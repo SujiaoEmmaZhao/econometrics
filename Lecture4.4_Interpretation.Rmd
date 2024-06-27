@@ -1,0 +1,278 @@
+---
+title: "**Econometrics**"
+subtitle: "Interpretation of the linear regression model"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/13 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+<br />
+
+
+We will use the housing dataset and go through several specifications. The aim is to see how to interpret the coefficients in each specification. We will ignore whether or not the specification is appropriate and whether the marginal effects are statistically significant. The aim is simply to show how to properly interpret the coefficients. We will also show how to use the R `ggeffects` package and how to take advantage of R's factorial notation.
+
+
+We start by reading a dataset.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+library(haven) # import Stata data
+housing2 <- read_dta("housing2.dta")
+```
+
+and next we provide descriptive statistics of the variables that we will use in the regression
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+stargazer(as.data.frame(housing2[c("price","unemp","bedrooms","heatsqft","built01plus")]), type = "text",
+ title="Descriptive statistics/selected variables")
+```
+
+
+Consider the following specification:
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+reg1<-lm(price~bedrooms + heatsqft + unemp + built01plus, data = housing2)
+stargazer(reg1, type="text", digits=4)
+
+```
+
+
+How shall we interpret the estimated coefficients of this regression?  
+    
+Everything else constant (ceteris paribus) we can conclude that on average:
+ 
+- each additional bedroom leads to a price decrease of 52357.9 dollars
+- each additional square foot leads to an increase of 322.2198 dollars
+- an additional percentage point increase in the unemployment rate leads to a decrease of 56232.35 dollars
+- houses built after 2000 have a price that is 89030.65 lower
+
+Since our model is of the type 
+\begin{equation*}
+E(y_{i}|\mathbf{x}_i)=\beta _{1}+\beta _{2}x_{2i}+\beta _{3}x_{3i}+...+\beta _{k}x_{ki}
+\end{equation*}
+the estimates of the $\beta$s have a direct interpretation as a partial effect.
+
+We can use the margins command to compute marginal effects. One advantage is that `margins` calculates the statistical significance associated with the effect.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(margins)
+(m <- margins(reg1))
+summary(m)
+```
+
+As expected, the results are the same as those obtained with `lm`. This is because we want to look at the impact of $\Delta X$ on $\Delta Y$ (for simplicity we ommit the expected sign on Y).
+
+
+Using the `plot()` method yields the margins plot
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(margins)
+plot(m)
+```
+
+We can also inspect the marginal effects at the representative levels of the non-focal variables using the `ggpredict()` command in the **`ggeffects`** package. 
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(ggeffects)
+p<-ggpredict(reg1, terms = c("bedrooms", "heatsqft","unemp","built01plus"))
+plot(p)
+```
+
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+p<-ggpredict(reg1, terms = c("heatsqft","bedrooms", "unemp","built01plus"))
+plot(p)
+```
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+p<-ggpredict(reg1, terms = c("unemp", "heatsqft","bedrooms","built01plus"))
+plot(p)
+```
+
+
+This is a lot of information. What if you just want to specify certain values for the non-focal covariates, at which marginal effects should be calculated.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+p<-ggpredict(reg1, terms = c("unemp", "heatsqft [meansd]","bedrooms [3]","built01plus  [1]"))
+plot(p)
+```
+
+
+Now what if we want to look at the impact $\Delta X$ on $\frac {\Delta Y}{Y}$ (semi-elasticities)?  This means the OLS coefficient is rescaled by the predicted value of the outcome and then averaged. This can be interpreted as the percentage/proportionate change in the expected value of y for a one unit change in x.
+
+
+There is no easy way to do this in R. But recall that the estimated semi-elasticity is given by $\frac {\beta_j} {Y}$. The question is which $Y$ to use. The R command `margins` uses the predicted value of $Y$ and does this computation for each observation, and then averages all values. We can replicate this result in R:
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(dplyr)
+reg1<-lm(price~bedrooms + heatsqft + unemp + built01plus, data = housing2)
+
+elas1 <- round(as.numeric(mean(reg1$coefficients["bedrooms"]/reg1$fitted.values)), digits=7)
+elas2 <- round(as.numeric(mean(reg1$coefficients["heatsqft"]/reg1$fitted.values)), digits=7)
+elas3 <- round(as.numeric(mean(reg1$coefficients["unemp"]/reg1$fitted.values)), digits=7)
+elas4 <- round(as.numeric(mean(reg1$coefficients["built01plus"]/reg1$fitted.values)), digits=7)
+
+print(paste0("The semi-elasticity of bedrooms is: ", elas1))
+print(paste0("The semi-elasticity of heatsqft is: ", elas2))
+print(paste0("The semi-elasticity of unemp is: ", elas3))
+print(paste0("The semi-elasticity of built01plus is: ", elas4))
+
+```
+
+
+We could have instructed `margins` to compute the formula using the average value of *Y* instead:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg1<-lm(price~bedrooms + heatsqft + unemp + built01plus, data = housing2)
+
+elas1 <- round(as.numeric(reg1$coefficients["bedrooms"]/mean(housing2$price)), digits=7)
+elas2 <- round(as.numeric(reg1$coefficients["heatsqft"]/mean(housing2$price)), digits=7)
+elas3 <- round(as.numeric(reg1$coefficients["unemp"]/mean(housing2$price)), digits=7)
+elas4 <- round(as.numeric(reg1$coefficients["built01plus"]/mean(housing2$price)), digits=7)
+
+print(paste0("The semi-elasticity of bedrooms is: ", elas1))
+print(paste0("The semi-elasticity of heatsqft is: ", elas2))
+print(paste0("The semi-elasticity of unemp is: ", elas3))
+print(paste0("The semi-elasticity of built01plus is: ", elas4))
+
+```
+
+The estimate is quite different but the interpretation would be the same. For instance, everything else constant an incease of one square foot in a house would on average lead to a price increase of 0.10875%. Note that the change in $Y$  is relative so it must be read as a percentage.
+
+Finally, what if we wanted to compute the elasticity, e.g., for *heatsqft*?
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg1<-lm(price~bedrooms + heatsqft + unemp + built01plus, data = housing2)
+
+elas <- round(as.numeric(reg1$coefficients["heatsqft"]*mean(housing2$heatsqft)/mean(housing2$price)), digits=7)
+
+print(paste0("The semi-elasticity of heatsqft is: ", elas))
+```
+
+and we can conclude that, ceteris paribus, an increase of 1 percent on footage will lead to a 2.2 percent increase in price.
+ 
+ 
+Suppose now that to the specification above we decide to add a quadratic term on *heatsqft*. We could create a new variable and add it to the regression.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+housing2$heatsqft2<-housing2$heatsqft*housing2$heatsqft
+reg2<-lm(price~bedrooms + heatsqft + unemp + built01plus + heatsqft2, data = housing2)
+summary(reg2)
+anova(reg2)
+stargazer(reg2, type="text", digits=4)
+```
+
+
+Since *heat2* is the square of *heatsqft* the partial effect of this variable needs to take this into account. This is a model of the type 
+\begin{equation*}
+E(y_{i}|\mathbf{x}_i)=\beta _{1}+\beta _{2}x_{2i}+\beta _{3}x_{2i}^2+...+\beta _{k}x_{ki}
+\end{equation*}
+and the marginal effect for $x_2$ (heatsqft) is $\frac{\partial E(y_i|\mathbf{x}_i)}{\partial x_{2i}}=\beta_2+2\beta_3 x_{2i}$.
+
+But with R you don't need to calculate *heat2*. Instead we use the syntax `I(heatsqft^2)` to let R calculate the squared variable. An advantage of doing this is that now the margins command will "know" how to compute the marginal effects.  
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg2<-lm(price~bedrooms + heatsqft +I(heatsqft^2) + unemp + built01plus, data = housing2)
+(marg2 <- margins(reg2))
+```
+
+and we can conclude that, everything else constant, on average, an increase of a foot leads to a price incease of 219 dollars.
+
+Similarly, if we wanted to compute any interaction of variables we should use R's syntax. For example, suppose that for some reason we want to introduce as a regressor the interaction between *unemp* and *heatsqft*. We could simply do  
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg3<-lm(price~bedrooms + heatsqft * unemp + built01plus, data = housing2)
+(marg3 <- margins(reg3))
+```
+
+and because we "told" R how the interaction variable was constructed `margins` would know how to correctly compute the partial effects.
+
+<br />
+
+<br />
+
+# The log linear model
+
+Suppose that instead of the above regression we used as a dependent variable the log of price.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+housing2$logprice=log(housing2$price)
+reg<-lm(logprice~bedrooms + heatsqft + unemp + built01plus, data = housing2)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text", digits=4)
+```
+
+
+
+This is a model of the type 
+\begin{equation*}
+E(log(y_{i}|\mathbf{x}_i))=\beta_{1}+\beta _{2}x_{2i}+\beta _{3}x_{3i}+...+\beta _{k}x_{ki}
+\end{equation*}
+whose coefficients have a direct interpretation as semi-elasticities. Based on this model we would conclude that, everything else constant, and on average
+
+ - an increase of one bedroom leads to a price decrease of 11.17 percent
+ - an increase of a foot leads to an increase of 0.07 percent in the price of a house
+ - an increase of a **percentage point** in the unemployment rate leads to a decrease of 16 percent in price
+ 
+What about the coefficient on "1.built01plus"? We can conclude that, ceteris paribus, after 2000 prices increase by a factor of $exp(-0.0918)=.9122864$ or, in other words, decreased 8.77 percent ($exp(-0.0918)-1=-.0877136$). When working with dummies, if the dependent variable is in logs, then the partial effect is usually calculated as $(e^\beta-1) \times 100\%$.
+
+<br />
+
+<br />
+
+# The log-log regression model
+
+What if we wanted to estimate a constant-elasticity model? In this case the explanatory variables would need to be in logs. Of course, that would only be possible if the variables had positive values.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+housing2$lbedrooms=log(housing2$bedrooms)
+housing2$lheatsqft=log(housing2$heatsqft)
+housing2$lunemp=log(housing2$unemp)
+
+reg<-lm(logprice~lbedrooms + lheatsqft + lunemp + built01plus, data = housing2)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text", digits=4)
+```
+
+Now we have a model of the type (ignoring the dummy variable)
+\begin{equation*}
+E(log(y_{i}|\mathbf{x}_i))=\beta_{1}+\beta _{2}log(x_{2i})+\beta _{3}log(x_{3i})+...+\beta _{k}log(x_{ki})
+\end{equation*}
+and the coefficients have a direct interpretation as elasticities. In this particular case it doesn't make much sense to take the log of *bedrooms* or *unemp* so we will only interpret the coeffcient for *heatsqft*. Based on this model we would conclude that, everything else constant, on average when the square footage increased by 1 percent price increased by 1.52 percent.
+
+Note that *R* does not "know" that the variables are in logs. So using the `margins` command would produce estimates for the elasticities. 
+
+
+# Remarks
+
+In general we do not include among the explanatory the log of variables that are already in percentage (as *unemp*). 
+
+It is also not common to take logs of variables that have a small number of discrete values (as *bedroom*). 
+
+We also have to be careful about interactions because it may become difficult to provide meaningful interpretation. When adding interactions it is also a good idea to add the original variables by themselves.
+
+
+<br />
+
+<br />

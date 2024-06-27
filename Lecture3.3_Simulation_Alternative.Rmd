@@ -1,0 +1,113 @@
+---
+title: "**Econometrics**"
+subtitle: "R Exercises: Monte Carlo Simulation for OLS Using the Monte Carlo Package"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/06 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# library(data.table)
+# library(stargazer)
+# library(dplyr)
+# library(magrittr)
+
+library(pacman)
+pacman:: p_load(data.table, stargazer, dplyr, magrittr)
+```
+
+
+<br />
+
+## Small Samples and Asymptotic Theory
+
+<br />
+
+We will implement a **Monte Carlo** simulation. The idea is to use a single equation such as
+
+\begin{equation}
+y_i=\beta_1+\beta_2 x_i + \epsilon_i
+\end{equation}
+
+for the data generation where we establish beforehand the $\beta$ parameters. For each sample of data that we create we estimate the $\beta$s. 
+
+This is the basic idea of many **Monte Carlo** simulations where you already know the model and what you want to do is to see how well your estimators or test statistics perform given that you already know the model.
+
+
+# Monte Carlo Simulations Using the MonteCarlo Package 
+
+```{r MonteCarlo-package}
+
+p_load(MonteCarlo)
+
+## Define the function for our OLS estimator
+
+ols_estimator <- function(n, beta_0, beta_1){
+  
+  # Generate data
+  U_i = rnorm(n, mean = 0, sd = 2) # Error
+  X_i = rnorm(n, mean = 5, sd = 5) # Independent variable
+  Y_i = beta_0 + beta_1*X_i + U_i  # Dependent variable
+  
+  # Formulate data.table
+  data_i = data.table(Y = Y_i, X = X_i)
+  
+  # Run regressions
+  ols_i <- lm(Y ~ X, data = data_i)
+  
+  # Extract slope coefficient and save
+  slope <- ols_i$coefficients[2]
+  #intercept <- ols_i$coefficients[1]
+  
+  # Return Results in a list
+  return(list("beta_1" = unname(slope)))
+  #return(list("beta_0" = unname(intercept)))
+  
+  
+}
+
+ols_estimator(n = 100, beta_0 = 1.5, beta_1 = 2.0)
+
+## Define parameter grid
+#n_grid <- c(100, 500, 1000, 2000)   # Sample sizes
+n_grid <- c(100, 500, 1000)   # Sample sizes
+beta0_grid <- c(2.0)          # Intercept
+beta1_grid <- c(1.5)          # Slope coefficient
+
+## Collect parameter grids in list
+param_list = list("n" = n_grid, "beta_0" = beta0_grid, "beta_1" = beta1_grid)
+
+## Run simulation
+MC_result_OLS <- MonteCarlo(func = ols_estimator,    # One iteration of estimator
+                            nrep = 500,              # Number of simulations
+                            param_list = param_list, # Parameter grid (Sample size and betas)
+                            ncpus = 1,               # Number of computers
+                            time_n_test = TRUE)      # Estimate how long simulation will take?
+  
+
+
+```
+
+
+
+
+```{r review-results}
+## View results
+res <- MC_result_OLS$results
+res <- res$beta_1
+
+n_100 <- res[1,,,]   # Sample size of 100
+n_500 <- res[2,,,]   # Sample size of 500
+n_1000 <- res[3,,,]  # Sample size of 1000 
+#n_2000 <- res[4,,,]  # Sample size of 2000 
+
+hist(n_100, xlim = c(1.20,1.70))
+hist(n_500, xlim = c(1.20,1.70))
+hist(n_1000, xlim = c(1.20,1.70))
+#hist(n_2000, xlim = c(1.20,1.70))
+
+```
+
+
+<br />
+<br />

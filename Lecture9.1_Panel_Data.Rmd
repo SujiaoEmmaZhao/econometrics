@@ -1,0 +1,606 @@
+---
+title: "**Microeconometrics**"
+subtitle: "**1MEEE01 Models for Panel Data**"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/11/24 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, "class/bplim-fonts.css", "class/bplim.css"]
+    nature:
+      highlightLines: true
+      beforeInit: "macros.js"
+      
+---
+
+
+## About the (re)schedule
+
+.font120[
+.blue[
+**Microeconometrics**
+]
+]
+
+- **December 2nd in classroom 113**
+- **December 10th in classroom 213**
+- **December 22th: Presentations**
+- **January 5th: Test**
+- **January 28th: Exam**
+
+<br \>
+
+.font120[
+.blue[
+**Econometrics**
+]
+]
+
+- **January 25th: Exam**
+
+
+---
+
+class: center, middle, inverse
+
+# **Models for Panel Data**
+
+---
+
+## Panel Data
+
+- Panel data contain repeated observations on the same units
+    
+    - A household survey held every year
+    
+    - Firm level data filed each year
+    
+    - Annual characteristics of hospitals followed over time
+    
+    - Pooled time series data for all EU countries
+    
+- The data are characterized by having two dimensions, an individual dimension, indexed $i$ = 1, . . . , N, and (typically) a time dimension, indexed $t$ = 1, . . . ,T.
+    
+- The data is **balanced** if the time dimension is identical for all individuals and **unbalanced** otherwise
+
+---
+
+## Examples of Panel Data
+
+.scroll-output[
+```{r include=TRUE, message=FALSE, warning=FALSE, echo = FALSE}
+library(kableExtra)
+library(wooldridge)
+data("traffic1")
+#?traffic1
+kable(traffic1)
+```
+<br \>
+<br \>
+<br \>
+]
+
+---
+
+## Examples of Panel Data
+
+.scroll-output[
+```{r include=TRUE, message=FALSE, warning=FALSE, echo = FALSE}
+library(AER)
+data(Fatalities)
+smplf <- Fatalities[Fatalities$state %in% c("al","az","ar"), c(1:6)]
+kable(smplf)
+```
+<br \>
+<br \>
+<br \>
+]
+
+---
+
+## Estimators for Panel Data
+
+- With panel data it is possible to consider a specification of this type:
+
+$$y_{it} = \beta_0 + x_{it}^{'} \beta + \alpha_i + \epsilon_{it}$$
+
+- The question is how we treat the term $\alpha_i + \epsilon_{it}$
+
+- There are five different estimators for $\beta$:
+
+    - The OLS estimator
+    
+    - The between estimator
+    
+    - The random effects estimator
+    
+    - The within estimator (fixed effects)
+    
+    - The first-difference estimator
+
+---
+
+## Pooled OLS
+
+
+- If we simply ignore it and treat it as the usual error term then we are using **pooled OLS**
+
+- If the $\alpha_i$ are correlated with the $x_{it}$ then the OLS estimators are biased (violation of A.2)
+
+- If uncorrelated then we still have violation of A.4. OLS not the most efficient (but consistent)
+
+---
+
+## The Between Estimator
+
+- The between estimator (BE) is OLS applied to the individual means equation
+
+
+$$\bar y_{i} = \beta_0 + \bar x_{i}^{'} \beta + \alpha_i + \bar \epsilon_{i}$$
+
+- The BE discards all time-information
+
+- Consistency of the BE requires uncorrelatdness between the random terms and the explanatory variables
+
+
+---
+
+## The Fixed Effects Model
+
+- The fixed effects model takes into account individual differences, translated into different intercepts of the regression line for different individuals.
+
+- Variables that change little or not at all over time should not be included in a fixed effects model due to collinearity with the fixed effects.
+
+- We start from a model in which all coefficients are the same across individuals and time, except the intercept term
+
+$$y_{it} = \alpha_i + x_{it}^{'} \beta + \epsilon_{it}$$
+
+where it is assumed that $\epsilon_{it} \sim IID(0, \sigma_{\epsilon}^2)$, independent of all $x_{it}$
+
+
+---
+
+## The Fixed Effects Model
+
+- In the usual regression/OLS framework, we can handle this by including a dummy variable for each individual (and omitting the overall intercept)
+
+- This produces the **Least Squares Dummy Variable (LSDV) estimator** for $\beta$ which is BLUE given the above assumptions
+
+
+- Exactly the same estimator for $\beta$ is obtained if we apply OLS to an equation in deviations from individual means (within-transformed equation)
+
+
+- The estimator for $\beta$ is referred to as the **within estimator** (or **fixed effects estimator**)
+
+---
+
+## The Fixed Effects Model
+
+- Consistency of the within estimator for $\beta$ requires that the within transformed regressors are uncorrelated with the error term. This is implied by $E(X_{it}\epsilon_{is}) = 0$  for all $s,t$
+
+In this case we call $x_{it}$ **strictly exogenous**
+
+
+- A strictly exogenous variable is not allowed to depend upon current, future and past values of the error term
+
+- This excludes lagged dependent variables. It also excludes feedback from $y_{it}$ to future values of $x_{it}$
+
+---
+
+## The Fixed Effects Model
+
+- Essentially, the fixed effects model concentrates on differences "within" individuals
+
+- Any time-invariant variable (gender, race, . . . ) is eliminated by the within transformation. Its impact will be absorbed by the fixed effects
+
+- It is also possible to include fixed time effects. This is most easily done using time dummies (if $T$ is small)
+
+- To test $H_o : \alpha_i = 0$ for all i we can use an F-test
+
+- Note that $\alpha_i$ cannot be estimated consistently for fixed $T$ (but they are estimated unbiasedly)
+
+---
+
+## The First-Difference Estimator
+
+- Another approach to eliminate the $\alpha_i$ is first-differencing
+
+$$y_{it} - y_{i,t-1}  = (x_{it} - x_{i,t-1})^{'} \beta + (\epsilon_{it} - \epsilon_{i,t-1})$$
+
+$$\Delta y_{it} = \Delta x_{it}^{'} + \Delta \epsilon_{it}$$
+
+
+- Consistency requires $E(\Delta x_{it}\Delta \epsilon_{it}) = 0$
+
+- This condition is slightly weaker than that for the within estimator
+
+- Calculation of standard errors need to account for autocorrelation
+
+- With T = 2, within and first-differences produce the same results
+
+- First-differences is generally less efficient that the within estimator
+
+
+---
+
+## The Random Effects Model
+
+- This model (a.k.a. one-way error component model) simply treats $\alpha_i$ as part of the error term:
+
+$$y_{it} = \beta_0 + x_{it}^{'} \beta + \alpha_i + \epsilon_{it}$$
+
+
+where it is assumed that $\epsilon_{it} \sim IID(0, \sigma_{\epsilon}^2)$,
+$\alpha_{i} \sim IID(0, \sigma_{\alpha}^2)$, independent of all $x_{it}$
+
+- The intercept term $\beta_0$ is included because we redefined $\alpha_i$ to have
+mean zero
+
+- This is a standard linear model where the error term has non zero covariances. (Feasible) GLS is able to exploit this
+
+- The random effects (RE) estimator is the feasible GLS estimator for $\beta$
+
+- We can test $H_0 : \sigma_{\alpha}^2 = 0$ using Breusch-Pagan’s test
+
+---
+
+## The Random Effects Model
+
+- Consistency of the RE estimator requires that both components of the error term are uncorrelated with all regressors (from all periods)
+
+- Most importantly, it requires that the regressors $x_{it}$ and the individual component $\alpha_i$ are uncorrelated
+
+- In many applications, it is felt that unobserved heterogeneity is correlated to observed regressors
+
+- For example it is often assumed that “ability” is correlated with education
+
+
+---
+
+## OLS, Between, Within, and GLS
+
+There are five different estimators for $\beta$:
+
+- The between estimator. OLS applied to the equation in individual means. Exploits the between dimension of the data
+
+- The within estimator (fixed effects). OLS applied to the equation in deviations from individual means. Exploits the within dimension of the data
+
+- The first-difference estimator. OLS applied to first differences. Like within it exploits the within dimension of the data
+
+- The OLS estimator. Exploits the two sources, but not efficiently
+
+- The random effects estimator, exploits the correlation between the error terms (based on GLS). It combines the within and between dimension efficiently. Consistency requires that both the between and within estimator are consistent
+
+---
+
+## Fixed Effects vs Random Effects
+
+- The random effects model elaborates on the fixed effects model by recognizing that, since the individuals in the panel are randomly selected, their characteristics, measured by the intercept should also be random.
+
+- The random effects model is distinguished by the special structure of its error term. The intercept is, unlike the fixed effects model, constant across individuals, but the error term incorporates both individual specifics and the initial regression error term.
+
+- Fixed effects estimation is preferred if the individual units are one of a kind and of interest (e.g. countries)
+
+- Random effects estimator are reliable under the assumption that individual characteristics (heterogeneity) are exogenous, that is, they are independent with respect to the regressors in the random effects equation.
+
+---
+
+## Fixed Effects vs Random Effects
+
+- The fixed effects approach assumes that
+
+$$E(y_{it} | x_{it}, \alpha_{i}) = \alpha_i + x_{it}^{'} \beta$$
+
+- While the random effects approach assumes
+
+$$E(y_{it} | x_{it}) = x_{it}^{'} \beta$$
+
+- The $\beta$ coefficients are the same only if
+
+$$E(\alpha_{i}| x_{it}) = 0$$
+
+- This can be tested with a **Hausman test**
+
+
+---
+
+## The Hausman Test
+
+- Idea: estimate the model both by fixed effects and by random effects. Compare the results
+
+- The null hypothesis is that there is no correlation between the regressors and the errors (RE is appropriate)
+
+- If the estimates are “very different”, this suggests that the random effects estimator is inconsistent (making the fixed effects approach more appropriate)
+
+- The Hausman test statistic H is a quadratic form in the difference between the two estimators. The covariance matrix is simply the difference between the FE and the RE covariance matrix
+
+$$H = (\hat \beta_{FE} - \hat \beta_{RE})^{'}[\hat V(\beta_{FE})-\hat V(\beta_{RE})]^{-1}(\hat \beta_{FE} - \hat \beta_{RE})$$
+
+
+---
+
+## Goodness of Fit
+
+Computation of goodness-of-fit measures in panel data models is somewhat uncommon, because:
+
+- One may attach different importance to the within and between variation in the data
+
+- The usual $R^2$ measures are only appropriate if the model is estimated by OLS
+
+- Goodness-of-fit measures provide only partial information about the “quality” of the model. Further, it should never be used to choose an estimator
+
+---
+
+## Goodness of Fit
+
+It is common to calculate several $R^2$ measures:
+
+- Within $R^2$ : squared correlation between within transformed actual and fitted $y_{it}$. Maximized by within estimator.
+
+- Between $R^2$ : based upon individual averages of actual and fitted $y_{it}$. Maximized by between estimator.
+
+- Overall $R^2$ : squared correlation between actual and fitted $y_{it}$. Maximized by OLS.
+
+---
+
+## Heteroskedasticity and Autocorrelation
+
+- Tests for heteroskedasticity and autocorrelation in $\epsilon_{it}$ can be based
+upon the fixed effects residuals
+
+- It is possible to use a variant of the Newey-West estimator to estimate a robust covariance matrix of the OLS, random effects and fixed effects estimators 
+
+- It is possible (but often cumbersome) to exploit heteroskedasticity or autocorrelation (if form is known) by an additional GLS step
+
+
+---
+
+class: center, middle, inverse
+
+# **R Commands for Panel Data**
+
+---
+
+## Panel Data Structure
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+#install.packages("plm")
+library(plm)
+```
+
+.scroll-output[
+
+Most panel data methods require the long form (a column for each variable and a row for each individual-period). We can create a panel structure using the function `pdata.frame` of the `plm` package. 
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(kableExtra)
+library(haven)
+library(plm)
+library(xtable)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+nls_panel <- read_dta("Data/nls_panel.dta")
+nlspd <- pdata.frame(nls_panel, index=c("id", "year"))
+smpl <- nlspd[nlspd$id %in% c(1,2),c(1:6, 14:15)]
+tbl <- xtable(smpl) 
+kable(tbl, digits=4, align="c",
+      caption="A data sample")
+```
+
+<br \>
+
+Function `pdim()` extracts the dimensions of the panel data:
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+pdim(nlspd)
+```
+
+<br \>
+
+The `plm()` function accepts the following main arguments, where the parameters shown as vectors c(...), such as effect and model can only take one value at a time out of the provided list.
+
+```{r eval=FALSE}
+plm(formula, data, subset, na.action, effect = c("individual", "time", "twoways"), model = c("within", "random", "ht", "between", "pooling", "fd"),...)
+```
+
+
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+---
+
+## The Pooled Model
+
+- A pooled model does not allow for intercept or slope differences among individuals.
+
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(stargazer)
+library(xtable)
+library(broom) #tidy up statistical outputs
+wage.pooled <- plm(lwage~educ+exper+I(exper^2)+
+  tenure+I(tenure^2)+black+south+union, 
+  model="pooling", data=nlspd)
+# table1<-stargazer(wage.pooled,type = "text", 
+#            title="Pooled model",
+#                   keep.stat = c("rsq", "n"),
+#                   digits=4)
+
+kable(tidy(wage.pooled), digits=3, 
+           caption="Pooled model")
+```
+<br \>
+<br \>
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+
+---
+
+## The Fixed Effects Model
+
+- An OLS Approach
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+nls10 <- pdata.frame(nls_panel[nls_panel$id %in% 1:10,])
+wage.fixed <- lm(lwage~exper+I(exper^2)+
+                  tenure+I(tenure^2)+union+factor(id)-1,
+                  data=nls10)
+kable(tidy(wage.fixed), digits=3, 
+      caption="Fixed effects in a subsample")
+```
+
+<br \>
+<br \>
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+
+---
+
+## The Fixed Effects Model
+
+- Using the option model="within" in the `plm()` function
+
+- Accounting for individual heterogeneity significantly lowers the marginal effects of the variables.
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+wage.within <- plm(lwage~exper+I(exper^2)+
+                  tenure+I(tenure^2)+south+union,
+                  data=nlspd, 
+                  #data=nls10,   # Fixed effects using the 'within' model option for n=10
+                  model="within")
+tbl <- tidy(wage.within)
+kable(tbl, digits=5, caption=
+"Fixed effects using 'within' with full sample")
+```
+
+<br \>
+
+Testing if fixed effets are necessary is to compare the fixed effects model wage.within with the pooled model wage.pooled.
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+kable(tidy(pFtest(wage.within, wage.pooled)), caption=
+        "Fixed effects test: Ho:'No fixed effects'")
+```
+
+<br \>
+<br \>
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+---
+
+## The Random Effects Model
+
+- The same function we used for fixed effects can be used for random effects, but setting the argument `model=` to ‘random’ and selecting the `random.method` as one out of four possibilities: “swar” (default), “amemiya”, “walhus”, or “nerlove”.
+
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+wage.random <- plm(lwage~educ+exper+I(exper^2)+
+                  tenure+I(tenure^2)+black+south+union,
+                  data=nlspd, random.method="swar",
+                  model="random")
+kable(tidy(wage.random), digits=4, caption=
+      "The random effects results for the wage equation")
+```
+
+
+<br \>
+<br \>
+<br \>
+]
+
+
+---
+
+## The Random Effects Model
+
+- The random effects test function is `plmtest()`, which takes as its main argument the pooling model (indeed it extracts the residuals from the pooling object).
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+wageReTest <- plmtest(wage.pooled, effect="individual")
+kable(tidy(wageReTest), caption=
+        "A random effects test for the wage equation")
+```
+
+The null hypothesis of zero variance in individual-specific errors is rejected; therefore, heterogeneity among individuals may be significant.
+
+
+---
+
+## The Random Effects Model
+
+
+- The test function `phtest()` compares the fixed effects and the random effects models
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+kable(tidy(phtest(wage.within, wage.random)), caption=
+ "Hausman endogeneity test for the random effects wage model")
+```
+
+
+The null hypothesis saying that the individual random effects are exogenous is rejected, which makes the random effects equation inconsistent. So, the fixed effects model is the correct solution here. 
+ 
+
+---
+
+## The Random Effects Model
+
+- The fixed effects model, however, does not allow time-invariant variables such as `educ` or `black.` Since the problem of the random effects model is endogeneity, one can use instrumental variables methods when time-invariant regressors must be in the model.
+
+- The **Hausman-Taylor estimator** uses instrumental variables in a random effects model
+
+- It assumes four categories of regressors: time-varying exogenous, time-varying endogenous, time-invariant exogenous, and time-invariant endogenous
+
+- The number of time-varying variables must be at least equal to the number of time-invariant ones.
+
+---
+
+## The Random Effects Model
+
+In our `wage`  model, suppose `exper`, `tenure` and `union` are time-varying exogenous, `south` is time-varying endogenous, `black` is time-invariant exogenous, and `educ` is time-invariant endogenous. The same `plm()` function allows carrying out Hausman-Taylor estimation by setting `model= “ht”`.
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+wage.HT <- plm(lwage~educ+exper+I(exper^2)+
+      tenure+I(tenure^2)+black+south+union |
+      exper+I(exper^2)+tenure+I(tenure^2)+union+black,
+      data=nlspd, model="ht")
+kable(tidy(wage.HT), digits=5, caption=
+     "Hausman-Taylor estimates for the wage equation")
+```
+
+<br \>
+
+The largest changes take place for `educ` and `black`.
+
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+
+
+

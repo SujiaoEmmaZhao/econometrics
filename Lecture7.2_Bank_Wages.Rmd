@@ -1,0 +1,201 @@
+---
+title: "**Econometrics**"
+subtitle: "Heteroskedasticity: Bank Wages"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/27 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+
+
+We consider the bank wage data of 474 bank employees. It will be discussed: three jobs categories, a possible model for heteroskedasticity and visual impression of the amount of variation in wages.
+
+The bank employees can be divided according to three job categories: administrative jobs, custodial jobs and management jobs. It may well be that the amount the variation in wages differs among these three categories. For example, two managers with the same level of education may have quite different wages because they have different management experience or their jobs responsibilities differ. However, for a given level of education, it may be expected that employees with custodial jobs earn similar wages.
+
+Let us consider the following regression model
+
+\begin{equation*}
+logsalary_i= \beta_1 + \beta_2 educ_i + \beta_3  gender_i + \beta_4 minority_i  + \beta_5  dumjcat2_i + \beta_6 dumjcat3_i+u_i,
+\end{equation*}
+
+where $logsalary$ is the logarithm of yearly wage, $educ$ is the number of years of education, $gender$ is a gender dummy (1 for males, 0 for females), and $minority$ is a minority dummy (1 for minorities, 0 otherwise). The administration is taken as the reference category, and $dumjcat2$ and $dumjcat3$ are dummy variables ($dumjcat2=1$ for individuals with a custodial job and $dumjcat2=0$ otherwise, and $dumjcat3=1$ for individuals with a management job and $dumjcat3=0$ otherwise).
+
+<br />
+
+First, we need to read the bank_wages dataset. We assume that we have changed to the folder where the dataset is located. We can now read the file. 
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(haven) # import Stata data
+bwages <- read_dta("bank_wages.dta")
+```
+
+
+We can do some descriptive statistics:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+stargazer(as.data.frame(bwages), type = "text")
+```
+
+We need to create factor variable *jobcat2*.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+bwages$jobcat2 <- factor(bwages$jobcat,
+                       levels = c(1,2,3),
+                       labels = c("administrative", "custodial", "management"))
+```
+
+We now run the regression.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+reg1<-lm(logsalary~educ+gender+minority+jobcat2, data = bwages)
+stargazer(reg1, type="text", digits=8)
+```
+
+The following graphs show for each job category both the unconditional variation in $logsalary$ and the conditional variation using the variation of the estimates of the OLS of $logsalary$ and the variation of the OLS residuals of the above regression model.
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(ggplot2)
+fig1<-ggplot(data = bwages, aes(y = logsalary, x = jobcat2)) + geom_point(col = 'blue') + geom_abline(slope = 0)
+fig2<-ggplot(data = bwages, aes(y = reg1$residuals, x = jobcat2)) + geom_point(col = 'blue') + geom_abline(slope = 0)
+
+library(grid)
+# Create a new page
+grid.newpage()
+# Next push the vissible area with a layout of 1 row and 2 columns using pushViewport()
+pushViewport(viewport(layout = grid.layout(1,2)))
+
+print(fig1, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(fig2, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+```
+
+
+The graphs indicate that the variations are the smallest for custodial jobs.
+
+
+## Checking homoskedasticity of residuals
+
+One common assumption for the OLS regression is the homogeneity of variance of the residuals. If the model is well-fitted, there should be no pattern to the residuals plotted against the fitted values. If the variance of the residuals is non-constant, then the residual variance is said to be “heteroskedastic.” There are graphical and non-graphical methods for detecting heteroskedasticity. A commonly used graphical method is to plot the residuals versus fitted (predicted) values.  
+
+We do this by drawong the residual plot in R (question: why don't we drawn the scatter Diagram with the regression line?). Note that a reference line at $y=0.$ is inserted by the argument `geom_abline(slope = 0)`. We see that the pattern of the data points is getting a little narrower towards the right end, which is an indication of heteroskedasticity.
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(ggplot2)
+bwages$resi <- reg1$residuals
+bwages$fit <- reg1$fitted.values
+ggplot(data = bwages, aes(y = resi, x = fit)) + geom_point(col = 'blue') + geom_abline(slope = 0)
+```
+
+
+Now let us look at a couple of commands that test for heteroskedasticity. Both **Breusch-Pagan** and **White** test the null hypothesis that the variance of the error terms is constant. The **Breusch-Pagan test** is based on an auxiliary regression of the squared OLS residuals on the regressors or/and variables that are not in the regression model. The White’s test is based on an auxiliary regression of the squared OLS residuals on all regressors, their squares and their (unique) cross-products. Therefore, if the p-value is very small, we would have to reject the hypothesis that the variance is not constant. The tests can be implemented using `bptest` in R (`library(lmtest)`).  
+
+Below we use the studentized test proposed by R. Koenker in his 1981 article *A Note on Studentizing a Test for Heteroscedasticity*.
+
+**Breusch-Pagan test**
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+bptest(reg1, varformula = ~ educ+gender+minority+jobcat2, data = bwages, studentize = T)
+```
+
+
+**White test**
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+bptest(reg1, varformula = ~ fit+I(fit^2), data = bwages, studentize = T)
+```
+
+So, in this case, the evidence is against the null hypothesis that the variance is constant. These tests are susceptible to model assumptions, such as the assumption of normality. Therefore it is a common practice to combine the tests with diagnostic plots to make a judgment on the severity of the heteroskedasticity. Moreover, to decide if any correction is needed for heteroskedasticity. In our case, the plot above does show too strong an evidence. So we are going to get into details on how to correct for heteroskedasticity.
+
+## Dealing with heteroskedasticity
+<br />
+
+$\mbox{ 1. Respecify the model and/or transform the variables}$
+<br />
+
+Sometimes heteroskedasticity results are from the improper model specification. There may be subgroup differences. Effects of variables may not be linear. Perhaps some important variables have been left out of the model. If these are problems, deal with them first.
+<br />
+
+$\mbox{2. Use robust standard errors}$
+<br />
+
+R includes options with most routines for estimating robust standard errors (also referred to as Huber/White estimators or sandwich estimators of variance). As noted above, heteroskedasticity causes standard errors to be biased. When applying OLS it is common to assume that errors are both independent and identically distributed; robust standard errors relax either or both of those assumptions. Hence, when heteroskedasticity is present, robust standard errors tend to be more trustworthy. 
+
+In R the `coeftest` from the lmtest package can be used in combination with the function `vcovHC` from the sandwich package to calculate robust standard errors.
+
+With R, robust standard errors can usually be computed via the `coeftest` option. The first argument of the coeftest function contains the output of the lm function and calculates the t test based on the variance-covariance matrix provided in the vcov argument. The vcovHC function produces that matrix and allows to obtain several types of heteroskedasticity robust versions of it. In our case we obtain a simple White standard error, which is indicated by type = "HC0". Other, more sophisticated methods are described in the documentation of the function, ?vcovHC. For instance, HC1 gives us the White standard errors
+
+Let us rerun the above regression with the `coeftest` option.
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+library(sandwich)
+# OLS
+stargazer(reg1, type="text", digits=8)
+# Robust Standard Errors
+coeftest(reg1, vcov = vcovHC(reg1, "HC0"))  
+coeftest(reg1, vcov = vcovHC(reg1, "HC1"))  
+coeftest(reg1, vcov = vcovHC(reg1, "HC2"))  
+coeftest(reg1, vcov = vcovHC(reg1, "HC3"))  
+coeftest(reg1, vcov = vcovHC(reg1, "HC4"))  
+```
+
+Comparing the results with the earlier regression, we note that none of the coefficient estimates changed, but the standard errors and hence the t values are a little different. Had there been more heteroskedasticity in these data, we would have probably seen bigger changes.
+
+Caution: Do not confuse robust standard errors with robust regression. Despite their similar names, they deal with different problems:
+Robust standard errors address the problem of errors that are not independent and identically distributed. The use of robust standard errors will not change the coefficient estimates provided by OLS, but they will change the standard errors and significance tests.
+
+Robust regression deals with the problem of outliers in a regression. Robust regression uses a weighting scheme that causes outliers to have less impact on the estimates of regression coefficients. 
+
+<br />
+$\mbox{3. Use Weighted Least Squares or Feasible Weighted Least Squares}$
+<br />
+
+We concluded that the unexplained variation of the error terms in the logarithmic wages might differ among the three job categories. Let us assume the following multiplicative model for 
+
+$$\sigma_i^2= \exp^{\gamma_1 +\gamma_2 dumjcat2_i + \gamma_3 dumjcat3_i}.$$ 
+
+In this case, we have to use two-step FWLS estimates. First we need to obtain estimates for $\gamma_1$, $\gamma_2$, and $\gamma_3$. Since we do not observe $\sigma_i^2$ we use $e_i^2$ instead. Thus, the regression to estimate is
+
+\begin{equation}
+log(e_i^2)=\gamma_1 +\gamma_2 dumjcat2_i + \gamma_3 dumjcat3_i+v_i
+\end{equation}
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+varfunc.ols <- lm(log(resi^2) ~ jobcat2, data = bwages)
+stargazer(varfunc.ols, type="text", digits=8)
+```
+
+
+With our estimates at hand we can estimate $\sigma_i^2$, then we are ready to estimate our FGLS model
+
+The function `lm()` can do wls estimation if the argument weights is provided under the form of a vector of the same size as the other variables in the model. R takes the square roots of the weights provided to multiply the variables in the regression. Thus, if you wish to multiply the model by $\frac{1}{\sqrt{x_i}}$ , the weights should be $\frac{1}{x_i}$.
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+bwages$logvarhat=varfunc.ols$fitted.values
+bwages$varfunc=exp(bwages$logvarhat)
+bwages.gls <- lm(logsalary ~ educ+gender+minority+jobcat2, weights = 1/varfunc, data = bwages)
+stargazer(bwages.gls, type="text", digits=8)
+```
+
+
+<br />
+
+<br />

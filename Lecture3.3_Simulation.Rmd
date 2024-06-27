@@ -1,0 +1,91 @@
+---
+title: "**Econometrics**"
+subtitle: "R Exercises: Monte Carlo Simulation for OLS"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/06 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# library(data.table)
+# library(stargazer)
+# library(dplyr)
+# library(magrittr)
+
+library(pacman)
+pacman:: p_load(data.table, stargazer, dplyr, magrittr)
+```
+
+
+<br />
+
+## Small Samples and Asymptotic Theory
+
+<br />
+
+We will implement a **Monte Carlo** simulation. The idea is to use a single equation such as
+
+\begin{equation}
+y_i=\beta_1+\beta_2 x_i + \epsilon_i
+\end{equation}
+
+for the data generation where we establish beforehand the $\beta$ parameters. For each sample of data that we create we estimate the $\beta$s. 
+
+This is the basic idea of many **Monte Carlo** simulations where you already know the model and what you want to do is to see how well your estimators or test statistics perform given that you already know the model.
+
+
+```{r OLS-n-100-M-500, include=TRUE}
+
+## Parameters and Seed
+
+beta_o = 1.5        # Intercept
+beta_1 = 2.0        # Slope
+set.seed(1)         # Seed (allows to drawn the same sequence of random numbers)
+n = 100             # Sample Size
+M = 500             # Number of experiments/iterations
+
+
+## Storage
+slope_DT <- rep(0,M)
+intercept_DT <- rep(0,M)
+
+
+## Begin Monte Carlo
+
+for (i in 1:M){
+  
+  # Generate dat
+  u_i = rnorm(n, mean = 0, sd = 2)    # Error
+  X_i = rnorm(n, mean = 5, sd = 5)    # Independent Variable  
+  Y_i = beta_o + beta_1*X_i + u_i     # Dependent Variable 
+  
+  
+  # Formulate data.table
+  data_i = data.table(Y = Y_i, X= X_i)
+  
+  # Run regressions
+  ols_i <- lm(Y ~ X, data = data_i)
+  
+  
+  # Extract slope coefficient and save
+  slope_DT[i] <- ols_i$coefficients[2]
+  intercept_DT[i] <-  ols_i$coefficients[1]
+  
+}
+
+
+# Summary Statistics
+
+estimates_DT <-data.table(beta_1 = slope_DT, beta_0 = intercept_DT)
+stargazer(estimates_DT[, c("beta_1", "beta_0")], type = "text")
+
+# visual inspection
+hist(estimates_DT[, beta_1], xlim = c(1.5, 2.5))
+
+
+```
+
+Now you can play with different sample size.
+
+<br />
+<br />

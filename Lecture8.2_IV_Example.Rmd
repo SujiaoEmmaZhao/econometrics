@@ -1,0 +1,207 @@
+---
+title: "**Econometrics**"
+subtitle: "IV Example: Education and Income"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/11/24 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+##  More Education, More Income?
+
+<br />
+
+In this example, we look at the correlation between wage and education. More specifically, we ask: how much does your salary (Y) increase for any additional year of education? In other words, we are interested in estimating $\beta_1$
+
+$$Y = \beta_0 + \beta_1Education$$
+
+
+## Data
+
+This data comes from the `wage2` dataset in the wooldridge R package (and it’s real!). Wages are measured in monthly earnings in 1980 dollars.
+
+For the purpose of demonstration, we will select five variables from the data set for this exercise.
+
+| Variable name |  Description | 
+| :--- | :--- |
+| lwage  | Natural log of wage |
+| educ  | Education |
+| IQ  | Ability (omitted variable) |
+| exper  | Experience |
+| feduc  | 	Father’s education |
+
+
+
+
+## Analyses
+
+Let's simulate some data
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(scales)
+# Variable definitions for model  y ~ x1 + x2 + x3
+set.seed(103)
+experience <- rnorm(1000, 50000, 10000)    #Control variable (Experience)
+ability <- rnorm(1000, 35000, 10000)    #Ability
+fathereduc  <- rnorm(1000, 15000, 20000)    #Father's education (IV)
+ex1 = rnorm(1000, 26000, 10000)
+ey = 0.43*rnorm(1000, 50000, 10000)
+educ <- 3.7 + 0.52*fathereduc + 0.40*ability + 0.33*experience + ex1 #Education
+wage  <- 5 + 0.23*educ + 0.5*ability + 0.2*experience - ey #Wage
+wage  <- rescale(wage,  to = c(7.75, 300)) #Rescale from minimum wage to Director wage (hourly)
+experience <- rescale(experience, to = c(0, 15))     #Rescale as experience
+educ <- rescale(educ, to = c(10, 23))    #Rescale as years of school. Min 10 to max 23 (PhD)
+ability <- rescale(ability, to = c(0, 600))    #Hypothetical test scores for ability
+fathereduc  <- rescale(fathereduc,  to = c(10, 23))  #Father's education
+dat <- data.frame(wage, educ, ability, experience, fathereduc)
+```
+
+We then generate the descriptive statistics on wage and education:
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+library(stargazer)
+stargazer( dat,  
+           type = "html", 
+           omit = c("ability", "experience", "fathereduc"),
+           omit.summary.stat = c("p25", "p75"), 
+           covariate.labels = c("Wage", "Education"),
+           digits = 4 )
+```
+
+<br />
+
+When estimating the relationship between wage and education, scholars have encountered issues in dealing with the so-called **“ability bias”**: individuals who have higher ability are more likely both to stay longer in school and get a more highly paid job.
+
+Ability, however, is difficult to measure and cannot be included in the model. It is an omitted variable, which is correlated with both our outcome variable and our policy variable. Excluding “ability” from the analysis creates a bias in the estimation of $\beta_1$.
+
+We can observe this bias with the following exercise. Let’s assume that the variable `ability` is well measured and we can include it in our model (full model) based on equation above such that:
+
+$$Y = \beta_0 + \beta_1Education + \beta_2Ability + \beta_3Experience$$
+In a naive model, the ability variable is excluded:
+
+$$Y = \beta_0 + \beta_1Education + \beta_3Experience$$
+
+We can now compare the different estimates:
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+full.model  <- lm(dat$wage ~ dat$educ + dat$ability + dat$experience ) # Full Model if we were able to measure ability
+naive.model <- lm(dat$wage ~ dat$educ + dat$experience )      # Naive Model where ability is excluded (omitted variable bias)
+
+stargazer( full.model, naive.model, 
+           type = "html", 
+           dep.var.labels = ("Wage"),
+           column.labels = c("Full Model", "Naive Model"),
+           covariate.labels = c("Education", "Ability", "Experience"),
+           omit.stat = "all", 
+           digits = 2 )
+
+```
+
+<br />
+
+We note that the coefficient of the education variable is significantly different in the naive and the full model, where the naive model overestimate the effect of education on wage.
+
+<br />
+
+
+In order to avoid the omitted variable bias we can introduce an instrumental variable that is:
+
+- correlated with the variable of interest.
+- correlated to the dependent variable only through the variable of interest.
+- not correlated with the omitted variable.
+
+While point #1 and #2 can be empirically tested, point #3 needs to be argued by theory.
+
+We based our example on previous studies which utilize an individual’s father’s education as an instrumental variable ([Blackburn & Newmark, 1993](https://www.nber.org/papers/w3693); [Hoogerheide et al. 2012](https://personal.eur.nl/thurik/Research/Articles/Family%20background%20variables%20as%20instruments%20in%20EER.pdf)).
+
+Individuals who come from more educated families are more likely to stay in school longer, especially when fathers are more educated but one’s father’s education has little to no direct effect on wage.
+
+We can empirically test these hypotheses by looking at correlations across the variables in our dataset. In the first graph, we can see that father’s education is positively correlated with education. In the second graph, there is a slight correlation between a father’s education and wage. We would expect this, because education and hourly wage are correlated. However, we theoretically argue that there is no direct correlation: a father’s education increases the hourly wage only because it increases one’s education, which in turn leads to a higher salary. Finally, in the third graph, we can see that there is no correlation between father’s education and ability.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+par(mfrow=c(1,3) )
+plot(dat$fathereduc, dat$educ, xlab = "Father's education", ylab = "Education" )   # Plot
+abline(lm(dat$educ ~ dat$fathereduc ), col = "red")                              # regression line 
+plot(dat$fathereduc, dat$wage, xlab = "Father's education", ylab = "Wage" )
+abline(lm(dat$wage ~ dat$fathereduc ), col = "green") 
+plot(dat$fathereduc, dat$ability, xlab = "Father's education", ylab = "Ability")
+abline(lm(dat$ability ~ dat$fathereduc ), col = "blue")
+```
+
+
+
+<br />
+
+We now run the model using our instrumental variable. The model is defined in two stages: first, we estimate our variable of interest (Education) based on our instrumental variable.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+first.stage  <- lm(dat$educ ~ dat$fathereduc + dat$experience)        #Run the first stage predict the education variable
+
+stargazer( first.stage,
+           type = "html", 
+           dep.var.labels = ("Education"),
+           column.labels = c("First stage"),
+           omit.stat = c("adj.rsq", "ser"), 
+           covariate.labels = c("Father's education", "Experience"),
+           digits = 2 )
+```
+
+<br />
+
+Then, we estimate our dependent variable (Wage) using the predicted values of education estimated in the first model
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+dat$x1_hat <- fitted(first.stage)   
+#Saved the predicted values of education from the first stage
+
+second.stage <- lm(dat$wage ~ dat$x1_hat + dat$experience )   
+#Run the 2nd stage using the predicted values of education to look at the effect on income.
+
+
+stargazer( full.model, naive.model, second.stage,
+           type = "html", 
+           dep.var.labels = ("Wage"),
+           column.labels = c("Full Model", "Naive Model", "IV model"),
+           omit.stat = c("adj.rsq", "ser"), 
+           covariate.labels = c("Education", "Ability", "Predicted Education", "Experience"),
+           digits = 2 )
+```
+
+<br />
+
+Note that the table report the “true”" model (full model) where we include all variables, the naive model where we omit the ability variable, and the instrumental variable model where we use the predicted values of the first stage. The IV model has almost completely recovered the true slope.
+
+<br />
+
+## Discussion
+
+**Q: Is father's education a good instrument?**
+
+Check the real data `wage2` in the package `wooldridge`
+
+For the purpose of demonstration, we select five variables from the data set for this exercise.
+
+| Variable name |  Description | 
+| :--- | :--- |
+| lwage  | Natural log of wage |
+| educ  | Education |
+| IQ  | Ability (omitted variable) |
+| exper  | Experience |
+| feduc  | 	Father’s education |
+
+
+
+

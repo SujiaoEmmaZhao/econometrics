@@ -1,0 +1,454 @@
+---
+title: "**Microeconometrics**"
+subtitle: "**1MEEE01 Instrumental Variables**"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/06 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, "class/bplim-fonts.css", "class/bplim.css"]
+    nature:
+      highlightLines: true
+      beforeInit: "macros.js"
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+class: center, middle, inverse
+
+# **Instrumental Variables**
+
+
+---
+
+## What You Should Know after This Lecture?
+
+<br />
+
+.font120[
+
+- Under what circumstances do you need to use an instrumental variable? Why?
+
+- What are the main characteristics of a valid instrumental variable?
+
+- Key mechanisms behind an instrumental variable model
+
+]
+
+---
+
+## [IV and Randomization](https://mru.org/practice-questions/introduction-instrumental-variables-part-one-practice-questions)
+
+<iframe width="1000" height="500" src="https://www.youtube.com/embed/eoJUPd6104Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<div class="navy" align="center">
+Marginal Revolution University 
+</div>
+
+<div class="navy" align="center">
+Josh Angrist, MIT
+</div>
+
+
+---
+
+## Endogenous Regressors
+
+- Consider the linear regression model
+
+$$y_i = x_i^{'} \beta + \epsilon_i$$
+
+- We assumed that the error term $\epsilon_i$ and the explanatory variables $x_i$ were contemporaneously uncorrelated, i.e. $E(\epsilon_i x_i)=0$
+
+- But if $E(\epsilon_i x_i) \neq 0$ the estimator of $\beta$ will be inconsistent
+
+- When can we expect $E(\epsilon_i x_i) \neq 0$?
+
+
+---
+
+## Autocorrelation with a Lagged Dependent Variable
+
+- Suppose that
+
+$$y_t = \beta_1 + \beta_2 x_t + \beta_3 y_{t-1} + \epsilon_t$$
+
+and that $\epsilon_t = \rho \epsilon_{t-1} + v_t$ where $v_t$ is white noite
+
+- Now
+
+$$\begin{aligned}
+cov(y_{t-1}, \epsilon_t) & = cov(y_{t-1}, \rho \epsilon_{t-1} + v_t)   \\
+& = cov(y_{t-1}, \rho \epsilon_{t-1}) + cov(y_{t-1}, v_t)  \\
+& = \rho cov(y_{t-1}, \epsilon_{t-1})  \\
+& = \rho cov(\beta_1 + \beta_2 x_{t-1} + \beta_3 y_{t-2} + \epsilon_{t-1}, \epsilon_{t-1})  \\
+& = \rho \beta_3 cov(y_{t-2}, \epsilon_{t-1}) + \rho \sigma^2  \\
+& = \rho \beta_3 cov(y_{t-1}, \epsilon_{t}) + \rho \sigma^2
+\end{aligned}$$
+
+---
+
+## Autocorrelation with a Lagged Dependent Variable
+
+- and thus
+
+$$cov(y_{t-1}, \epsilon_t) = \frac {\rho \sigma^2}{1-\rho \beta_3}$$
+
+- Unless $\rho = 0$ the OLS estimators are biased
+
+---
+
+## Simultaneity and Reverse Causality
+
+
+- Consider a Keynesian consumption function:
+
+$$y_t = \beta_1 + \beta_2 x_t + \epsilon_t$$
+
+
+where $y_t$ is aggregate consumption, $x_t$ is aggregate income and $\beta_2$ denotes the marginal propensity to consume
+
+- But aggregate income is not exogenous because,
+$$x_t = y_t + z_t$$
+where $z_t$ denotes investment
+
+- This implies that income $x_t$ and the error term $\epsilon_t$ are correlated
+
+
+---
+
+## Simultaneity and Reverse Causality
+
+- This can be shown be deriving the reduced form, which describes $y_t$ and $x_t$ as a function of exogenous variable(s) and error terms
+
+- The reduced form is
+
+$$x_t = \frac {\beta_1}{1-\beta_2} + \frac {z_t}{1-\beta_2} + \frac {\epsilon_t}{1-\beta_2}$$
+
+
+$$y_t = \frac {\beta_1}{1-\beta_2} + \frac {\beta_2z_t}{1-\beta_2} + \frac {\epsilon_t}{1-\beta_2}$$
+
+
+- And it follows that
+
+$$cov(x_{t}, \epsilon_t) = \frac{V(\epsilon_t)}{1-\beta_2} = \frac{\sigma^2}{1-\beta_2}$$
+
+
+---
+
+## More Examples
+
+### Omitted Variable Bias
+
+- Omitted variables are problematic when they are significantly correlated with both the outcome variable and the variable (X1) of interest because they can cause bias in the estimation of the coefficient 
+
+- Both the slope and the standard error of the model will be biased
+
+See details in Section 5.2.3
+
+
+### Measurement Error
+
+See details in Section 5.2.2
+
+---
+
+## An Alternative Estimator
+
+- Consider the simple model
+
+$$y_i = \beta_1 + \beta_2x_i + \epsilon_i$$
+
+where $E(\epsilon_i x_i) \neq 0$ so OLS is inconsistent
+
+
+- Now, suppose we can find an instrumental variable $z_i$ satisfying
+
+    - Exogeneity: $E(\epsilon_i z_i) = 0$ (instrument uncorrelated to error term)
+    
+    - Relevance: $cov(x_{i}, z_i)  \neq 0$ (instrument correlated with endogenous
+regressor)
+
+---
+
+## An Alternative Estimator
+
+Take the covariance with $z_i$ on both sides of
+
+$$y_i = \beta_1 + \beta_2x_i + \epsilon_i$$
+
+to obtain 
+
+$$cov(y_{i}, z_i) =\beta_2 cov(x_i, z_i) +  \beta_2 cov(\epsilon_i, z_i)$$
+
+and thus
+
+$$\beta_2 = \frac{cov(y_{i}, z_i)}{cov(x_{i}, z_i)}$$
+
+---
+
+## An Alternative Estimator
+
+- How can we build an estimator for $\beta_2$?
+
+- Replace the population covariances by the sample covariances
+
+$$\hat \beta_{2, IV} = \frac{\frac{1}{N} \sum_{i=1}^N (y_i-\bar y)(z_i-\bar z)}{\frac{1}{N} \sum_{i=1}^N (x_i-\bar x)(z_i-\bar z)} = \frac{\sum_{i=1}^N (y_i-\bar y)(z_i-\bar z)}{\sum_{i=1}^N (x_i-\bar x)(z_i-\bar z)}$$
+
+- This is an **instrumental variables estimator**
+
+- Note that this reduces to OLS if $z_i = x_i$
+
+- $\hat \beta_{2, IV}$ is a consistent estimator for $\beta_2$ provided the instruments are valid
+
+- In general we cannot show unbiasedness of the IV estimator (small sample properties are unknown)
+
+
+---
+
+## The More General Case - One IV per Endogenous Variable
+
+- Consider the model
+
+$$y_i = x^{'}\beta + \epsilon_i$$
+
+where $E(\epsilon_i x_i) \neq 0$ for some elements of $x_i$ and the $\epsilon_i$ follow the usual conditions
+
+- Suppose we can find a vector of instruments $z_i$ having the same dimension as $x_i$ such that
+
+$$E(\epsilon_i z_i) = 0$$
+
+- Exogenous variables are instrumented by themselves
+
+
+---
+
+## The More General Case - One IV per Endogenous Variable
+
+- working in matrix terms
+$$Y = X \beta + \epsilon$$
+
+- and $Z$ is the vector of instruments (one for each variable in $X$)
+
+
+- then the IV estimator is given by
+
+$$\hat \beta_{IV} =(Z^{'}X)^{-1}Z^{'}Y$$
+
+- this estimator is consistent and asymptotically follows a normal distribution.
+
+---
+
+## The More General Case - One IV per Endogenous Variable
+
+- the (asymptotic) variance-covariance matrix can be estimated by
+
+$$\hat V(\hat \beta_{IV}) =\hat \sigma^2(Z^{'}X)^{-1}Z^{'}Z(X^{'}Z)^{-1}$$
+
+with
+
+
+$$\hat \sigma^2 = \frac{1}{N} \sum_{i=1}^N {(y_i-x_i^{'} \hat \beta_{IV})}$$
+
+- since the results are valid asymptotically it does not matter whether we correct for degrees of freedom
+
+- standard errors of IV estimators are typically quite high when compared to OLS - this is usually due to low correlation between the instrument and the regressor
+
+
+---
+
+## The Generalized IV Estimator
+
+- Consider the linear model
+
+$$y_i = x^{'}\beta + \epsilon_i$$
+
+where $\beta$ is a $K$-dimensional vector of parameters
+
+- For OLS to be consistent it must be true that $E(\epsilon_i x_i) = 0$
+
+- If $E(\epsilon_i x_i) \neq 0$ then OLS is inconsistent
+
+- The model is unidentified - in order to be identified we need to impose alternative assumptions
+
+- Identification is obtained if we can find an R-dimensional vector of (relevant) instruments $z_i$ such that $E(\epsilon_i z_i) = 0$
+
+- The conditions $E(\epsilon_i z_i) = 0$
+
+$$E(\epsilon_i z_i) = E[(y_i − x^{'}\beta)z_i] = 0$$
+
+are **moment conditions**.
+
+- These $R$ moment conditions can be used to estimate $\beta$
+
+
+---
+
+## The Generalized IV Estimator
+
+- Simply replace the expectations by sample averages. That is, replace
+
+$$E[(y_i − x^{'}\beta)z_i] = 0$$
+by
+
+$$\frac{1}{N} \sum_{i=1}^N (y_i − x^{'}\beta)z_i = 0$$
+
+
+- Next, choose an estimate for $\beta$ that makes the sample averages as close to 0 as possible
+
+- Why? Sample averages converge to population means if $N$ becomes infinitely large
+
+- Population mean is zero (only) for the true parameter values
+
+
+---
+
+## The Generalized IV Estimator
+
+But note that
+
+- If $R < K$ we do not have enough instruments. There is an infinite number of values for $\hat \beta_{IV}$ that satisfy the moment conditions. The model remains unidentified
+
+- If $R = K$ there is (typically) one unique solution $\hat \beta_{IV}=(Z^{'}X)^{-1}Z^{'}Y$ satisfying the moment conditions.
+
+- If $R > K$ the model is overidentified. There are more instruments than necessary for identification. Rather than choosing a subset of instruments, we can exploit them all by minimizing a quadratic form in the sample moments
+
+
+$$Q_n(\beta) = [\frac{1}{N} \sum_{i=1}^N (y_i − x^{'}\beta)z_i]^{'}W_N[\frac{1}{N} \sum_{i=1}^N (y_i − x^{'}\beta)z_i]$$
+
+where $W_N$ is a $R \times R$  positive definite weighting matrix
+
+---
+
+## The Generalized IV Estimator
+
+- The resulting estimator for $\beta$ is consistent for any choice of weighting matrix
+
+- the optimal weighting matrix yields the most efficient estimator for $\beta$
+
+- When $\epsilon_i \sim N(0, \sigma^2)$ the optimal weighting matrix is given by
+
+$$W_N^{opt} = (\frac{1}{N}\sum_{i=1}^N z_iz_i^{'})^{-1}$$
+
+- In matrix terms, the resulting estimator is
+
+$$\hat \beta_{IV} =(X^{'}Z(Z^{'}Z)^{-1}Z^{'}X)^{-1}X^{'}Z(Z^{'}Z)^{-1}Z^{'}Y$$
+
+
+---
+
+## The Generalized IV Estimator
+
+
+- This is the **generalized instrumental variable estimator (GIVE)** estimator
+
+- The GIVE estimator is consistent and asymptotically normal with estimated variance
+
+$$\hat V(\hat \beta_{IV}) =\hat \sigma^2(X^{'}Z(Z^{'}Z)^{-1}Z^{'}X)^{-1}$$
+
+where
+
+$$\hat \sigma^2 = \frac{1}{N} \sum_{i=1}^N {(y_i-x_i^{'} \hat \beta_{IV})}$$
+
+
+---
+
+## The Generalized IV Estimator
+
+
+- It is also known as the **two-stage least squares (2SLS)** estimator. This is because $\hat \beta_{IV}$ can be obtained by OLS as follows:
+
+$$\hat \beta_{IV} =(\hat X^{'}\hat X)^{-1}\hat X^{'}Y$$
+
+where 
+
+$$\hat X = Z(Z^{'}Z)^{-1}Z^{'}X$$
+
+- In the first step we regress each endogenous variable on all instruments and exogenous variables
+
+- In the second step we replace the endogenous variables by their predicted values
+
+- Note that the standard errors are not correct in the second step
+
+- If the $\epsilon_i$ are not homoskedastic we can estimate a “robust” variance-covariance matrix using an approach similar to what we do in OLS
+
+---
+
+## Additional Remarks
+
+.font85[
+- Finding instruments is hard and statistical theory is of little help. Instruments should be motivated by economic arguments.
+
+- They should also be relevant, i.e. correlated with the regressors that they are supposed to be instrumenting
+
+    - This means that in the reduced form, where we explain $x_i$ from $z_i$ , the instruments should be “sufficiently important ”. Otherwise, we may have a **weak instruments** problem
+    
+    - Stock and Watson propose a simple rule-of-thumb: If the F-statistic for (joint) significance of the instruments in the first stage regression is above 10 we do not need to worry about weak instruments
+
+- The lack of direct correlation between the instrumental and the oucome variable
+
+- Instruments should be exogenous, i.e. uncorrelated with the equation’s error term. Otherwise, we may have a **bad instruments** problem
+
+]
+
+
+
+---
+
+## Should you use IV? [A Readers’ Guide](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1540-5907.2010.00477.x#pane-pcw-details)
+
+<div align="center">
+<img src="pictures/IV_Checklist.png" width=1000 height=550>
+</div>
+
+---
+
+## The Hausman Test for Endogeneity
+
+- It is possible to test whether one or more regressors are endogenous (correlated with the error term), provided we are willing to assume that the instruments are valid - we can test whether $E(\epsilon_ix_i ) = 0$
+
+- Under the null, both the OLS and IV estimator are consistent. They should differ by sampling error only. Under the alternative, only the IV estimator is consistent (and OLS is inconsistent)
+
+    - A simple version of the test is obtained by running an auxiliary regression, where we augment the original model with the residual(s) from the reduced form equations
+    
+    - Estimation of this auxiliary regression by OLS reproduces the IV estimator. Under the null hypothesis that $x_i$ is exogenous, the added residual(s) should be irrelevant
+    
+    - The Hausman test for endogeneity is based on the t-statistic (or F-statistic) on the reduced form residuals
+
+---
+
+## Overidentification Test
+
+.font85[
+
+- We can test the overidentifying restrictions by checking whether the sample moments are "close" to zero.
+
+$$\frac{1}{N} \sum {\hat \epsilon_{i}Z_i} = 0$$
+
+
+
+- It is not possible to test whether instruments are valid (exogenous). Thus, in the exactly identified case (K = R) we cannot test the instruments. We just have to believe them!
+
+- This is implemented using the overidentifying restrictions test (Sargan test) which follows a chi-squared distribution with $R − K$ degrees of freedom
+
+- A simple way to implement the test is to take $N$ times $R^2$ of an auxiliary regression of IV residuals upon the full set of instruments
+
+- If the test rejects, the sample evidence is inconsistent with the joint validity of the $R$ moment conditions
+]
+
+
+
+
+---
+
+## R packages for IV Regression
+
+- The `ivreg` function from the `AER` package
+
+```{r eval = FALSE}
+install.packages(AER)
+library( "AER" )      
+```
+

@@ -1,0 +1,331 @@
+---
+title: "**Econometrics**"
+subtitle: "Logit Model in R"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/12/10 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+## Reminder
+
+- **If outcome or dependent variable is binary and in the form 0/1, then use logit or probit models.**
+
+- If outcome or dependent variable is categorical but are ordered (i.e. low to high), then use ordered logit or ordered probit models.
+
+- If outcome or dependent variable is categorical without any particular order, then use multinomial logit.
+
+
+<br />
+
+## Running a Logit Model
+
+- Getting sample data
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(foreign)
+mydata <- read.dta("https://dss.princeton.edu/training/Panel101.dta")
+```
+
+
+- Inspect data
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+dim(mydata)
+str(mydata)
+summary(mydata)
+```
+
+
+
+- Running a logit model
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+logit <- glm(y_bin ~ x1 + x2 + x3, family=binomial(link="logit"), data=mydata)
+summary(logit)
+
+library(stargazer)
+stargazer(logit, type="text", digits = 4)
+```
+
+
+- The Pr(>|z|) column shows the two-tailed p-values testing the null hypothesis that the coefficient is equal to zero (i.e. no significant effect). The usual value is 0.05, by this measure none of the coefficients have a significant effect on the log-odds ratio of the dependent variable. The coefficient for $x_3$ is significant at 10% (<0.10).
+
+- The z value also tests the null that the coefficient is equal to zero. For a 5% significance, the z-value should fall outside the ±1.96.
+
+- The Estimate column shows the coefficients in log-odds form. When $x_3$ increase by one unit, the expected change in the log odds is 0.7512. What you get from this column is whether the effect of the predictors is positive or negative.
+
+
+## Odds Ratio
+
+The Estimate column shows the coefficients in log-odds form. When $x_3$ increase by one unit, the expected change in the log odds is 0.7512.
+
+To get the odds ratio, you need explonentiate the logit coefficient.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+cbind(Estimate=round(coef(logit),4),
+      OR=round(exp(coef(logit)),4))
+```
+
+
+
+We can also do this using the package "mfx"
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(mfx)
+logitor(y_bin ~ x1 + x2 + x3, data=mydata)
+```
+
+
+
+Now let's hold x1 and x2 constant at their means, and vary $x_3$ with values 1, 2, and 3, to get the predicted log-odds given each of the three values of $x_3$:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+r1 <- logit$coeff[1] + logit$coeff[2]*mean(mydata$x1) +
+  logit$coeff[3]*mean(mydata$x2) +
+  logit$coeff[4]*1
+
+r1
+
+r2 <- logit$coeff[1] + logit$coeff[2]*mean(mydata$x1) +
+  logit$coeff[3]*mean(mydata$x2) +
+  logit$coeff[4]*2
+
+r2
+
+r3 <- logit$coeff[1] + logit$coeff[2]*mean(mydata$x1) +
+  logit$coeff[3]*mean(mydata$x2) +
+  logit$coeff[4]*3
+
+r3
+```
+
+When $x_3$ increases from 1 to 2, the log-odds increases
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+r2-r1
+```
+
+When $x_3$ increases from 2 to 3, the log-odds increases
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+r3-r2
+```
+
+
+It corresponds to the estimate for $x_3$ above.
+
+The odds ratio, is the exponentiation of the difference of the log-odds
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+exp(r2-r1)
+```
+
+
+Or, the ratio of the exponentiation of each of the log-odds.
+```{r include=TRUE, warning = FALSE, message=FALSE}
+exp(r2)/exp(r1)
+```
+
+
+**Odds ratio (aka. relative risk ratios) interpretation (OR)**: 
+
+Odds ratio allows an easier interpretation of the logit coefficients. They are the exponentiated value of the logit coefficients.
+
+Based on the output above, when $x_3$ increases by one unit, the odds of y = 1 increase by 112% = (2.12-1)*100. 
+
+Or, the odds of y =1 are 2.12 times higher when $x_3$ increases by one unit (keeping all other predictors constant). 
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+logit.or = exp(coef(logit))
+stargazer(logit, type="text", coef=list(logit.or), p.auto=FALSE)
+```
+
+
+Keeping all other variables constant, when x1 increases one unit, it is 2.367 times more likely to be in the 1 category. In other words, the odds of being in the 1 category (as opposed to the 0 category) are 136% higher when x1 move one unit (2.36 – 1). The coefficient, however, is not significant.
+
+## Predicted Probabilities
+
+The logit model can be written as (Gelman and Hill, 2007):
+
+$$P(y_i=1) = Logit ^{-1} (X_i \beta)$$
+
+In this example,
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+logit <- glm(y_bin ~ x1 + x2 + x3, family=binomial(link="logit"), data=mydata)
+coef(logit)
+```
+
+$$P(y_i=1) = Logit ^{-1} (0.421935 + 0.861722 x_1 + 0.3665348 x_2 + 0.7512115 x_3)$$
+
+Estimating the probability at the mean point of each predictor can be done by inverting the logit model
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+invlogit = function (x) {1/(1+exp(-x))}
+```
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+invlogit(coef(logit)[1]+
+coef(logit)[2]*mean(mydata$x1)+
+coef(logit)[3]*mean(mydata$x2)+
+coef(logit)[4]*mean(mydata$x3))
+```
+
+
+Adding categorical variable, the model would be:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+logit.cat <- glm(y_bin ~ x1 + x2 + x3 + opinion, family=binomial(link="logit"), data=mydata)
+coef(logit.cat)
+```
+
+- Estimating the probability when opinion = ‘Agree’
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+levels(mydata$opinion)
+```
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+invlogit(coef(logit.cat)[1]+
+coef(logit.cat)[2]*mean(mydata$x1)+
+coef(logit.cat)[3]*mean(mydata$x2)+
+coef(logit.cat)[4]*mean(mydata$x3)+
+coef(logit.cat)[5]*1)  
+```
+
+$P(y_i=1 | opinion = "Agree") = 0.5107928$
+
+- Estimating the probability when opinion = ‘Disagree’
+```{r include=TRUE, warning = FALSE, message=FALSE}
+invlogit(coef(logit.cat)[1]+
+coef(logit.cat)[2]*mean(mydata$x1)+
+coef(logit.cat)[3]*mean(mydata$x2)+
+coef(logit.cat)[4]*mean(mydata$x3)+
+coef(logit.cat)[6]*1)  
+```
+
+$P(y_i=1 | opinion = "Disagree") = 0.9077609$
+
+
+- Estimating the probability when opinion = ‘Strongly Disagree’
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+invlogit(coef(logit.cat)[1]+
+coef(logit.cat)[2]*mean(mydata$x1)+
+coef(logit.cat)[3]*mean(mydata$x2)+
+coef(logit.cat)[4]*mean(mydata$x3)+
+coef(logit.cat)[7]*1)  
+```
+
+$P(y_i=1 | opinion = "Strongly Disagree") = 0.933931$
+
+- Estimating the probability when opinion = ‘Strongly agree’
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+invlogit(coef(logit.cat)[1]+
+coef(logit.cat)[2]*mean(mydata$x1)+
+coef(logit.cat)[3]*mean(mydata$x2)+
+coef(logit.cat)[4]*mean(mydata$x3))
+```
+
+$P(y_i=1 | opinion = "Strongly Agree") = 0.8764826$
+
+
+**Another way to estimate the predicted probabilities is by setting initial conditions.**
+
+Getting predicted probabilities holding all predictors or independent variables to their means.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+allmean <- data.frame(x1=mean(mydata$x1),
+x2=mean(mydata$x2),
+x3=mean(mydata$x3))
+allmean
+```
+
+
+After estimating the logit model and creating the dataset with the mean values of the predictors, you can use the predict() function to estimate the predicted probabilities (for help/details type `?predict.glm`), and add them to the allmean dataset.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+allmean$pred.prob <- predict(logit, newdata=allmean, type="response")
+allmean
+```
+
+
+Now let's do the same exercise for the specification with the categorical variable "opinion".
+
+To estimate the predicted probabilities, we need to set the initial conditions. Getting predicted probabilities holding all predictors or independent variables to their means for each category of categorical variable ‘opinion’.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+logit <- glm(y_bin ~ x1+x2+x3+opinion, family=binomial(link="logit"), data=mydata)
+
+allmean <- data.frame(x1=rep(mean(mydata$x1),4),
+x2=rep(mean(mydata$x2),4),
+x3=rep(mean(mydata$x3),4),
+opinion=as.factor(c("Str agree","Agree","Disag","Str disag")))
+
+allmean
+```
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+allmean <- cbind(allmean,predict(logit, newdata=allmean, type="response", se.fit=TRUE))
+allmean
+```
+
+The argument `se.fit` includes standard error of the prediction.
+
+
+Let's rename "fit" and "se.fit" columns
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+names(allmean)[names(allmean)=="fit"] = "prob"
+names(allmean)[names(allmean)=="se.fit"] = "se.prob"
+```
+
+Now estimate confidence intervals
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+allmean$ll = allmean$prob - 1.96*allmean$se.prob
+allmean$ul = allmean$prob + 1.96*allmean$se.prob
+allmean
+```
+
+Plot predicted probabilities and confidence intervals using ggplot2
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(ggplot2)
+ggplot(allmean, aes(x=opinion, y = prob)) +
+geom_errorbar(aes(ymin = ll, ymax = ul), width = 0.2, lty=1, lwd=1, col="red") +
+geom_point(shape=18, size=5, fill="black") +
+scale_x_discrete(limits = c("Str agree","Agree","Disag","Str disag")) +
+labs(title= " Predicted probabilities", x="Opinion", y="Pr(y=1)", caption = "add footnote here") +
+theme(plot.title = element_text(family = "sans", face="bold", size=13, hjust=0.5),
+axis.title = element_text(family = "sans", size=9),
+plot.caption = element_text(family = "sans", size=5))
+```
+
+
+## Marginal Effects
+
+See package [`mfx`](http://cran.r-project.org/web/packages/mfx/mfx.pdf)
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+# install.packages("mfx")
+library(mfx)
+logitmfx(y_bin ~ x1+x2+x3, data=mydata)
+```
+
+Marginal effects show the change in probability when the predictor or independent variable increases by one unit. For continuous variables this represents the instantaneous change given that the ‘unit’ may be very small. For binary variables, the change is from 0 to 1, so one ‘unit’ as it is usually thought.
+

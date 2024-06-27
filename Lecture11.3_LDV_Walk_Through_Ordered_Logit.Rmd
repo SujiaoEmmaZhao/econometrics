@@ -1,0 +1,120 @@
+---
+title: "**Econometrics**"
+subtitle: "Ordered Logit Model in R"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/12/10 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+## Reminder
+
+- If outcome or dependent variable is binary and in the form 0/1, then use logit or probit models.
+
+- **If outcome or dependent variable is categorical but are ordered (i.e. low to high), then use ordered logit or ordered probit models.**
+
+- If outcome or dependent variable is categorical without any particular order, then use multinomial logit.
+
+
+<br />
+
+## Running a Ordered Logit Model
+
+- Getting sample data
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(foreign)
+mydata <- read.dta("https://dss.princeton.edu/training/Panel101.dta")
+```
+
+
+- Running a ordered logit model
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(MASS)
+m1 <- polr(opinion ~ x1 + x2 + x3, data=mydata, Hess=TRUE)
+summary(m1)
+```
+
+The argument `Hess` is required for SE.
+
+Arrange the results in a table.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+stargazer(m1, type="text")
+```
+
+
+## Odds Ratio
+
+The Estimate column shows the coefficients in log-odds form. To get the odds ratio, you need explonentiate the logit coefficient.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+m1.or=exp(coef(m1))
+m1.or
+stargazer(m1, type="text", coef=list(m1.or), p.auto=FALSE)
+```
+
+Keeping all other variables constant, when x1 increases one unit, it is 2.668 times more likely to be in a higher category. In other words, the odds of moving to a higher category in the outcome variable is 166.8% when x1 move one unit (2.668 – 1). The coefficient is significant.
+
+## Predicted Probabilities
+
+**Use "probs" for predicted probabilities**
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+m1.pred <- predict(m1, type="probs")
+summary(m1.pred)
+```
+The line "Mean" shows the predicted probabilities of each category when all predictors are at their mean value.
+
+We can also set the predictors at specific values, for example x1 and x2 at their means, and x3 = 1 and x3 = 2.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+setup1 <- data.frame(x1=rep(mean(mydata$x1),2),
+x2=rep(mean(mydata$x2),2),
+x3=c(1,2))
+setup1
+```
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+predictm1<-predict(m1, newdata=setup1, type="probs")
+setup1.probs <-cbind(setup1, predictm1)
+setup1.probs
+```
+
+**Use "class" for the predicted category**
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+predictm1<-predict(m1, newdata=setup1, type="class")
+setup1.class <-cbind(setup1, predictm1)
+setup1.class
+```
+
+
+## Marginal Effects
+
+See package [`erer`](https://cran.r-project.org/web/packages/erer/index.html)
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+# install.packages("erer")
+library(erer)
+x <- ocME(m1)
+x
+```
+
+Type the following if you want t and p-values
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+x$out
+```

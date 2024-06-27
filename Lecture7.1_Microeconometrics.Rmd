@@ -1,0 +1,225 @@
+---
+title: "**Microeconometrics**"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/11/10 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, "class/bplim-fonts.css", "class/bplim.css"]
+    nature:
+      highlightLines: true
+      beforeInit: "macros.js"
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+## About this course
+
+.font120[
+.blue[
+**Microeconometrics**
+]
+]
+
+*The analysis of individual-level data on the economic behavior of individuals or firms using econometric methods applied to cross-section and panel data.*
+
+.font85[
+1. Heteroskedasticity and Autocorrelation
+
+2. Instrumental Variables (IV)
+
+3. Models for Panel Data
+
+4. Special Issue 1: Difference in Difference
+
+5. Maximum likelihood Estimation
+
+6. Models with Limited Dependent Variables (Binary Choice, Multiresponse, Tobit, and Duration)
+
+7. Special Issue 2: Regression Discontinuity Design
+]
+
+
+---
+
+## Working Method
+.font100[
+- Presencial
+- Expository classes + Laboratorial work
+]
+
+## Pre-requirements
+.font100[
+- Introductory Econometrics at the undergraduate level
+
+- Estimation of Linear Models at the graduate level
+]
+
+
+## Software
+.font100[
+- R
+]
+
+
+---
+
+## Policies
+.font100[
+- Do reading before class
+
+- Do exercises after class to check your understanding
+
+- Ask questions in the course
+
+- Students must attend at least 75% of classes to be eligible for exams
+]
+
+
+
+## Evaluation 
+.font100[
+- Test
+
+- Project Work and Group Presentation
+
+    - The final grade is the average of the two evaluations.
+    - A minimum of 10 is required in each evaluation
+]
+
+
+## [Contact](up649687@g.uporto.pt) 
+
+
+---
+
+
+# References
+
+.font100[
+
+**Textbooks**
+
+#### Marno Verbeek (2017), A Guide to Modern Econometrics, 5th ed. Wiley, ISBN 9781119401100. 
+
+#### William H. Greene (2020), Econometric Analysis, 8th ed. Pearson, ISBN: 978-0-13-446136-6.
+
+#### Jeffrey M. Wooldridge (2012), Introductory Econometrics: A Modern Approach, 5th ed. Cenage Learning, ISBN 978-1111531041. 
+
+#### Jeffrey M. Wooldridge (2010), Econometric Analysis of Cross Section and Panel Data, 2nd ed. The MIT Press, ISBN: 9780262232586. 
+
+#### Joseph Adler (2012), R in a Nutshell, 2nd ed. Reilly, ISBN 978-1-449-31208-4.
+
+
+]
+
+---
+
+
+# References
+
+.font100[
+
+**Programming**
+
+#### [R Cookbook, 2nd Edition](https://rc2e.com/)
+
+#### [Introduction to Econometrics with R](https://www.econometrics-with-r.org/): Practice with the exercises!
+
+#### [Introductory Econometrics Examples](https://justinmshea.github.io/wooldridge/articles/Introductory-Econometrics-Examples.html#chapter-13-pooling-cross-sections-across-time-simple-panel-data-methods-1)
+
+#### [Reproducible Finance with R](http://www.reproduciblefinance.com/start-here/)
+
+
+#### Christopher F. Baum (2016), An Introduction to Stata Programming, 2nd ed. Stata Press, ISBN: 978-1-59718-150-1.
+
+
+]
+
+
+
+
+
+---
+
+# About the Project
+
+<br \>
+
+.font120[
+.blue[
+**Replication of Empirical Studies in Economics**
+]
+]
+
+<br \>
+
+- Replicate a paper published in an Economics journal that uses econometric techniques that are covered in class
+
+- The selected paper should have the code and data publicly available
+
+- Groups have a minimum of 2 and a maximum of 4 students
+
+- You should submit the project proposal by Friday, Nov 26
+
+
+---
+
+# Data and Code Repositories
+
+- [IPCSR](https://www.openicpsr.org/openicpsr/repository/)
+
+- [Dataverse](https://dataverse.harvard.edu/)
+
+- [Mendeley Data](https://data.mendeley.com/)
+
+- [Zenodo](https://zenodo.org/)
+
+- [ZBW](https://journaldata.zbw.eu/journals)
+
+- [GESIS](https://search.gesis.org/)
+
+- [Datacite](https://datacite.org/)
+
+- [Replication Wiki](https://replication.uni-goettingen.de/wiki/index.php/Main_Page)
+
+
+---
+
+# Journals with Open Datasets
+
+- [RFE Replication](https://www.aeaweb.org/rfe/showCat.php?cat_id=9)
+
+- AEA Journals, materials in [IPCSR](https://www.openicpsr.org/openicpsr/repository/)
+
+    - [American Economic Review](https://www.aeaweb.org/journals/aer)
+    - [AER: Insights](https://www.aeaweb.org/journals/aeri)
+    - [AEJ: Applied Economics](https://www.aeaweb.org/journals/app)
+    - [AEJ: Economic Policy](https://www.aeaweb.org/journals/pol)
+    - [AEJ: Macroeconomics](https://www.aeaweb.org/journals/mac)
+    - [AEJ: Microeconomics](https://www.aeaweb.org/journals/mic)
+    - [AEA: Papers&Proceedings](https://www.aeaweb.org/journals/pandp)
+
+- [Econometrica](https://onlinelibrary.wiley.com/journal/14680262)
+
+---
+
+# Journals with Open Datasets - Cont'd
+
+- [The Quarterly Journal of Economics](https://academic.oup.com/qje) (materials in Harvard [Dataverse](https://dataverse.harvard.edu/))
+
+- [The Journal of Political Economy](https://www.journals.uchicago.edu/toc/jpe/current) (materials in site)
+
+- [Review of Economic Studies](https://academic.oup.com/restud/issue) (materials in [Zenodo](https://zenodo.org/))
+
+- [Review of Economics and Statistics](https://direct.mit.edu/rest/issue) (materials in Harvard [Dataverse](https://dataverse.harvard.edu/))
+
+- [Economic Journal](https://academic.oup.com/ej/issue) (materials in site)
+
+- [Oxford Economic Papers](https://academic.oup.com/oep/issue) (materials in site)
+
+- [Journal of Labor Economics](https://www.journals.uchicago.edu/toc/jole/current) (materials in site)
+
+

@@ -1,0 +1,233 @@
+---
+title: "**Econometrics**"
+subtitle: "R Exercises: The Capital Asset Pricing Model"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/09/29 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+
+<br />
+
+## The Capital Asset Pricing Model
+
+<br />
+
+
+THE CAPM model predicts that 
+\begin{equation*}
+E(r_{jt}-r_f)=\beta_j E(r_{mt}-r_f)
+\end{equation*}
+where $r_{jt}$ is the risky return on asset $j$ in period $t$, $r_{mt}$ is the risky return on the market portfolio and $r_f$ is the riskless return. The parameter $\beta_j$ is a measure of systematic risk.
+Under certain assumptions (see Section 2.7) is is possible to consistently estimate $\beta_j$ by running the regression
+\begin{equation*}
+r_{jt}-r_f=\beta_j (r_{mt}-r_f)+\epsilon_{jt}
+\end{equation*}
+Next, we apply the CAPM model to data on three industries (food, consumer durables and construction) using data for 660 months from January 1960 to December 2014. 
+
+First we need to read the CAPM dataset.
+
+
+```{r eval=FALSE}
+library(Ecdat)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+
+# Loading data set
+data(Capm)
+
+# Print the first 6 rows
+head(Capm, 6)
+
+# Number of rows (observations)
+nrow(Capm)
+
+# Number of columns (variables)
+ncol(Capm)
+
+```
+
+
+We can do some descriptive statistics:
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(Ecdat)
+
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+summary(Capm)
+```
+
+We are now ready to replicate Table 2.3. First we need to run the regressions without intercept. 
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+t231<-lm(Capm$rfood~Capm$rmrf-1)
+t231
+
+t232<-lm(Capm$rdur~Capm$rmrf-1)
+t232
+
+t233<-lm(Capm$rcon~Capm$rmrf-1)
+t233
+```
+
+It's the same to run
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+t231<-lm(rfood~rmrf-1, data=Capm)
+t231
+
+t232<-lm(rdur~rmrf-1, data=Capm)
+t232
+
+t233<-lm(rcon~rmrf-1, data=Capm)
+t233
+```
+
+We want more than just the coefficients.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+t231<-lm(Capm$rfood~Capm$rmrf-1)
+summary(t231)
+
+t232<-lm(Capm$rdur~Capm$rmrf-1)
+summary(t232)
+
+t233<-lm(Capm$rcon~Capm$rcon-1)
+summary(t233)
+```
+
+
+It's the same to run
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+t231<-lm(Capm$rfood~Capm$rmrf+0)
+summary(t231)
+t232<-lm(Capm$rdur~Capm$rmrf+0)
+summary(t232)
+t233<-lm(Capm$rdur~Capm$rmrf+0)
+summary(t233)
+```
+
+
+We can check specific elements:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+summary_t231<-summary(t231)
+t231r2<-summary_t231$r.squared
+t231r2
+t231adjr2<-summary_t231$adj.r.squared
+t231adjr2
+```
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+summary_t232<-summary(t232)
+t232r2<-summary_t232$r.squared
+t232r2
+t232adjr2<-summary_t232$adj.r.squared
+t232adjr2
+```
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+summary_t233<-summary(t233)
+t233r2<-summary_t233$r.squared
+t233r2
+t233adjr2<-summary_t233$adj.r.squared
+t233adjr2
+```
+
+
+And we are ready to produce the table (DON'T do it manually!) using [`stargazer`](https://cran.r-project.org/web/packages/stargazer/vignettes/stargazer.pdf)
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+t231<-lm(Capm$rfood~Capm$rmrf+0)
+t232<-lm(Capm$rdur~Capm$rmrf+0)
+t233<-lm(Capm$rdur~Capm$rmrf+0)
+table1<-stargazer(t231, t232, t233, type = "text")
+```
+
+Table 2.4 is similar but the regressions have a constant.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+t231<-lm(Capm$rfood~Capm$rmrf)
+t232<-lm(Capm$rdur~Capm$rmrf)
+t233<-lm(Capm$rdur~Capm$rmrf)
+table1<-stargazer(t231, t232, t233, type = "text")
+```
+
+We can put Table 2.3 and Table 2.4 in the same table.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+t231<-lm(Capm$rfood~Capm$rmrf-1)
+t232<-lm(Capm$rdur~Capm$rmrf-1)
+t233<-lm(Capm$rdur~Capm$rmrf-1)
+t234<-lm(Capm$rfood~Capm$rmrf)
+t235<-lm(Capm$rdur~Capm$rmrf)
+t236<-lm(Capm$rdur~Capm$rmrf)
+table1<-stargazer(t231, t232, t233, t234, t235, t236,type = "text")
+```
+
+
+What if we are only interested in certain elements
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+t231<-lm(Capm$rfood~Capm$rmrf-1)
+t232<-lm(Capm$rdur~Capm$rmrf-1)
+t233<-lm(Capm$rdur~Capm$rmrf-1)
+t234<-lm(Capm$rfood~Capm$rmrf)
+t235<-lm(Capm$rdur~Capm$rmrf)
+t236<-lm(Capm$rdur~Capm$rmrf)
+table1<-stargazer(t231, t232, t233, t234, t235, t236,type = "text", 
+                  keep.stat = c("n", "adj.rsq"),
+                  keep=c("rmrf"),
+                  add.lines = list(c("Constant", "No", "No", "No", "Yes", "Yes", "Yes")))
+```
+
+<br />
+
+## Madoff Investment Securities hedge fund
+
+The CAPM is often used to evaluate the performance of professional money managers. A positive intercept ("alpha") reflects superior skill (or information) of the investment manager. We now use the CAPM model to analyze the returns of the Madoff Investment Securities hedge fund. For this we use data on returns on Fairfield Sentry Ltd, which was one of the feeder funds of Madoff Investment Securities. The data cover period December 1990 until October 2008 (T=215). 
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(haven) # import Stata data
+library(expss) # apply labels
+library(tidyverse) # data manipulation
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+madoff <- read_dta("madoff.dta") %>% rename (date = dateid01)
+madoff = apply_labels(madoff,
+                      fsl = "return (in %) on Fairfield Sentry",
+                      fslrf = "excess returns",
+                      rf ="risk free rate",
+                      rmrf ="excess return on the market portfolio",
+                      hml = "excess return book-to-market factor (Fama and French)",
+                      smb = "excess return size factor (Fama and French)"
+)
+
+
+```
+
+
+We replicate the results in Table 2.6
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+lm(madoff$fslrf~madoff$rmrf)
+```
+
+
+The beta coefficient is very low at 0.04 while the alpha has a value of 0.5% per month. These numbers seem "too good to be true". 
+
+<br />
+
+<br />

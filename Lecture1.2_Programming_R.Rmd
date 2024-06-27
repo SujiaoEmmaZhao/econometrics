@@ -1,0 +1,1380 @@
+---
+title: "**Econometrics**"
+subtitle: "**2M3E03 R Tutorial**"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/09/22 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, "class/bplim-fonts.css", "class/bplim.css"]
+    nature:
+      highlightLines: true
+      beforeInit: "macros.js"
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+class: center, middle, inverse
+
+# **R Programming**
+
+## **A Short Tutorial** 
+
+---
+
+
+
+<br />
+
+.pull-left[
+<div align="left">
+<img src="pictures/R_Logo.png" width=200 height=200>
+</div>
+]
+
+.pull-right[
+<br />
+.font120[
+[The R Project for Statistical Computing](https://www.r-project.org/)
+]
+]
+
+<br />
+
+"*[R](https://www.r-project.org/about.html) is a free software environment for statistical computing and graphics.*"
+
+
+<br />
+
+
+Created by Ross Ihaka and Robert Gentleman, from Auckland university (New Zealand), as a research project. 
+
+
+---
+
+# R Language
+
+<div align="right">
+.font150[
+.blue[
+**R is a dynamic, lazy, functional, object-oriented interpreted programming language.**
+]
+]
+</div>
+
+
+<br />
+
+<div align="left">
+It has a package system that easily allows to create and share extensions.
+</div>
+
+<br />
+
+<div align="left">
+It can be used both interactively or in batch mode.
+</div>
+
+<br />
+
+<div align="left">
+It can be linked to other languages as C, C++, Python or Fortran.
+</div>
+
+
+---
+
+
+# Why learn R?
+
+1 - Free to use; 
+
+2 - Runs almost everywhere;
+
+3 - Learn from the code base;
+
+4 - rich tools (data analysis, statistical modeling and visualization)
+
+5 - extensible functionality (designed around a true computer language);
+
+5 - explore new methodology;
+
+6 - easier to eliminate bugs;
+
+7 - the language of choice for many data scientist and data analyst.
+
+
+<div align="left">
+<img src="pictures/R-User.png" width=800 height=200>
+</div>
+
+---
+
+# RStudio
+
+**RStudio** is an integrated development environment (IDE) for R.
+
+It includes:
+
+- a console;
+
+- an editor with syntax-highlighting and code completion and diagnostics;
+
+- plotting, history, debugging and workspace management.
+
+<br />
+
+It can also be installed as a server, allowing remote access.
+
+
+---
+
+# Quick Tour: Basic Math
+
+.scroll-output[
+
+```{r include=TRUE}
+1 + 2 # addition
+
+1 - 2 # subtraction
+
+2 * 3 # multiplication
+
+2/3 # division
+
+2^3 # exponent
+
+3%%2 # reminder
+
+5%/%2 # integer division
+```
+
+
+<br />
+
+```{r include=TRUE}
+2 * 3 - 1
+
+2 * (3 - 1)
+
+2^2 * 3
+
+2^(2 * 3)
+```
+]
+
+---
+
+# Quick Tour: Comparisons
+
+#### .blue[**Operators**]
+
+.scroll-output[
+
+```{r include=TRUE}
+1 == 1
+
+2 != 1
+
+2 < 1
+
+2 > 1
+
+2 <= 2
+
+3 >= 2
+```
+
+<br />
+  
+```{r include=TRUE}
+
+!(1 == 1)
+
+(2 < 1) & (3 > 2)
+
+(2 > 1) | (1 > 2)
+
+"a" == "A"
+
+"a" == "a"
+
+"j" > "z"
+
+```
+
+<br />
+]
+
+---
+
+# Quick Tour: Functions
+
+.font100[
+.blue[
+**A function is group of instructions. They may take an input (parameters) and usually return a value (result).**
+]
+]
+
+.scroll-output[
+```{r include=TRUE}
+rnorm(10)
+
+rnorm(10, mean = 10, sd = 1)
+
+rnorm(10, m = 10, sd = 1)
+
+getwd()
+```
+
+<br />
+]
+
+---
+
+# Quick Tour: Generic functions
+
+.font100[
+.blue[
+**A function may act differently depending on the object that we pass as an argument. They are called in R: generic functions.**
+]
+]
+
+.scroll-output[
+
+To get all methods from a given function use:
+
+```{r include=TRUE}
+methods(summary)
+```
+
+We can get the function arguments using args():
+
+```{r include=TRUE}
+args(rnorm)
+```
+
+<br />
+
+<br />
+
+<br />
+]
+
+---
+
+# Help
+.font100[
+.blue[
+**inside R**
+]
+]
+
+We can use R and RStudio to get help:
+
+.scroll-output[
+
+- If we don't know exactly what we are looking for:
+
+```{r eval=FALSE}
+help.search("normal distribution")
+```
+
+```{r eval=FALSE}
+??"normal distribution"
+```
+
+
+- If we know what we are looking for:
+
+```{r eval=FALSE}
+?rnorm
+```
+
+```{r eval=FALSE}
+?"+"
+```
+
+
+- We can also run all the examples within the help page of a function using:
+```{r eval=FALSE}
+example(rnorm)
+```
+
+- If we are not completely sure about the name of the function:
+```{r eval=FALSE}
+apropos("rno")
+apropos("norm")
+```
+
+- find() tells what package something is in:
+
+```{r eval=FALSE}
+find("rnorm")
+```
+
+<br />
+
+<br />
+
+<br />
+]
+
+
+
+---
+
+# Help
+.font100[
+.blue[
+**inside R**
+]
+]
+
+We can use R and RStudio to get help:
+
+
+
+.scroll-output[
+
+.font85[
+- Many R packages also have vignettes (more detailed descriptions on how the
+packages work).
+
+    - To list the avaliable ones:
+    
+```{r eval=FALSE}
+# List vignette from loaded (attached packages)
+vignette(all = FALSE)
+## List vignettes from all installed packages
+vignette(all = TRUE)
+```
+
+- If we know the name of the vignette:
+
+
+```{r eval=FALSE}
+vignette("dplyr")
+vignette("Formula")
+```
+
+- A friendlier option is:
+
+```{r eval=FALSE}
+browseVignettes()
+```
+
+<br />
+
+<br />
+
+<br />
+]
+]
+
+
+
+---
+
+# Help
+.font100[
+.blue[
+**outside R**
+]
+]
+
+
+- **[The R manuals](https://cran.r-project.org/)**
+
+- **[The R forums and lists](https://cran.r-project.org/)**
+
+- **[Google](https://www.google.com/#spf=1630403191354)**
+
+- **[Stack Overflow](https://stackoverflow.com/questions/tagged/r)** for R problems (make sure to use the [r] tag)
+    
+- **[Cross Validated](https://stats.stackexchange.com/questions/tagged/r)** for statistical problems (you can also use the [r] tag)
+
+
+
+---
+
+# Help
+.font100[
+.blue[
+**outside R**
+]
+]
+
+
+.scroll-output[
+
+**Before asking a question make sure that you have**:
+
+- Searched before asking the question
+
+- Narrowed down the problem
+
+- Been explicit about what you are trying to do and provide an example of what
+you want to accomplish.
+
+
+
+**Be sure to provided a reproducible example**:
+
+- Include the list of packages that you have loaded
+
+- Provide a minimal dataset
+
+- The absolute minimum code that you have that narrows down the problem
+
+- The expected output or end result
+
+<br />
+
+<br />
+
+]
+
+
+---
+
+# Help
+
+.font100[
+.blue[
+**outside R**
+]
+]
+
+
+For more on this take a look at:
+
+- [Prepare Reproducible Example Code for Sharing • reprex](https://reprex.tidyverse.org/)
+
+- [Minimal reproducible examples | Hyndsight](https://robjhyndman.com/hyndsight/minimal-reproducible-examples/)
+
+- [Reproducibility · Advanced R.](http://adv-r.had.co.nz/Reproducibility.html)
+
+- [r faq - How to make a great R reproducible example? - Stack Overflow](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example)
+
+
+---
+
+# Packages
+
+.font100[
+.blue[
+**Nomenclature**
+]
+]
+
+
+- In R the place where a package is installed is called library.
+
+- R does not automatically load all the installed packages.
+
+- To get a list of all loaded packages (also gives the path where those packages are in your hard drive.):
+
+```{r eval=FALSE}
+path.package()
+```
+
+- To get the list of installed packages use:
+
+```{r eval=FALSE}
+installed.packages()
+```
+
+
+---
+
+# Packages
+
+.scroll-output[
+
+.font100[
+.blue[
+**Installing a package**
+]
+]
+
+We can install packages using the RStudio or the *install.packages()* command:
+
+```{r eval = FALSE}
+install.packages("dplyr")
+```
+
+.font100[
+.blue[
+**Removing a package**
+]
+]
+
+```{r eval = FALSE}
+remove.packages("dplyr")
+```
+
+
+.font100[
+.blue[
+**Loading packages**
+]
+]
+
+An installed package cannot be used before being loaded. To load and attach a package we use *library()*:
+
+```{r eval = FALSE}
+library("dplyr")
+```
+
+.font100[
+.blue[
+**Unloading packages**
+]
+]
+
+To unload/detach a package we use *detach()*:
+
+```{r eval = FALSE}
+detach(package:dplyr)
+```
+
+.font100[
+.blue[
+**Listing the package functions**
+]
+]
+
+To get the list of all functions from a package(also provides useful additional information):
+
+```{r include=TRUE}
+library(help = dplyr)
+```
+
+]
+
+
+
+---
+
+# Objects & Variables
+
+.font100[
+.blue[
+**Objects**
+]
+]
+
+In R everything is an object, and an object is an instance of a class. Objects have attributes and methods that depend on their class.
+
+
+.font100[
+.blue[
+**Variables**
+]
+]
+
+Variables in R can can hold values (numeric or otherwise), but also output of functions, or even functions. Variables can hold any R object. Since R is a dynamically typed language we don't need to define variable types.
+
+---
+
+# Objects & Variables
+
+.font100[
+.blue[
+**Variable Assignment**
+]
+]
+
+R has two assignment operators: = and <-
+
+.scroll-output[
+
+```{r include=TRUE}
+a <- 5
+a
+a <- "ten"
+a
+```
+
+```{r include=TRUE}
+a <- 6
+print(a)
+```
+
+The assignment operator can be used (but not recommended) in the other direction -> and mutiple times:
+
+
+```{r include=TRUE}
+1 -> a -> b
+a
+b
+```
+
+<br />
+
+<br />
+
+<br />
+
+
+]
+
+
+---
+
+# Objects & Variables
+
+.font100[
+.blue[
+**Variable Names**
+]
+]
+
+.scroll-output[
+.font85[
+- Variable names can contain any combination of alphanumeric characters along with periods (.) and underscores (_).
+
+```{r include=TRUE}
+.a <- 1
+a.b <- 1
+a_b <- 1
+a1 <- 1
+```
+
+- Be aware that variable names are case sensitive.
+
+```{r include=TRUE}
+a <- 1
+A <- 2
+a
+A
+```
+
+- There are no reserved words in R! And there are many one letter words that already have special meaning: c, q, t, C, D, F, I, and T.
+
+<br />
+
+<br />
+
+]
+]
+
+
+
+---
+
+# Objects & Variables
+
+.font100[
+.blue[
+**Variable Names**
+]
+]
+
+.font85[
+
+- A few other naming rules:
+
+    - They cannot start with a number or an underscore
+
+    - If they start with a dot (.) the character cannot be a number.
+    
+
+Try to be consistent!
+
+Take a look at: [Style guide · Advanced R.](http://adv-r.had.co.nz/Style.html)
+
+]
+
+
+---
+
+# Objects & Variables
+
+.font100[
+.blue[
+**Variable Management**
+]
+]
+
+.font85[
+
+- To list variables use the ls() function
+
+```{r include=TRUE}
+ls()
+```
+
+- To view established variables
+
+```{r include=TRUE}
+View(a)
+```
+
+- To remove variables
+
+```{r include=TRUE}
+rm(a)
+```
+
+Note that this will remove the pointer but will not release the memory address
+immediately.
+
+]
+
+
+---
+
+# R Data Types
+
+Data types are also called modes in R.
+
+There are several, among them:
+
+- logical (TRUE/FALSE or T/F)
+
+- integer
+
+- double
+
+- character
+
+- complex
+
+---
+
+# R Data Types
+
+To check the type of an object use: *typeof()*
+
+.scroll-output[
+.font85[
+```{r include=TRUE}
+typeof(TRUE)
+typeof(1L)
+typeof(1)
+typeof("test")
+typeof(1 + (0+2i))
+# 1 corresponds to the real part and 2 to the imaginary part of the number
+```
+
+<br /> 
+
+<br /> 
+
+<br /> 
+
+<br /> 
+
+<br /> 
+
+<br /> 
+]
+]
+
+
+---
+
+# R Data Types
+
+We can check the type of an object using the functions *is.character()*, *is.double()*, *is.integer()*, *is.logical()*, *is.complex()*
+
+.scroll-output[
+.font85[
+```{r include=TRUE}
+is.logical(TRUE)
+is.integer(1L)
+is.double(1)
+is.character("test")
+is.complex(1 + (0+2i))
+```
+
+<br /> 
+
+<br /> 
+
+]
+]
+
+
+---
+
+# R Data Structures
+
+R has several data structures:
+
+.font85[
+
+- vectors (one-dimensional): A vector can be thought of as contiguous cells containing data.
+
+- matrices (two-dimensional) 
+
+- lists (multi-dimensional)
+
+- data.frames (two-dimensional) 
+
+- arrays (multi-dimensional) 
+
+]
+
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors**
+]
+]
+
+.scroll-output[
+.font85[
+
+```{r include=TRUE}
+c(1, 2, 5)
+1:10
+seq(from = 1, to = 30, by = 4)
+seq(from = 0.1, to = 1, length = 10)
+rep(1, 10)
+rep(c(1, 2, 3), 3)
+```
+
+```{r include=TRUE}
+a_vector <- 1:10
+a_vector
+b_vector <- c(1L, 2L)
+b_vector
+d_vector <- 1
+d_vector
+e_vector <- c(TRUE, TRUE, FALSE)
+e_vector
+f_vector <- c(1, "a")
+f_vector
+```
+<br /> 
+
+<br /> 
+]
+]
+
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors: Useful functions**
+]
+]
+
+
+.scroll-output[
+.font85[
+
+```{r include=TRUE}
+x <- 1:20
+mean(x) # average
+sd(x) # standard deviation
+var(x) # variance of x
+min(x) # min
+max(x) # max
+abs(x) # absolute value
+sum(x) # summation
+```
+
+<br /> 
+
+<br /> 
+]
+]
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors: Comparisons**
+]
+]
+
+.scroll-output[
+.font85[
+
+```{r include=TRUE}
+x <- 1:10
+x >= 5
+```
+
+```{r include=TRUE}
+x <- 1:10
+y <- 10:1
+x > y
+any(x > y)
+all(x > y)
+```
+
+
+<br /> 
+<br />
+<br /> 
+]
+]
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors: Missing values**
+]
+]
+
+- R missing values are defined by NA
+
+.scroll-output[
+.font80[
+
+```{r include=TRUE}
+x <- c(1, NA, 5)
+is.na(x)
+mean(x)
+mean(x, na.rm = TRUE)
+```
+<br />
+]
+]
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors: Missing values**
+]
+]
+
+
+- We can remove missing values with na.omit()
+
+
+```{r include=TRUE}
+x <- c(1, NA, 5, NA)
+na.omit(x)
+```
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors: Missing values**
+]
+]
+
+- NA vs NULL: In R NULL correspond to nothing (absence of anything).
+
+.scroll-output[
+.font80[
+
+```{r include=TRUE}
+x <- c(1, NA, 5)
+x
+x <- NULL
+x
+is.null(x)
+```
+<br />
+
+```{r include=TRUE}
+x <- NA
+length(x)
+x <- NULL
+is.null(x)
+length(x)
+```
+
+
+<br />
+<br />
+<br />
+<br />
+<br />
+]
+]
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors**
+]
+]
+
+
+- We can also do explicit coercion of objects with the as. functions
+
+```{r include=TRUE}
+x <- 0:10
+as.character(x)
+as.logical(x)
+x <- c("a", "b", "c")
+as.numeric(x)
+```
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors: Slicing & Filtering**
+]
+]
+
+
+- Slicing: We can select elements of a vector using the "[" operator
+
+- Filtering: 
+
+    - Filtering consists of extracting elements of a vector that satisfy a given condition. 
+
+    - We can use logical indices.
+    
+    - We can also use subset().
+    
+    - We can also use which().
+    
+    - We can also use filtering for assignments.
+    
+    - We can add a comment attribute to an R object using comment()
+    
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors: Slicing & Filtering**
+]
+]
+
+.scroll-output[
+.font80[    
+    
+```{r include=TRUE}
+x <- 10:18
+x[x%%2 == 0]
+subset(x, x%%2 == 0)
+x[which(x%%2 == 0)]
+comment(x) <- "This is a comment"
+attributes(x)
+comment(x)
+```
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+]
+]
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**Vectors**
+]
+]
+
+<br />
+<br />
+
+.font150[
+.red[
+<div align="center">
+Arrays, matrices, and even lists are vectors with some extra class attributes!
+</div>
+]
+]
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**data.frames**
+]
+]
+
+- data.frames is one of the most useful features of R. 
+
+- They are a collection of vectors all with the same size.
+
+- Creating a data.frame
+
+.font85[
+```{r include=TRUE}
+set.seed(12345)
+a_df <- data.frame(subject = letters[1:15],
+height = rnorm(15, 170, 5),
+weight = rnorm(15, 70, 10),
+stringsAsFactors = FALSE)
+```
+
+<br /> 
+]
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**data.frames**
+]
+]
+
+.scroll-output[
+.font85[
+
+- Testing if an object is a data.frame
+
+```{r include=TRUE}
+is.data.frame(a_df)
+class(a_df)
+```
+
+
+- Attributes of a data.frame
+
+```{r include=TRUE}
+attributes(a_df)
+dim(a_df)
+length(a_df)
+nrow(a_df)
+ncol(a_df)
+names(a_df)
+```
+
+
+- Inspecting a data.frame
+
+```{r include=TRUE}
+View(a_df)
+str(a_df)
+summary(a_df)
+head(a_df)
+tail(a_df)
+```
+
+<br /> 
+
+]
+]
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**data.frames: Subsetting**
+]
+]
+
+.scroll-output[
+.font85[
+
+- Since data.frame is a list we can use the $ operator:
+
+```{r include=TRUE}
+a_df$subject
+class(a_df)
+```
+
+
+- But they are also vectors so we can use the []:
+
+```{r include=TRUE}
+a_df[2:3, ]
+a_df[2:3, 1]
+```
+
+
+```{r include=TRUE}
+a_df[2:3, "subject"]
+a_df["subject"]
+class(a_df["subject"])
+a_df[, "subject"]
+class(a_df[, "subject"])
+a_df[["subject"]]
+class(a_df[["subject"]])
+```
+
+<br /> 
+
+<br /> 
+
+]
+]
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**data.frames: Filtering**
+]
+]
+
+.scroll-output[
+.font85[
+
+- Select all subjects with height greater than 170:
+
+```{r include=TRUE}
+a_df[a_df$height > 170, ]
+```
+
+- Select all subjects with height less than 170 and weight greater than 75:
+
+```{r include=TRUE}
+a_df[a_df$height < 170 & a_df$weight < 65, ]
+```
+
+<br /> 
+
+<br /> 
+]
+]
+
+
+---
+
+# R Data Structures
+
+.font100[
+.blue[
+**data.frames: Adding & Removing Columns**
+]
+]
+
+.scroll-output[
+.font85[
+
+- Let's create the column BMI as the person's weight in kilograms divided by the square of height in meters:
+
+
+```{r include=TRUE}
+a_df$bmi <- a_df$weight/((a_df$height/100)^2)
+```
+
+- Now we can select the subjects overweight (25 < bmi < 30 )
+
+```{r include=TRUE}
+a_df[a_df$bmi < 30 & a_df$bmi > 25, ]
+subset(a_df, a_df$bmi < 30 & a_df$bmi > 25)
+```
+
+
+- It is also possible to use cbind() and rbind() to add new columns and rows to a data.frame
+
+- Removing columns
+
+```{r include=TRUE}
+b_df <- a_df
+b_df$bmi <- NULL
+head(b_df)
+```
+
+<br /> 
+
+<br /> 
+
+]
+]
+
+
+---
+
+# Tips and Shortcuts
+
+
+- Run codes: **ctrl + Enter** 
+
+- Interrrupts R: **ESC** 
+
+- Comment out scripts or change it back: **Shift + ctrl + c**
+
+- Re-run Chunk: **shift + ctrl + p**
+
+- Delete lines: **ctrl + d**
+
+- Clear the console: **Ctrl + L**
+
+- Change tab
+
+    - Previous: **ctrl + F11**
+    
+    - Next: **ctrl + F12**
+    
+---
+
+# Tips and Shortcuts
+
+- Use `tidyverse`
+
+
+```{r include=TRUE, warning=FALSE, message=FALSE,}
+library(tidyverse)
+```
+
+```{r eval=FALSE}
+read.csv()
+read_csv() # from tidyverse and much faster
+```
+
+
+```{r include=TRUE, warning=FALSE, message=FALSE,}
+library(tidyverse)
+iris %>% 
+  select(Sepal.Width, Sepal.Length) %>% 
+  mutate(Sepal_Aqr=Sepal.Length*Sepal.Length) %>% 
+  filter(Sepal.Width >3) %>% 
+  summarize(sum(Sepal_Aqr))
+```
+
+
+
+    
+
+
+

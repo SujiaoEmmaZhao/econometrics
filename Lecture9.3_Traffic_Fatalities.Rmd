@@ -1,0 +1,242 @@
+---
+title: "**Econometrics**"
+subtitle: "Panel Data: Traffic Fatalities"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/11/24 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+Regression using panel data may mitigate omitted variable bias when there is no information on variables that correlate with the regressors of interest and if these variables are constant in the time dimension or across entities. Provided that panel data is available, panel regression methods may improve upon multiple regression models which produce results that are not internally valid in such a setting.
+
+
+## Data
+
+We make use of the dataset Fatalities from the AER package (Christian Kleiber and Zeileis 2020) which is a panel dataset reporting annual state level observations on U.S. traffic fatalities for the period 1982 through 1988. The applications analyze if there are **effects of alcohol taxes and drunk driving laws on road fatalities and, if present, how strong these effects are**.
+
+Panel data is also called longitudinal data as it adds a temporal dimension to cross-sectional data. Let us have a look at the dataset `Fatalities` by checking its structure and listing the first few observations.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(plm)
+library(AER)
+library(stargazer)
+data(Fatalities)
+dim(Fatalities)
+str(Fatalities)
+kable(head(Fatalities), align="c", caption=
+"The head of the Fatalities dataset organized as a panel")
+summary(Fatalities[, c(1, 2)])
+Fatalities.panel <- pdata.frame(Fatalities, index=c("state","year"))
+```
+
+We find that the dataset consists of 336 observations on 34 variables. Notice that the variable state is a factor variable with 48 levels (one for each of the 48 contiguous federal states of the U.S.). The variable year is also a factor variable that has 7 levels identifying the time period when the observation was made. This gives us $7 \times 48 = 336$  observations in total. Since all variables are observed for all entities and over all time periods, the panel is balanced. If there were missing data for at least one entity in at least one time period we would call the panel unbalanced.
+
+
+## Analyses
+
+### Panel Data
+
+We start by estimating simple regressions using data for years 1982 and 1988 that model the relationship between beer tax (adjusted for 1988 dollars) and the traffic fatality rate, measured as the number of fatalities per 10000 inhabitants. Afterwards, we plot the data and add the corresponding estimated regression functions.
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+# define the fatality rate
+Fatalities$fatal_rate <- Fatalities$fatal / Fatalities$pop*10000
+
+# subset the data
+Fatalities1982 <- subset(Fatalities, year == "1982")
+Fatalities1988 <- subset(Fatalities, year == "1988")
+
+# estimate simple regression models using 1982 and 1988 data
+fatal1982_mod <- lm(fatal_rate ~ beertax, data = Fatalities1982)
+fatal1988_mod <- lm(fatal_rate ~ beertax, data = Fatalities1988)
+
+coeftest(fatal1982_mod, vcov. = vcovHC, type = "HC1")
+coeftest(fatal1988_mod, vcov. = vcovHC, type = "HC1")
+```
+
+<br />
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+# plot the observations and add the estimated regression line for 1982 data
+plot(x = Fatalities1982$beertax, 
+     y = Fatalities1982$fatal_rate, 
+     xlab = "Beer tax (in 1988 dollars)",
+     ylab = "Fatality rate (fatalities per 10000)",
+     main = "Traffic Fatality Rates and Beer Taxes in 1982",
+     ylim = c(0, 4.5),
+     pch = 20, 
+     col = "steelblue")
+
+abline(fatal1982_mod, lwd = 1.5)
+```
+
+
+<br />
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+# plot observations and add estimated regression line for 1988 data
+plot(x = Fatalities1988$beertax, 
+     y = Fatalities1988$fatal_rate, 
+     xlab = "Beer tax (in 1988 dollars)",
+     ylab = "Fatality rate (fatalities per 10000)",
+     main = "Traffic Fatality Rates and Beer Taxes in 1988",
+     ylim = c(0, 4.5),
+     pch = 20, 
+     col = "steelblue")
+
+abline(fatal1988_mod, lwd = 1.5)
+```
+
+
+In both plots, each point represents observations of beer tax and fatality rate for a given state in the respective year. The regression results indicate a positive relationship between the beer tax and the fatality rate for both years. This is contrary to our expectations: alcohol taxes are supposed to lower the rate of traffic fatalities. As we known, this is possibly due to omitted variable bias, since both models do not include any covariates, e.g., economic conditions. This could be corrected for using a multiple regression approach. However, this cannot account for omitted unobservable factors that differ from state to state but can be assumed to be constant over the observation span, e.g., the populations’ attitude towards drunk driving. Panel data allow us to hold such factors constant.
+
+### Panel Data with Two Time Periods: “Before and After”
+
+Suppose there are only 2 time periods: 1980 and 1988. This allows us to analyze differences in changes of the the fatality rate from year 1982 to 1988. We can eliminate the time-invariant state unobservables by regressing the difference in the fatality rate between 1988 and 1982 on the difference in beer tax between those years.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+# compute the differences 
+diff_fatal_rate <- Fatalities1988$fatal_rate - Fatalities1982$fatal_rate
+diff_beertax <- Fatalities1988$beertax - Fatalities1982$beertax
+
+# estimate a regression using differenced data
+fatal_diff_mod <- lm(diff_fatal_rate ~ diff_beertax)
+
+coeftest(fatal_diff_mod, vcov = vcovHC, type = "HC1")
+```
+
+Including the intercept allows for a change in the mean fatality rate in the time between 1982 and 1988 in the absence of a change in the beer tax.
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+# plot the differenced data
+plot(x = diff_beertax, 
+     y = diff_fatal_rate, 
+     xlab = "Change in beer tax (in 1988 dollars)",
+     ylab = "Change in fatality rate (fatalities per 10000)",
+     main = "Changes in Traffic Fatality Rates and Beer Taxes in 1982-1988",
+     xlim = c(-0.6, 0.6),
+     ylim = c(-1.5, 1),
+     pch = 20, 
+     col = "steelblue")
+
+# add the regression line to plot
+abline(fatal_diff_mod, lwd = 1.5)
+```
+
+The estimated coefficient on beer tax is now negative and significantly different from zero at 5%. Its interpretation is that raising the beer tax by 1 dollar causes traffic fatalities to decrease by 1.04 per 10000 people. This is rather large as the average fatality rate is approximately 2 persons per 10000 people.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+mean(Fatalities$fatal_rate)
+```
+
+<br />
+
+Once more this outcome is likely to be a consequence of omitting factors in the single-year regression that influence the fatality rate and are correlated with the beer tax and change over time. The message is that we need to be more careful and control for such factors before drawing conclusions about the effect of a raise in beer taxes.
+
+The approach presented so far discards information for years 1983 to 1987. A method that allows to use data for more than $T=2$ time periods and enables us to add control variables is the fixed effects regression approach.
+
+The simple fixed effects model for estimation of the relation between traffic fatality rates and the beer taxes is a regression of the traffic fatality rate on beer tax and 48 binary regressors — one for each federal state.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+library(stargazer)
+fatal_fe_lm_mod <- lm(fatal_rate ~ beertax + state - 1, data = Fatalities)
+stargazer(fatal_fe_lm_mod,type = "text", digits=4)
+```
+<br />
+
+It is also possible to estimate by applying OLS to the demeaned data
+  
+  
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+# obtain demeaned data
+Fatalities_demeaned <- with(Fatalities,
+            data.frame(fatal_rate = fatal_rate - ave(fatal_rate, state),
+            beertax = beertax - ave(beertax, state)))
+
+# estimate the regression
+summary(lm(fatal_rate ~ beertax - 1, data = Fatalities_demeaned))
+```
+
+The function `ave` is convenient for computing group averages. We use it to obtain state specific averages of the fatality rate and the beer tax.
+
+<br />
+
+Alternatively one may use plm() from the package with the same name.
+
+As for `lm()` we have to specify the regression formula and the data to be used in our call of `plm()`. Additionally, it is required to pass a vector of names of entity and time ID variables to the argument `index`. For `Fatalities`, the ID variable for entities is named `state` and the time id variable is `year`. Since the fixed effects estimator is also called the within estimator, we set `model = “within”`. Finally, the function `coeftest()` allows to obtain inference based on robust standard errors.
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+library(plm)
+# estimate the fixed effects regression with plm()
+fatal_fe_mod <- plm(fatal_rate ~ beertax, 
+                    data = Fatalities,
+                    index = c("state", "year"), 
+                    model = "within")
+
+# print summary using robust standard errors
+coeftest(fatal_fe_mod, vcov. = vcovHC, type = "HC1")
+
+```
+
+Note that `plm()` uses the entity-demeaned OLS algorithm and thus does not report dummy coefficients.
+
+The coefficient on $BeerTax$ is negative and significant. The interpretation is that the estimated reduction in traffic fatalities due to an increase in the real beer tax by 1 dollar is 0.66 per 10000 people, which is still pretty high. Although including state fixed effects eliminates the risk of a bias due to omitted factors that vary across states but not over time, we suspect that there are other omitted variables that vary over time and thus cause a bias.
+  
+Controlling for variables that are constant across entities but vary over time can be done by including time fixed effects. In some applications it is meaningful to include both entity and time fixed effects. The combined model allows to eliminate bias from unobservables that change over time but are constant over entities and it controls for factors that differ across entities but are constant over time.
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+# estimate a combined time and entity fixed effects regression model
+
+# via lm()
+fatal_tefe_lm_mod <- lm(fatal_rate ~ beertax + state + year - 1, data = Fatalities)
+fatal_tefe_lm_mod
+
+# via plm()
+fatal_tefe_mod <- plm(fatal_rate ~ beertax, 
+                      data = Fatalities,
+                      index = c("state", "year"), 
+                      model = "within", 
+                      effect = "twoways")
+
+coeftest(fatal_tefe_mod, vcov = vcovHC, type = "HC1")
+```
+
+
+<br />
+
+<br />
+
+The result -0.64 is close to the estimated coefficient for the regression model including only entity fixed effects. We conclude that the estimated relationship between traffic fatalities and the real beer tax is not affected by omitted variable bias due to factors that are constant over time.
+
+Usage of clustered standard errors is crucial in empirical applications of fixed effects models. Similar as for heteroskedasticity, autocorrelation invalidates the usual standard error formulas as well as heteroskedasticity-robust standard errors since these are derived under the assumption that there is no autocorrelation. When there is both heteroskedasticity and autocorrelation so-called heteroskedasticity and autocorrelation-consistent (HAC) standard errors need to be used. Clustered standard errors belong to these type of standard errors. 
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+# check class of the model object
+class(fatal_tefe_lm_mod)
+
+# obtain a summary based on heteroskedasticity-robust standard errors 
+# (adjustment for heteroskedasticity only)
+coeftest(fatal_tefe_lm_mod, vcov = vcovHC, type = "HC1")[1, ]
+
+# check class of the (plm) model object
+class(fatal_tefe_mod)
+
+# obtain a summary based on clusterd standard errors 
+# (adjustment for autocorrelation + heteroskedasticity)
+coeftest(fatal_tefe_mod, vcov = vcovHC, type = "HC1")[1, ]
+```
+
+The outcomes differ rather strongly. What can you conclude?

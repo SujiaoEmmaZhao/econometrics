@@ -1,0 +1,258 @@
+---
+title: "**Econometrics**"
+subtitle: "Returns to Schooling"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/11/24 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+##  Returning to Schooling
+
+<br />
+
+Returning to schooling is a historically popular topic for causal questions in labor. In this example, we will simply estimate a 2SLS model, calculate the first-stage F statistic, and compare the 2SLS results with the OLS results. 
+
+[Card (1995)](https://www.nber.org/system/files/working_papers/w4483/w4483.pdf) is interested in estimating the following regression equation:
+
+$$Y = \alpha + \delta S_i + \gamma X_i + \epsilon_i$$
+
+where $Y$ is log wages, $S$ is years of schooling, $X$ is a matrix of exogenous covariates, and $\epsilon$ is an error term that contains, among other things, unobserved ability. Under the assumption that $\epsilon$ contains ability, and ability is correlated with schooling, then $cov(S,\epsilon) \neq 0$ and therefore schooling is biased. Card (1995) proposes therefore an instrumental variables strategy whereby he will **instrument for schooling with the college-in-the-county dummy variable**.
+
+It is worth asking ourselves why the presence of a 4-year college in one’s county would increase schooling. The main reason we can think of is that the presence of the 4-year college increases the likelihood of going to college by lowering the costs, since the student can live at home. 
+
+This therefore means that we are selecting on a group of kids whose behavior is affected by the variable. Some kids, in other words, will always go to college regardless of whether a college is in their county, and some will never go despite the presence of the nearby college. But there may exist a group of kids who go to college only because their county has a college, and if I’m right that this is primarily picking up people going because they can attend while living at home, then it’s necessarily people at some margin who attend only because college became slightly cheaper. This is, in other words, a group of people who are liquidity constrained. 
+
+
+## Data
+
+The dataset is contained in the Wooldrige package and you can download it to replicate this exercise.
+
+For this exercise we are going to use the following variables. You can find a description of all variables [here.](http://fmwww.bc.edu/ec-p/data/wooldridge/card.des)
+
+| Variable name |  Description | 
+| :--- | :--- |
+| lwage  | 	Annual wage (log form) |
+| educ  |  years of education |
+| nearc4  |  Living close to college (=1) or far from college (=0) |
+| smsa  | Living in metropolitan area (=1) or not (=0) |
+| exper  | Years of experience |
+| expersq  | Years of experience (squared term) |
+| black  |  Black (=1), not black (=0) |
+| south  | 	Living in the south (=1) or not (=0) |
+
+
+## Two Stage Least Squares” (2SLS) Estimation
+
+Load the data
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library( "wooldridge" )
+data("card") ## we attach the data to our R working space
+nrow(card) ## To check if data were properly load, we can look if the number of obs is equal to 3010
+```
+
+As mentioned above, Card (1995) utilizes proximity to college as the instrumental variable. He provides arguments to support each of three main characteristics of a good instrumental variable:
+
+- **It is correlated with the endogenous variable**: Individuals who live close to a 4-year college have easier access to education at a lower costs (no communiting costs and time nor accomodation costs), so they have greater incentives to pursue education.
+
+- **It is not correlated with the omitted variable**: Individual ability does not depend on proximity to a college.
+
+- **It is correlated to the dependent variable only through the endogenous variable**: Proximity to a college has no effect on your annual income, unless you decide to pursue further education because of the nearby college.
+
+Therefore, he estimates a model where:
+
+First stage:
+
+$$educ = \beta_0 + \beta_1 nearc4 + \beta_{2-6} control \ variables$$
+Second stage:
+
+$$lwage = \gamma_0 + \gamma_1 \hat {educ} + \gamma_{2-6} control \ variables$$
+
+We replicate the study starting by having a look at the summary statistics and distribution of the 3 key variables:
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+library(stargazer)
+stargazer( card,  
+           type = "html", 
+           keep = c("lwage", "^educ$", "nearc4"), #Note: the symbols ^ & $ around educ prevents the function from grabbing other variables containing educ, such as fatheduc or motheduc
+           omit.summary.stat = c("p25", "p75"),
+           digits = 2 )
+```
+
+<br />
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+par( mfrow=c(1,2) )
+
+plot( density(card$lwage), xlab = "Wage", main = "Dependent variable", ylab = "Frequency")
+
+plot( density(card$educ), xlab = "Education", main = "Endogenous Variable", ylab = "Frequency")
+```
+
+
+
+<br />
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+barplot( table(card$nearc4), xlab = "Living near a four-year college", ylab = "Frequency", main = "Instrumental variable")
+```
+
+<br />
+
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+par(mfrow=c(1,3) )
+plot(card$nearc4, card$educ, xlab = "Living close to college", ylab = "Education" )   # Plot
+abline(lm(card$educ ~ card$nearc4 ), col = "red")          # regression line 
+plot(card$nearc4, card$lwage, xlab = "Living close to college", ylab = "Log wage" )
+abline(lm(card$lwage ~ card$nearc4 ), col = "green") 
+```
+
+We then estimate the model using two stages. As before, in the first stage we estimate education using our instrumental variable; you can see that the F statistic is greater than 10, suggesting that nearc4 is a valid instrumental variable. Then, we estimate the impact of education on wage using the predicted values of education.
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+first.stage = lm(educ ~ nearc4 + smsa66 + exper + expersq + black + south66, data = card)
+
+x1_hat <- fitted( first.stage ) #Save predicted values for education
+
+second.stage <- lm(lwage ~ x1_hat + smsa66 +  exper + expersq + black + south66, data = card)
+
+
+stargazer( first.stage, second.stage,
+           column.labels = c("First Stage", "Second Stage"),
+           type = "html",
+           omit.stat = c("rsq","ser"), 
+           digits = 2 )
+```
+
+<br />
+
+As you can see, `educ` has a different estimate in the two models.
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+naive.model <- lm(lwage ~ educ + smsa66 + exper + expersq + black + south66, data = card)
+
+stargazer( naive.model, second.stage,
+           model.numbers = F,
+           type = "html", 
+           omit.stat = "all", 
+           digits = 2,  keep = c("educ", "x1_hat") )
+```
+
+<br />
+
+## Using the `ivreg` function from the package `AER`
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+library(AER)
+simple.model <- lm(
+lwage ~              
+educ +
+smsa66 +
+exper +    
+expersq + 
+black +
+south66, data = card)
+
+ivreg.model <- 
+ivreg(            ## Call the ivreg function
+lwage ~           ## Dependent variable of the second stage 
+educ +            ## Education, as estimated in the first stage below 
+smsa66 +          ## Control variable - Living in a metropolitan area
+exper +           ## Control variable - Expertise
+expersq +         ## Control variable - Squared term of the expertise variable
+black +           ## Control variable - If race is black = 1, otherwise = 0
+south66           ## Control variable - If living in the south = 1, otherwise = 0 
+|                 ## Separate first and second stage   
+.-educ +          ## we include all variable of the first stage, minus the education variable that is estimated     
+nearc4,           ## The instrumental variable is included only here, in the first stage
+data = card )     ## Set the dataset
+
+
+stargazer( simple.model, ivreg.model,
+           column.labels = c("No IV model", "IV model"),
+           type="html", 
+           omit.stat = c("rsq","ser"), 
+           digits=2 )
+
+```
+
+
+<br />
+
+Let's also use parents' education as additional instrumental variables.
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+library(AER)
+
+ivreg.model2 <-ivreg( lwage ~ educ + smsa66 + exper + expersq +  black + south66 | .-educ +  nearc4 + fatheduc + motheduc, data = card ) 
+
+first.stage.iv2 <- lm(educ ~ nearc4 + fatheduc + motheduc + smsa66 + exper + expersq +  black + south66, data= card)
+
+stargazer( first.stage.iv2,
+           column.labels = c("First Stage: Additional IVs"),
+           type = "html",
+           omit.stat = c("rsq","ser"), 
+           digits = 2 )
+
+```
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE, results = 'asis'}
+
+stargazer( simple.model, ivreg.model, ivreg.model2,
+           column.labels = c("No IV model", "IV model: Living close to college", "IV model: + Parents' Education"),
+           type="html", 
+           omit.stat = c("rsq","ser"), 
+           digits=2 )
+
+```
+
+<br />
+
+We now conduct the the diagnostic tests, i.e., the endogeneity test for the two IV models and the overidentifying restrictions test for the second IV model which is the only model where the coefficient on education is overidentified ($R > K$, where $R$ =2 and $K$=1)
+
+
+- **Weak instruments** means that the instrument has a low correlation with the endogenous explanatory variable. This could result in a larger variance in the coefficient, and severe finite-sample bias.The null hypothesis is that the instrument is weak. 
+
+- **Wu-Hausman** tests that IV is as consistent as OLS, and since OLS is more efficient, it would be preferable. The null hypothesis is that IV and OLS are equally consistent.
+
+- **Sargan** tests overidentification restrictions. If it is significant, it means that you don't have valid instruments (note that this is a global test). 
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+summary(ivreg.model, vcov = sandwich, df = Inf, diagnostics = TRUE)
+```
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+summary(ivreg.model2, vcov = sandwich, df = Inf, diagnostics = TRUE)
+```
+
+<br />
+
+## Additional Examples
+
+| Outcome variable |  Endogenous Variable |   Omitted variable |  Instrumental variable |
+| :--- | :--- | :--- | :--- |
+| Birth Outcome  | Maternal Smoking | Other negative health behaviors | [Tobacco taxes](https://www.fsb.muohio.edu/lij14/511_paper_pr.pdf) |
+| Incarceration  | 	Crime | Simultaneous causality | [Abortion rate](https://www.jstor.org/stable/10.1086/343779) |
+| Election outcomes  | Federal spending in a district | Political vulnerability | [Federal spending in the rest of the state](https://www.jstor.org/stable/2138870?seq=1#metadata_info_tab_contents) |
+| Civil Conflicts  | Economic growth | Simultaneous causality | [Rainfall](https://www.jstor.org/stable/10.1086/421174?seq=1#metadata_info_tab_contents) |
+| Trade credit  | Stock Price Mispricing | Omitted variable | [Mutual fund outflow](https://www.sciencedirect.com/science/article/pii/S0378426621000017) |
+
+

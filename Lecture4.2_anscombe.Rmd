@@ -1,0 +1,122 @@
+---
+title: "**Econometrics**"
+subtitle: "The Anscombe dataset"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/13 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+<br />
+
+The Anscombe dataset is a well known dataset. You will understand why in a minute.
+
+Let us start by loading the data. It is in a text file so we use the insheet command
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+library(readr)
+anscombeinput <- read_delim("anscombeinput.dat", "\t", escape_double = FALSE, trim_ws = TRUE)
+```
+
+And next we describe the data.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(Hmisc)
+describe(anscombeinput)
+```
+
+The data contains 4 pairs of variables: $(y_1, x_1), (y_2, x_2), (y_3, x_3), (y_4, x_4)$ . We can take summary statistics:
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+stargazer(as.data.frame(anscombeinput), type = "text")
+```
+
+
+Take some time to look at the statistics. The mean and standard of the $y$ and $x$ variables are practically identical. Next we regress y on x for the four sets and compute the predicted value for each regression.
+
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+print("Regression 1")
+reg1<-lm(Y1~X1, data = anscombeinput)
+stargazer(reg1, type="text", digits=8)
+anscombeinput$y1hat<-fitted(reg1)
+
+print("Regression 2")
+reg2<-lm(Y2~X2, data = anscombeinput)
+stargazer(reg2, type="text", digits=8)
+anscombeinput$y2hat<-fitted(reg2)
+
+print("Regression 3")
+reg3<-lm(Y3~X3, data = anscombeinput)
+stargazer(reg3, type="text", digits=8)
+anscombeinput$y3hat<-fitted(reg3)
+
+print("Regression 4")
+reg4<-lm(Y4~X4, data = anscombeinput)
+stargazer(reg4, type="text", digits=8)
+anscombeinput$y4hat<-fitted(reg4)
+
+```
+
+
+
+
+Take some time to compare the results of the four regressions. What can you conclude?
+
+
+Now, we will plot the actual and fitted values for each regression.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(ggplot2)
+library(dplyr)
+fig1<- anscombeinput %>% ggplot(aes(x = X1, y = Y1)) + 
+  geom_point() +
+  geom_line(data=anscombeinput, aes(X1, y1hat), col="red")
+fig1
+
+fig2<- anscombeinput %>% ggplot(aes(x = X2, y = Y2)) + 
+  geom_point() +
+  geom_line(data=anscombeinput, aes(X2, y2hat), col="red")
+fig2
+
+fig3<- anscombeinput %>% ggplot(aes(x = X3, y = Y3)) + 
+  geom_point() +
+  geom_line(data=anscombeinput, aes(X3, y3hat), col="red")
+fig3
+
+fig4<- anscombeinput %>% ggplot(aes(x = X4, y = Y4)) + 
+  geom_point() +
+  geom_line(data=anscombeinput, aes(X4, y4hat), col="red")
+fig4
+```
+
+Now combine the four graphs into a single one
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(grid)
+# Create a new page
+grid.newpage()
+# Next push the vissible area with a layout of 2 columns and 2 row using pushViewport()
+pushViewport(viewport(layout = grid.layout(2,2)))
+
+print(fig1, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(fig2, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+print(fig3, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
+print(fig4, vp = viewport(layout.pos.row = 2, layout.pos.col = 2))
+```
+
+
+<br />
+
+<br />

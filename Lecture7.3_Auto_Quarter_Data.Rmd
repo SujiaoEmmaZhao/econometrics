@@ -1,0 +1,155 @@
+---
+title: "**Econometrics**"
+subtitle: "Autocorrelation: Quarter data car"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/27 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+First, we need to change to the folder where the dataset is located.
+
+<br />
+
+We need to read the auto_quarter_data dataset. $gas$ is the natural log of real per capita expenditure on gasoline. $price$ is the natural log of real price on gasoline. $income$ is the natural log of real per capita disposable personal income. $miles$ is the natural log of miles per gallon.
+
+<br />
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(haven) # import Stata data
+auto <- read_dta("auto_quarter_data.dta")
+```
+
+<br />
+
+We can do some descriptive statistics and show the first 10 observations:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+stargazer(as.data.frame(auto), type = "text")
+```
+
+<br />
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+head(auto, 10)
+```
+
+<br />
+
+We need to transform the data in “time series”:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(dplyr)
+auto<-auto %>% mutate(t = dense_rank(quarter))
+auto
+```
+
+<br />
+
+Suppose we want to estimate the following model
+
+$$gas_t=β_0+β_1 income_t+β_2 price_t+u_t$$
+
+and wish to test whether the disturbances are autocorrelated.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+reg1<-lm(gas~ income +price, data=auto)
+stargazer(reg1, type="text", digits=8)
+```
+
+Keep residuals and constructs the lagged value of residuals.
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(dplyr)
+auto$res1<-reg1$residuals
+auto<-auto %>% mutate(res1lag1 = lag(res1))
+auto
+```
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(ggplot2)
+fig1<-ggplot(data = auto, aes(y = res1, x = t)) + geom_point(col = 'blue') + geom_abline(slope = 0)
+fig2<-ggplot(data = auto, aes(y = res1, x = res1lag1)) + geom_point(col = 'blue') + geom_abline(slope = 0)
+library(grid)
+# Create a new page
+grid.newpage()
+# Next push the vissible area with a layout of 1 row and 2 columns using pushViewport()
+pushViewport(viewport(layout = grid.layout(1,2)))
+
+print(fig1, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(fig2, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+
+```
+
+The `acf()` function in the R stats package computes and plots the autocorrelation functions of a time series.The broken horizontal lines on the plots correspond to approximate 95% confidence limits. 
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(stats)
+acf(residuals(reg1))
+```
+
+The graphs indicate positive first order autocorrelation of residuals.
+
+
+
+## Checking autocorrelation
+
+Now let us look at a couple of commands that test for autocorrelation.
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+dwtest(reg1)
+```
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+bgtest(reg1)
+```
+
+So, in this case, there is evidence of autocorrelation.
+
+## Dealing with autocorrelation
+
+<br />
+
+$\mbox{1. Estimate by OLS and use the Newey-West estimator}$
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(sandwich)
+# Normal SE
+coeftest(reg1)
+# Newey West SE
+coeftest(reg1, vcov = NeweyWest)
+```
+
+<br />
+
+
+$\mbox{2. Use Feasible Weighted Least Squares}$
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(nlme)
+mod.gls <- gls(gas~ income + price,
+data=auto, correlation=corAR1(form = ~ t))
+stargazer(mod.gls, type="text", digits=8)
+```
+
+
+<br />
+
+<br />

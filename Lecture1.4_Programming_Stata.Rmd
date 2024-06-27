@@ -1,0 +1,669 @@
+---
+title: "**Econometrics**"
+subtitle: "**2M3E03 Stata Tutorial**"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/09/22 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, "class/bplim-fonts.css", "class/bplim.css"]
+    nature:
+      highlightLines: true
+      beforeInit: "macros.js"
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+class: center, middle, inverse
+
+# **Stata Programming**
+
+## **A Short Tutorial** 
+
+---
+
+<br />
+
+<div align="left">
+<img src="pictures/Stata_Logo.png" width=400 height=160>
+</div>
+
+
+<br />
+
+"Stata is a complete, integrated software package that provides all your data science needs—data manipulation, visualization, statistics, and automated reporting. Stata is not sold in modules, which means you get everything you need in one package."
+
+---
+
+
+# [Why should you use Stata?](https://www.stata.com/why-use-stata/)
+
+1 – Easy to learn 
+
+2 - Support (website, manuals, netcourses, Statalist, Youtube videos, Stata Blog, Stata Journal, Stata Conferences)
+
+3 - Powerful (fast, handles large datasets, easy to program)
+
+4 - Data Manipulation (very flexible, you can do anything!)
+
+5 - Statistics (lots of options and many online additions)
+
+6 - Excellent Graphics (after version 8)
+
+7 – Internet aware (updates, user commands, data input, online help)
+
+8 - Works in several platforms (Windows, Linux, Apple, etc)
+
+9 - Price (Different flavors of Stata)
+
+
+
+---
+
+# General Overview of Stata
+
+### The Windows
+
+1 – Command 
+
+2 – Results
+
+3 – Review
+
+4 – Variables
+
+5 – Properties
+
+### Editors
+
+1 – Data Editor
+
+2 – Do File Editor (text editor)
+
+3 – Variables Manager
+
+---
+
+# General Overview of Stata
+
+
+### The Menu
+
+Menu items run Stata commands!
+
+### Mata
+Mata is a matrix programming language. To enter Mata type “mata” at the command line. You can exit the Mata environment by typing “end”
+
+
+---
+
+# Workflow in Stata
+
+1 - Running Commands [interactive mode vs batch mode]
+
+2 - Viewing and Editing Data [browsing vs Editing]
+
+3 - Reviewing Output [Stata Results Window, output files]
+
+---
+
+# Typical  Stata files
+
+1 - “do” file
+
+2 - “ado” file
+
+3 - “dta” (data) file
+
+4 - “log” file
+
+5 - “smcl” file
+
+
+---
+
+# Stata Command Syntax
+
+[prefix :] command [varlist] [=exp] [if] [in] [weight] [using filename]
+                           [, options]
+                           
+<br />                           
+
+Elements in square brackets are optional. 
+“varlist” is a list of variable names, 
+“command” is a Stata command,
+“exp” is an algebraic expression, 
+“if” and “in”  define a range of observations, 
+“weight”  is a weighting expression, 
+“filename” is a filename and 
+“options” are options allowed by the particular command. 
+
+The optional “prefix” invokes Stata prefix commands
+
+<br />
+
+**You can always find the correct syntax for a command by typing help followed by the command name.**
+
+---
+
+# Stata Command Syntax
+
+#### Examples of Stata Commands
+```{r eval=FALSE}
+use auto, clear
+describe
+list make if price>1000
+list make in 1/10
+summarize price, detail 
+correlate mpg weight price length displ
+sort foreign
+by foreign: summarize price mpg
+```
+
+
+--
+
+For most commands that require “*varlist*”, if you do not specify it, it is assumed that you want all variables [the system variable “*_all*”]. 
+
+You can use wildcards (*) and abbreviations to refer to variables (and to cmdnames). 
+
+---
+
+# Stata Command Syntax
+
+#### Examples of Stata Commands
+
+```{r eval=FALSE}
+u auto, clear
+d
+l ma if  p>1000
+l ma in 1/10
+su p, d
+cor mp w p l d
+so f
+by f: su p mp
+```
+
+--
+
+**Very Important: ** Stata is case-sensitive. The variables “price”, “Price” and “PRICE” are all different. 
+
+**Reserved Names** e.g., “_all”, “_b”, “_cons”,” _n”, “_N”, “_pi”, “_pred”, “_rc”, “_skip”, “_coef”, “byte”, “double”, “float”, “if”, “in”, “int”, “long”, “strL”, “using”, “with”, and “str#”
+
+---
+
+# Stata Resources
+
+- **Help**
+
+    If you already know the command for which you need help, you can
+
+    - type: *help cmd*, e.g., *help regress*
+    
+    - type on your internet browser http://www.stata.com/help.cgi?cmd, e.g., http://www.stata.com/help.cgi?regress
+
+- **Other Search Related Commands** 
+
+    - *search*
+    
+    - *findit*
+
+- **Updates**
+
+    - Use the menu (Help>Check for Updates)
+    
+    - Type *update query*
+    
+---
+
+# Stata Resources    
+    
+- **Stata Manuals**
+
+    - “PDF Documentation” in the help menu 
+
+- [**Stata Journal**](http://www.stata-journal.com/)
+
+- **Other Resource**s (e.g., books, videos, blogs, discussion lists and conferences)
+
+    - Type *help resources*
+
+
+---
+
+# Reading & Saving Stata Datasets
+
+- Stata datasets are files with extension “dta”
+
+    
+- Stata reads and writes files to your “working directory”. 
+
+    - To find out the current “working directory” type *pwd* or *cd*
+
+    - To change the current “working directory”, use the File menu (File>Change Working Directory) or type *cd “path for new working directory”* 
+    
+```{r eval=FALSE}
+pwd
+cd
+cd “c:/mystuff/project1/”
+```   
+    
+    
+---
+
+# Reading Stata Datasets 
+
+#### **From Your Computer**
+
+- From a local directory
+
+    - Use the menu (FILE->Open)
+    
+    - Use commands
+
+```{r eval=FALSE}
+clear
+use auto
+sysuse auto, clear
+```
+
+```{r eval=FALSE}
+use “c:\stata\auto”
+```
+
+The quotation marks are not necessary, only if there are spaces in the names of files or directories.
+
+---
+
+# Reading Stata Datasets
+
+#### **From Your Computer**
+
+- From a different folder 
+
+```{r eval=FALSE}
+use “c:\mystuff\project1\auto”, clear
+```
+
+- Files that come with your Stata distribution (such as the auto.dta)  
+
+
+```{r eval=FALSE}
+sysuse auto
+```
+
+- Datasets that were installed with Stata
+
+    - Check the menu item (File>Example Datasets…) 
+    - Type *help dta_contents*
+    - Go to the page “http://www.stata-press.com/data/”
+
+    
+---
+
+# Reading Stata Datasets 
+
+#### **From the Internet**
+
+- with an url
+
+```{r eval=FALSE}
+use http://www.stata-press.com/data/r11/auto.dta
+```
+
+
+- for files located in the Stata website
+
+```{r eval=FALSE}
+webuse auto
+```
+
+
+---
+
+# Reading Stata Datasets 
+
+#### **Important Notes**
+
+- You maybe be unable to read a (large) dataset for lack of memory. To increase memory issue the command (memory will be increased to 100 Mbytes):
+
+```{r eval=FALSE}
+set mem 100m
+```
+
+If you have Stata version 12 or later you no longer have to worry about this.
+
+- If a file is in memory and you have modified it Stata will not allow you to overwrite it with another file unless you specify the “clear” option
+
+```{r eval=FALSE}
+clear
+webuse
+```
+
+```{r eval=FALSE}
+webuse auto, clear
+```
+
+---
+
+# Saving Stata Datasets
+
+- Use the menu (FILE->Save/FILE->Save As)
+
+- Use commands
+
+```{r eval=FALSE}
+save nameofthefile
+```
+
+**Note:** Stata will not let you write over an existing file with the same file name. You need to add the “replace” option:
+
+```{r eval=FALSE}
+save nameofthefile, replace
+```
+
+- To save to a different folder 
+
+```{r eval=FALSE}
+save “c:\mystuff\project1\mydata”, replace
+```
+
+
+---
+
+# Entering Data 
+
+- Type *edit* will load the Data Editor which looks like a “spreadsheet”. 
+
+- To import external ASCII files,
+
+    - **insheet** for ﬁles containing one observation (on all variables) per line with variables separated by tabs or commas, where the ﬁrst line may contain the variable names; 
+    
+    - **infile with varlist** (free format) allows line breaks to occur anywhere and variables to be separated by spaces as well as commas or tabs;
+    
+    - **infile with a dictionary** (ﬁxed format) is the most ﬂexible command for reading data.
+    
+    - Data may be saved as ASCII using outfile or outsheet
+
+- If you want to transfer files from other software you can always:
+
+    - Use software to convert datasets (eg DBMS, Stat-Transfer) 
+    
+    - Write the file in ASCII and read it back into Stata
+
+---
+
+# Manipulating Data
+
+### Variables
+.font80[
+- Variable Types: string and numeric
+
+- Storage types: byte, int, long, ﬂoat, and double (numeric) and str1 to str2045 (string)
+
+    - By default numeric variables are of the “float” type
+    
+    - Computers cannot store numbers with full precision. For more on this type help precision
+    
+    - If you worry about precision create variables of the “long” and “double” type.
+
+- Variables can be associated with a name, a label, and a format.
+
+- Type *help data types* for more information
+
+- If you created a lot of variables (and are running out of space) you may want to issue the *compress* command, which will automatically convert the variables to their most adequate storage type.
+]
+
+---
+
+# Manipulating Data
+
+### Create a variable 
+
+```{r eval=FALSE}
+generate myvar=1
+generate int myvar=1
+generate double othervar=log(myvar)
+```
+
+
+```{r eval=FALSE}
+generate str5 newvar="No"
+```
+
+.font80[
+
+**Notes**: 
+
+1 - Missing values are represented by “.”. Stata think of a missing value as the largest possible number. You can code different types of missing values using Stata’s 27 numeric missing values (eg, “.a”, “.b”, “.c”, etc.)
+
+2 - Dates are deﬁned as the number of days since 1/1/1960 and can be displayed using the date format %d. For example, the number 14976 will be displayed as 01jan2001 as long as the variable is formatted with “%d”.
+
+3 - More complex functions are available through the **egen** command (extensions to generate). 
+
+]
+
+
+
+---
+
+# Modifying  Data
+.font80[
+- To change the name of a variable
+
+```{r eval=FALSE}
+rename myvar1 newvar
+```
+
+- To format a variable 
+
+```{r eval=FALSE}
+format newvar %7.2g
+```
+
+To see a complete list of formats just type *help format*
+
+- To add a label
+
+```{r eval=FALSE}
+label variable newvar “This is the variable label for newvar”
+```
+
+- To add value labels for categorical variables
+
+```{r eval=FALSE}
+label define name1 1 married 2 divorced 3 widowed 4 single
+label values marital name1
+```
+
+- To attach notes to datasets or to variables
+
+```{r eval=FALSE}
+notes: “Need to label the data!” 
+notes myvar: “Check the missing values!”
+```
+
+]
+---
+
+# Modifying  Data
+
+- To delete variables 
+
+```{r eval=FALSE}
+drop newvar myvar2 myvar3 myvar4
+```
+
+```{r eval=FALSE}
+drop newvar myvar*
+```
+
+```{r eval=FALSE}
+drop newvar myvar2-myvar4
+```
+
+
+- Alternatively, you can specify the variables to keep in the data set
+```{r eval=FALSE}
+sysuse auto, clear
+keep  ma p mp r h tr w l tu d g for
+```
+
+---
+
+# Modifying  Data
+
+- To drop observations (drop if/keep if)
+
+```{r eval=FALSE}
+drop if mpg>35
+keep if foreign==0
+```
+
+```{r eval=FALSE}
+drop if foreign==1
+```
+
+- To modify selected values of a variables 
+
+```{r eval=FALSE}
+gen largecar=0
+replace largecar =1 if weight>3500
+```
+
+```{r eval=FALSE}
+recode mpg (1/20=1) (21/40=2)
+```
+
+
+**Note:** Stata uses one equal sign to assign values (eg. *generate myvar1=1*). Two equal signs are used to check for an equality.
+
+
+---
+
+# Manipulating Data
+
+**Functions**
+
+.font80[
+| Function |  Definition| 
+| :--- | :--- | 
+| *abs(x)* | computes the absolute value of x.  |
+| *acos(x)* | computes the arc-cosine of x, and returns the results in radians. |
+| *asin(x)* |     computes the arc-sine of x, and returns the results in radians. |
+| *atan(x)* |     computes the arc-tangent of x, and returns the results in radians. |
+| *comb(n,k)* |   provides the combinatorial function -- "k out of n". |
+| *cos(x)* |      computes the cosine of x (in radians). |
+| *digamma(x)* |  provides the digamma function (sometimes called the psi function). |
+| *exp(x)* |      provides the exponentiation of x. |
+| *ln(x)* |       computes the natural logarithm of x. |
+]
+
+For a complete list of functions just type: *help functions*
+
+---
+
+# Manipulating Data
+
+**Expressions**
+.font90[
+- Expressions involving variables are evaluated for each observation.
+
+- There are logical, algebraic and string expressions in Stata. 
+
+- Logical expressions: evaluate to 1 (true) or 0 (false) and use the operators < and <= for “less than” and “less than or equal to” respectively and similarly > and >= are used for “greater than” and “greater than or equal to”.
+
+    - The symbols == and ~=/!= stand for “equal to” and “not equal to”, and the characters ~/!, & and | represent “not”, “and” and “or” respectively
+
+    - *if (y ~= 2 & z > x) | x==1* means “if y is not equal to two and z is greater than x or if x equals one”.
+]
+
+---
+
+# Manipulating Data
+
+**Expressions**
+.font90[
+- Algebraic expressions: use the usual operators + - * / and ^ for addition, subtraction, multiplication, division, and powers respectively
+
+- String expressions: mainly use special string functions such as substr(str,n1,n2) to extract a substring starting at n1 for a length of n2
+
+    - The logical operators == and ~= are also allowed with string variables and the operator + concatenates two strings. 
+    
+]
+    
+```{r eval=FALSE}
+display ("moon"+substr("sunlight",4,5))
+```
+
+
+**Note:** The commands preserve and restore can be used to implement temporary changes to your data
+
+---
+
+# Manipulating Data
+
+**Indexes**
+.font80[
+- Each observation is associated with an index
+
+    - For example, the value of the third observation on a particular variable x may be referred to as x[3]
+    
+    - The macro _n takes on the value of the running index and _N is equal to the number of observations. 
+    
+    - The previous observation of a variable can be referred as x[_n-1]
+    
+    - To refer to a range of observations 
+]  
+
+```{r eval=FALSE}
+sysuse auto, clear
+display price[3]
+replace price=2 if _n==3
+list make if _n>=1 & _n<=_N
+```
+
+```{r eval=FALSE}
+sysuse auto, clear
+list make in f/l
+list make in 1/74
+list make in -10/l
+```
+
+
+---
+
+# Manipulating Data
+
+.font90[
+**Sorting**
+
+```{r eval=FALSE}
+sort price
+sort rep78 price
+gsort + rep78 –price 
+```
+
+**describe**
+
+```{r eval=FALSE}
+describe
+```
+
+**Online calculator**
+
+- Accessible with the *display* command
+
+```{r eval=FALSE}
+di 2*ln(5)
+di 10+23^0.5
+
+```
+
+**Graphics Package **
+
+**MATA**
+]
+

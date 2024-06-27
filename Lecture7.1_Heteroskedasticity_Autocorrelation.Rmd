@@ -1,0 +1,1107 @@
+---
+title: "**Microeconometrics**"
+subtitle: "**Heteroskedasticity and Autocorrelation**"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/11/10 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, "class/bplim-fonts.css", "class/bplim.css"]
+    nature:
+      highlightLines: true
+      beforeInit: "macros.js"
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+## GMA and OLS
+
+The **GMA** are:
+
+- A.1: $E(\epsilon_i) = 0$ for all $i$
+
+- A.2: All error terms ${\epsilon_i, ..., \epsilon_N}$ are independent of all ${x_1, ..., x_N}$ for all variables
+
+- **A.3: $V(\epsilon_i) = \sigma^2$ (homoskedasticity) for all $i$**
+
+- A.4: $cov(\epsilon_i, \epsilon_j) = 0$, for all $i, i \neq j$ (no autocorrelation)
+
+- A.5 (replaces A.1+A.3+A.4): $\epsilon_i$ are normally distributed with $\epsilon$ ~ $N(0, \sigma^2I)$ (the $\epsilon_i$ are independent drawings from a normal distribution with zero mean and constant variance $\sigma^2$)
+
+- A.6 $plim \: b = \beta$
+
+
+**If A.1 and A.2 hold then $E(b) = \beta$ (unbiasedness). But we want BLUE!**
+
+
+
+---
+
+## GMA and OLS
+
+Suppose that
+$$y = X \beta + \epsilon$$
+and
+
+$$V(\epsilon|X) = \sigma^2\Omega$$
+
+where $\Omega$ is positive definite
+
+If $\Omega \neq I$ then either A.3, A.4, or both are violated 
+
+- $E(b) = \beta$ (OLS is still unbiased)
+
+- But OLS is no longer the most efficient estimator (the one with smaller variance)
+
+
+---
+
+## The Variance of the OLS Estimator
+
+<br \>
+
+<br \>
+
+
+- If $\Omega \neq I$ then the formula for the variance of $V(b)$ becomes
+
+$$V(b) = \sigma^2 (X^{'}X)^{-1}(X^{'}\Omega X)(X^{'}X)^{-1}$$
+
+instead of
+
+$$V(b) = \sigma^2 (X^{'}X)^{-1}$$
+
+**The usual way of computing standard errors is incorrect!**
+
+
+---
+
+## Special Cases of $\Omega$
+
+- Violation of A3 (Heteroskedasticity)
+
+- The variance is not constant across error terms
+
+
+$$V(\epsilon|X) = \sigma^2\Omega =
+  \begin{bmatrix}
+      \sigma_1^2 & 0 & 0 & \dots  & 0 \\
+      0 & \sigma_2^2 & 0 & \dots  & 0 \\
+      \vdots & \vdots & \vdots & \ddots & \vdots \\
+      0 & 0 & 0 & \dots  & \sigma_N^2
+  \end{bmatrix}$$
+
+
+- Typical situations:
+
+    - Variances depend upon one or more explanatory variables
+    
+    - Variances evolve over time
+
+---
+
+## Special Cases of $\Omega$
+
+- Violation of A4 (Autocorrelation)
+
+- Error terms are correlated with each other
+
+
+$$V(\epsilon|X) = \sigma^2\Omega =
+  \begin{bmatrix}
+      1 & \rho_{12} & \rho_{13} & \dots  & \rho_{1N} \\
+      \rho_{12} & 1 & \rho_{23} & \dots  & \rho_{2N} \\
+      \vdots & \vdots & \vdots & \ddots & \vdots \\
+      \rho_{1N} & \rho_{2N} & \rho_{3N} & \dots  & 1
+  \end{bmatrix}$$
+
+
+- Typical situations:
+
+    - Typically occurs with time series data (where observations have a natural ordering)
+     
+    - Most common pattern is first order autocorrelation that assumes that the error term depends upon his predecessor: $\epsilon_t = \rho \epsilon_{t−1} + v_t$   where $v_t$ has zero mean and constant variance
+    
+    
+---
+
+## Special Cases of $\Omega$
+
+
+- Violation of A3 and A4 (Clustering)
+
+- Errors are correlated within (M) clusters of observations
+
+
+$$V(\epsilon|X) = \sigma^2\Omega =
+  \begin{bmatrix}
+      \Omega_1 & 0 & 0 & \dots  & 0 \\
+      0 & \Omega_2 & 0 & \dots  & 0 \\
+      \vdots & \vdots & \vdots & \ddots & \vdots \\
+      0 & 0 & 0 & \dots  & \Omega_M
+  \end{bmatrix}$$
+
+   
+- Usually associated with unobservables in a variable or group of variables   
+
+
+
+---
+
+## An Alternative BLUE Estimator (GLS)
+
+
+Given that $\Omega$ is positive definite we can find $P = \Omega^{-\frac{1}{2}}$ such that
+
+$$\Omega^{-1} = P^{'}P$$
+
+where P is symmetric and idempotent. Transforming the original model
+
+$$PY = PX\beta + P\epsilon$$
+
+
+$$Y^{*} = X^{*}\beta + \epsilon^{*}$$
+
+and now
+
+$$\begin{aligned}
+V(\epsilon^*) & = V(P \epsilon)  \\
+& = PV(\epsilon)P^{'}  \\
+& =P \sigma^2 \Omega P^{'}  \\
+& = \sigma^2I_N
+\end{aligned}$$
+
+
+
+---
+
+## Generalized Least Squares (GLS)
+
+- The transformed model verifies the classical hypothesis and
+
+$$\begin{aligned}
+b_{GLS} & = (X^{*'}X^{*})^{-1}X^{*'}Y^{*}  \\
+& = (X^{'}P^{'}PX)^{-1}X^{'}P^{'}PY \\
+& = (X^{'}\Omega^{-1}X)^{-1}X^{'}\Omega^{-1}Y
+\end{aligned}$$
+
+and this is the GLS (generalized least squares) estimator. Note that
+
+$$V(b_{GLS}) = \sigma^2(X^{'}\Omega^{-1}X)^{-1}$$
+
+
+- Since the Gauss-Markov hypothesis are satisfied the GLS estimator is BLUE
+
+
+
+---
+
+## Feasible Generalized Least Squares (FGLS)
+
+- In practice $\Omega^{-1}$ is often unknown and is replaced by a consistent estimator denoted by $\hat \Omega^{-1}$.
+
+Asymptotically this makes no difference but now the estimator is called feasible generalized least squares (FGLS):
+
+
+$$\hat \beta_{FGLS} = (X^{'}\hat \Omega^{-1}X)^{-1}X^{'}\hat \Omega^{-1}Y$$
+
+and
+
+$$V(\hat \beta_{FGLS}) = \sigma^2(X^{'}\hat \Omega^{-1}X)^{-1}$$
+
+
+- The weighted least squares (WLS) estimator is a particular case of the (F)GLS in the presence of heteroskedasticity
+
+---
+
+## Robust Standard Errors
+
+
+- If $\Omega$ was known we could estimate directly
+
+
+$$V(b) = \sigma^2(X^{'}X)^{-1}(X^{'} \Omega X)(X^{'}X)^{-1}$$
+
+- But $\Omega$ is usually unknown
+
+- In the case of heteroskedasticity we need only to estimate
+
+
+$$\frac{1}{N} \sum_{i=1}^N {\sigma_i^2x_ix_i^{'}}$$
+
+- White has shown that this latter expression can be consistently estimated as
+
+$$S_0 = \frac{1}{N} \sum_{i=1}^N {e_i^2x_ix_i^{'}}$$
+
+
+---
+
+## Robust Standard Errors
+
+
+- This means that if the error terms are heteroskedastic (A3 is violated) we can apply OLS and estimate the standard errors with:
+
+$$\hat V(b) = \frac{N}{N-k} (X^{'}X)^{-1}(\sum_{i=1}^N{e_i^2 x_i x_i^{'}})(X^{'}X)^{-1}$$
+
+
+where $N/(N − k)$ is a correction to improve performance in small samples
+
+- Standard errors computed from above are usually referred as **heteroskedasticity-consistent standard errors** or simply **White standard errors**. Other names are Eicker, Huber, sandwich, or robust standard errors
+
+- Performance on small samples may not be very accurate because calculation relies on asymptotic properties
+
+
+---
+
+## Robust Standard Errors
+
+- For the more general case of simultaneous autocorrelation and heteroskedasticity the “sandwiched” term becomes
+
+
+$$\frac{1}{N}\sum_{i=1}^N{}\sum_{j=1}^N{\sigma_{ij}^2x_ix_j^{'}}$$
+
+and a robust estimator for **V(b)** is:
+
+
+$$\hat V_{NW}(\hat \beta) = S_0 + \frac{1}{N}\sum_{l=1}^L\sum_{t=l+1}^N{w_le_te_{t-1}(x_tx_{t-l}^{'} + x_{t-l}x_{t}^{'})}$$
+
+
+where $w_l$ is usually set to $1 − \frac{1}{L+1}$ and $L$ is a pre-determined value for the maximum lag
+
+
+- These are known as **Newey-West standad errors**
+
+
+---
+
+## Robust Standard Errors
+
+- If there is correlation between the error terms of groups of observations (clusters) we can consistently estimate the variance-covariance matrix of the OLS estimator with
+
+$$\hat V(b) = \frac{N-1}{N-k} \frac{M}{M-1} (X^{'}X)^{-1}(\sum_{j=1}^M{\tilde e_j^{'} \tilde e_j})(X^{'}X)^{-1}$$
+
+where $\tilde e_j = \sum_{i=1}^{N_k} {e_ix_i}$ and $M$ is the number of clusters and $N_k$ is the number of observations in cluster $k$
+
+- these are usually called **cluster-robust standard errors**
+
+- White standard errors are a particular case when $M = N$ (or equivalently, $N_k = 1$ for all $k$)
+
+
+
+
+---
+
+
+class: center, middle, inverse
+
+# **Heteroskedasticity**
+
+---
+
+## Consequences of Heteroskedasticity
+
+
+- The least squares estimator is still a linear and unbiased estimator, but it is no longer best (not the one with smallest variance).
+
+- The standard errors computed for the least squares estimators are incorrect. 
+
+      - This can affect confidence intervals and hypothesis testing that use those standard errors, which could lead to misleading conclusions.
+      
+- Most real world data will probably be heteroskedastic. One can still use ordinary least squares without correcting for heteroskedasticity if the sample size is large enough. This is because the variance of the least squares estimator may still be sufficiently small to obtain precise estimates.
+
+
+
+---
+
+## Detection of Heteroskedasticity
+
+**How do I find out that A.3 is violated?**
+
+- There’s a bunch of statistical tests to find out; all of them have their limitations.
+
+- For now, just note that they all use the information about $\epsilon$ that is contained in the residuals from OLS regression
+
+
+- **Scatter Diagram with the Regression Line**: (You always have to run the OLS regression first!)
+
+- **Residual Plot**: you plot the least squares residuals against the explanatory variable or $\hat y$ if it’s a multiple regression.
+
+- **Formal Tests**: Breusch-Pagan test, White test
+
+---
+
+## Detection of Heteroskedasticity 
+
+- **Scatter Diagram with the Regression Line**
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+library(haven) # import Stata data
+library(ggplot2)
+food <- read_dta("food.dta")
+food.ols <- lm(food_exp ~ income, data = food)
+plot(food$income,food$food_exp, type="p",
+     xlab="income", ylab="food expenditure")
+abline(food.ols)
+```
+<br />
+
+<br />
+
+<br />
+
+]
+
+
+---
+
+## Detection of Heteroskedasticity 
+
+- **Residual Plot**
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+food$resi <- food.ols$residuals
+ggplot(data = food, aes(y = resi, x = income)) + geom_point(col = 'blue') + geom_abline(slope = 0)
+```
+<br />
+
+.font80[
+*There seems to be no evident pattern. However, it does seem to look as if there’s more variation in food expenditures for households with higher levels of income.*
+]
+
+<br />
+
+<br />
+
+]
+
+
+---
+## Detection of Heteroskedasticity 
+
+- The **Breusch-Pagan Test** uses a variance function and a $\chi^2$-test to test the null hypothesis that heteroskedasticity is not present against the alternative hypothesis that heteroskedasticity is present.
+
+- The **Breusch-Pagan test** checks whether the error variance is a function of the $z_i$ variables which need not be part of the regression model
+
+- There’s an “easy” way to conduct the Breusch-Pagan test in R. 
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+
+bptest(food.ols, varformula = ~ income, data = food, studentize = F)
+```
+
+
+
+---
+## Detection of Heteroskedasticity 
+
+- The alternative hypothesis test is
+
+$$\sigma_i^2 = \sigma^2h(z_i^{'} \alpha)$$
+where $h(.)$ is a continuosly differentiable function with $h(.)>0$ and $h(0)=1$
+
+
+- The null hypothesis is that $\alpha = 0$
+
+- The test is calculated by first implementing a regression of the squared residuals on the $z_i$ and based on this regression calculate the statistic $NR^2$
+
+- This test statistic has a chi-squared distribution with degrees of freedom equal to the number of variables in $z_i$
+
+---
+
+## Detection of Heteroskedasticity 
+
+<br />
+
+- The **White test** tests for a more general pattern of heteroskedasticity. It tests whether the error variance is a function of the explanatory variables
+
+- It is based on an auxiliary regression of the squared OLS residuals on all regressors, their squares and their (unique) cross-products.
+
+- The test statistic is calculated as $NR^2$ of the auxiliary regression. This is a common approach to calculate a $Lagrange \: multiplier$ test
+
+- The test follows a chi-squared distribution with degrees of freedom equal to the number of variables included in the auxiliary regression
+
+- It has low power in small samples
+
+---
+
+## Detection of Heteroskedasticity 
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+
+bptest(food.ols, varformula = ~ income+I(income^2), data = food, studentize = F)
+```
+
+
+---
+
+## Solutions for Heteroskedasticity
+
+**What to do if A.3 is violated in my equation?**
+
+- try and come up with a more sophisticated estimator than OLS (and, hopefully, a BLUE one), e.g., the generalized least squares estimator (GLS) or the weighted least squares estimator
+
+- use OLS to estimate the model, but calculate the standard errors (and the resulting t-ratios and F-statistics) in a different way
+
+    - Even without A.3, OLS has many favorable properties (unbiasedness and some others)
+    
+    - the only thing that doesn’t really work is the estimate of $\sigma^2$ (with heteroskedasticity, there is no “universal” $\sigma^2$ in the first place)
+    
+    - we needed this for standard errors and p-values, so we’ll have to calculate these differently, e.g., robust standard errors
+    
+    
+---
+
+## Solutions for Heteroskedasticity
+
+#### **1. Robust Standard Errors**
+
+If we’re willing to accept the fact that ordinary least squares no longer produces BLUE, we can still perform our regression analysis to correct the issue of incorrect standard errors so that our interval estimates and hypothesis tests are valid. 
+
+- We do this by using heteroskedasticity-consistent standard errors or simply robust standard errors (Halbert White).
+
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **1. Robust Standard Errors**
+
+First, let’s check the standard errors of our estimators for our original model.
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+summary(food.ols)
+```
+
+<br \>
+<br \>
+<br \>
+]
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **1. Robust Standard Errors**
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+library(sandwich)
+coeftest(food.ols, vcov = vcovHC(food.ols, "HC1"))   # HC1 gives us the White standard errors
+```
+
+Notice how drastically different our standard errors are!
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+
+- Transform the model into one with homoskedastic errors by introducing a general specification of the variance function, which can be written as
+
+$$var(e_i) = \sigma_i^2 = \sigma^2 x_i^{\gamma}$$
+where $\gamma$ is the unknown parameter.
+
+- Now take the natural logs of both sides of the above equations
+
+$$ln(\sigma_i^2) = ln(\sigma^2) +  {\gamma} ln(x_i)$$
+
+- Then, we take the anti-log of both sides
+
+
+$$\sigma_i^2 = exp[ln(\sigma^2) +  {\gamma} ln(x_i)] = exp(\alpha_1 + \alpha_2z_i)$$
+
+where $\alpha_1 =ln(\sigma^2)$, $\alpha_2 = \gamma$, and $z_i =ln(x_i)$
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+
+
+
+- it's easy to extend to more than one explanatory variable
+
+$$\sigma_i^2 = exp(\alpha_1 + \alpha_2z_{i2} + \cdots + \alpha_sz_{is})$$
+- Rewhite $\sigma_i^2 = exp(\alpha_1 + \alpha_2z_i)$
+
+$$ln(\sigma_i^2) = \alpha_1 + \alpha_2z_i$$
+
+- Now the unkown parameters $\alpha_1$ and $\alpha_2$ can be obtained in a simple regression model using ordinary least squares!
+
+$$ln(\hat e_i^2) = ln(\sigma_i^2) + v_i = \alpha_1 + \alpha_2z_i + v_i$$
+
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+.scroll-output[
+```{r include=TRUE, message=FALSE, warning=FALSE}
+food.ols <- lm(food_exp ~ income, data = food) # Fit our model to get our residuals.
+food$resi <- food.ols$residuals
+varfunc.ols <- lm(log(resi^2) ~ log(income), data = food)
+summary(varfunc.ols)
+```
+<br \>
+<br \>
+<br \>
+]
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+
+
+- The least squares estimate for our variance function is $$ln(\hat \sigma_i^2) = 0.9378 + 2.329z_i$$
+
+
+- The next step is to transform the observations in such a way that the transformed model has a constant error variance.
+
+$$\hat \sigma_i^2 = exp(\hat \alpha_1 + \hat \alpha_2z_i)$$
+
+- Then divide both sides of the regression model $y_i=β_1+β_2x_i+e_i$ by $\sigma$. 
+
+$$\frac{y_i}{\sigma_i}=β_1(\frac{1}{\sigma_i})+β_2(\frac{x_i}{\sigma_i})+(\frac{e_i}{\sigma_i})$$
+
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+
+
+- The variance of the transformed error is homoskedastic because
+
+
+$$var(\frac{e_i}{\sigma_i}) = \frac{1}{\sigma_i^2}var(e_i) = \frac{1}{\sigma_i^2}\sigma_i^2 = 1$$
+
+- Using the estimates of our variance function $\hat \sigma_i^2$ in place of $\sigma_i^2$ to obtain the generalized least squares estimators of $\beta_1$ and $\beta_2$, we define the transformed variables as
+
+$$y_i^* = \frac{y_i}{\hat \sigma_i} \: x_{i1}^*=\frac{1}{\hat \sigma_i} \: x_{i2}^*=\frac{x_i}{\hat \sigma_i}$$
+
+- Now apply weighted least squares to the equation
+
+$$y_i^*=β_1x_{i1}^*+β_2x_{i2}^*+e_i^*$$
+
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+
+R takes the square roots of the weights provided to multiply the variables in the regression. Thus, if you wish to multiply the model by $\frac{1}{\sqrt{x_i}}$ , the weights should be $\frac{1}{x_i}$.
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+food.ols <- lm(food_exp ~ income, data = food)
+food$resi <- food.ols$residuals
+varfunc.ols <- lm(log(resi^2) ~ log(income), data = food)
+food$varfunc <- exp(varfunc.ols$fitted.values)
+food.gls <- lm(food_exp ~ income, weights = 1/varfunc, data = food)
+```
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+
+Let’s compare the estimators resulting from ordinary least squares to the estimators using generalized least squares. 
+
+.scroll-output[
+```{r include=TRUE, message=FALSE, warning=FALSE}
+summary(food.ols)
+```
+<br \>
+<br \>
+<br \>
+]
+
+
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+
+.scroll-output[
+```{r include=TRUE, message=FALSE, warning=FALSE}
+summary(food.gls)
+```
+<br \>
+<br \>
+<br \>
+]
+
+---
+
+## Solutions for Heteroskedasticity
+
+#### **2. Generalized Least Squares (GLS)**
+
+Which model is better? In this case, it’s the generalized least squares model, since it has much lower variances for our estimators, resulting in a much higher $R^2$. Let’s visualize how our fitted lines differ.
+
+
+.scroll-output[
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(ggplot2)
+g <- ggplot(data = food, aes(y = food_exp, x = income)) + geom_point(col = 'blue')
+g + geom_abline(slope = food.ols$coefficients[2], intercept = food.ols$coefficients[1], col = 'red') + geom_abline(slope = food.gls$coefficients[2], intercept = food.gls$coefficients[1], col = 'green')
+```
+<br \>
+<br \>
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+---
+
+class: center, middle, inverse
+
+# **Autocorrelation**
+
+    
+---
+
+
+## Consequences of Autocorrelation
+    
+- A violation of this assumption has similar consequences as heteroskedasticity
+
+    - the OLS estimator is still unbiased and consistent
+    
+    - however, it is not BLUE and the usual statistical inference is not valid (std. errors, *t*-statistics, *p*-values are not usable)
+    
+- With heteroskedasticity, we mostly just used OLS with robust standard errors
+
+- This is also an option here, however the accuracy of OLS is very limited if random errors exhibit substantial persistence
+
+- In other words, the consequences are typically more severe than under heteroskedasticity.
+
+
+---
+
+## Regression with Time Series
+
+- Typical in time series
+
+- In cross-sectional regression, we were making inferences about the whole population based on a small sample
+
+- A crucial assumption is random sampling. Unfortunately, with time series, random sampling makes no sense (e.g., GDP).
+
+    - random sampling makes the characteristics of different individuals independent
+    
+    - it is difficult to imagine that GDP in 2004 is independent of that in 2005
+
+- Autocorrelation or serial correlation in a time series describes the correlation between two observations separated by one or several periods.    
+    
+---
+
+## Regression with Time Series
+
+
+**Good news**: everything we learnt with cross-sectional data will be used in time-series analysis, too
+
+**Bad News**: many new pitfalls that can spoil the analysis
+
+- Trends and seasonality --> spurious regression
+
+- Lags in economic behaviour: government’s expenditure cuts will slowly percolate through the economy
+
+- Persistence in time series: governments expenditure itself cannot change too dramatically from one year to another
+
+    - Most real-life time series persistent, but the degree differs
+    
+    - strong persistence of time series can again produce spurious regression (*stationarity*, *unit-root* issues)
+    
+    - weak persistence problematic only if applies to $u$ (serial correlation, or autocorrelation of $u$)
+
+---
+
+## Noise
+
+
+- Serial independence, same distribution
+
+- Stationary, weakly dependent
+    
+<div align="center">
+<img src="pictures/stationary.png" width=550 height=400>
+</div>
+
+
+---
+
+## First-Order Autocorrelation AR(1)
+
+- Definition: $y_t = ρy_{t –1} + noise$
+
+- Stationary, weakly dependent only if stable: $|ρ| < 1$
+
+
+<div align="center">
+<img src="pictures/Autoregressive.png" width=600 height=400>
+</div>
+
+
+---
+
+## Simulation of AR(1) with Varying $ρ$
+
+<div align="center">
+<img src="pictures/AR1_Simulation.png" width=600 height=500>
+</div>
+
+
+---
+
+## First-Order Autocorrelation AR(1)
+
+.font80[
+
+
+- It is assumed that
+
+$$y_t = x^{'} \beta + \epsilon _t$$
+
+and 
+
+$$\epsilon_t = \rho \epsilon_{t-1} + v_t$$
+
+where
+
+$$E(\epsilon_{t}) = 0, \forall t$$
+
+and 
+
+$$V(\epsilon_{t}) = \sigma_{\epsilon}^2, \forall t$$
+
+
+and $v_t$ is white noise
+
+]
+
+- Assumptions are such that GMA arise if $\rho = 0$
+
+- As a convention instead of $N$ we use $T$ to denote total sample size
+
+
+
+    
+---
+
+## First-Order Autocorrelation AR(1)
+
+- Assuming that $|\rho|$ < 1 then
+
+$$V(\epsilon_{t}) = V(\rho \epsilon_{t-1} + v_t)$$
+
+$$\sigma_{\epsilon}^2 = \rho^2\sigma_{\epsilon}^2 + \sigma_{v}^2$$
+
+$$\sigma_{\epsilon}^2 = \frac{\sigma_{v}^2}{1-\rho^2}$$
+
+and
+
+
+$$\begin{aligned}
+cov(\epsilon_{t}, \epsilon_{t-1}) & = cov(\rho\epsilon_{t-1} + v_t, \epsilon_{t-1}) \\
+& = \rho cov(\epsilon_{t-1}, \epsilon_{t-1}) + cov(v_t, \epsilon_{t-1}) \\
+& = \rho \sigma_{\epsilon}^2
+\end{aligned}$$
+
+and, more generally (for $s$ > 0),
+
+$$cov(\epsilon_{t}, \epsilon_{t-s}) = \rho^s \sigma_{\epsilon}^2$$
+
+
+---
+
+## First-Order Autocorrelation AR(1)
+
+- This form of autocorrelation implies that all error terms are correlated
+
+- A transformation that satisfies the GMA is
+
+$$y_t - \rho y_{t-1} = (x_t -\rho x_{t-1})^{'} \beta + v_t$$
+
+- With known $\rho$ this produces a GLS transformation (but the first observation is lost)
+
+
+- It is possible to recover the first observation using the Prais-Winsten transformation (by multiplying the first observation by $\sqrt {1-\rho^2}$). This transformation is advised when the sample is small.
+
+- If we replace $\rho$ by a consistent estimate and then estimate the above equation we are applying FGLS. An iterated version (Cochranne-Orcutt technique) tends to perform better in small samples.
+
+
+---
+
+## Estimating $\rho$
+
+- First estimate the OLS regression and obtain the residuals
+
+- Based on the residuals calculate
+
+$$\hat \rho = (\sum_{t=2}^T{e_{t-1}^2})^{-1}(\sum_{t=2}^T{e_{t}e_{t-1}})$$
+
+- The above expression is the OLS estimator for $\rho$
+
+- It is a biased but consistent estimator
+    
+
+---
+
+## Testing for Autocorrelation
+
+- A simple test for $\rho = 0$ consists on computing $\sqrt{T} \hat \rho$ which approximates the t-test statistic for the auxiliary regression
+
+- Another option is to implement a Lagrange multiplier test using $(T − 1)R^2$ of the following auxiliary regression (chi-squared with 1 DF)
+
+$$e_t = \alpha_o + \alpha_1x_{1t} + \alpha_2x_{2t} + ... +  \alpha_k x_{kt} + \rho e_{t-1} + v_t$$
+
+
+- We can augment the auxiliary regression with $p$ lagged residual series allowing us to test if the errors are serially independent up to order $p$
+
+- The above test is known as the autocorrelation test of Breusch and Godfrey
+
+
+---
+
+## Durbin-Watson Test
+
+- The Durbin-Watson (DW) is the most popular test for (first-order) autocorrelation; printed in most regression packages after a time-series regression
+
+- Tests for a presence of AR(1) process in the random errors; in fact, as usual, residuals are used for the test instead of the unknown $u$
+
+- The test requires strictly exogenous regressors and should only be implemented in models 1) estimated with an intercept; 2) no time lags and 3) no lagged dependent variables
+
+- Moreover, it requires homoskedasticity and normality of random errors
+
+- the test statistic of the test (denoted either d or DW) is closely related to the OLS estimate of $ρ$ in the equation $e_t = ρe_{t-1} + u$
+
+
+---
+## Durbin-Watson Test
+
+- The DW tests $H_o : \rho = 0$ against $H_a : \rho \neq 0$:
+
+$$DW = \frac{\sum_{t=2}^N{(e_{t}-e_{t-1})^2}}{\sum_{t=1}^n{e_{t}^2}}$$
+
+- It is easy to show that
+
+$$DW \approx 2(1-\hat \rho)$$
+
+- The DW statistic belongs to the interval [0,4]
+
+- DW values close to 2 are usually ok. Values of $d$ close to 0 indicate positive autocorrelation, values of $d$ close to 4 indicate negative autocorrelation
+
+---
+
+## Durbin-Watson Test
+
+- Two critical values given, $d_L$ and $d_U$, as the D-W test has a region of inconclusiveness (see below)
+
+<br />
+
+<div align="center">
+<img src="pictures/DW.png" width=600 height=250>
+</div>
+
+- Critical values for DW depend on the matrix **X**
+
+- Exact critical values are unknown but there are tables that produce upper $d_U$ and lower $d_L$ bounds as a function of $N$ and $k$
+
+---
+
+## Testing for Autocorrelation
+
+
+- Testing for (positive) autocorrelation: $H_o : \rho = 0$ against $H_a : \rho \neq 0$
+
+    - Reject if DW < $d_L$
+    - Do not reject if $DW > d_U$
+    - Inconclusive if $d_L \geq DW \leq d_U$
+
+
+- The inconclusive regions becomes smaller with sample size
+
+---
+
+## Breusch-Godfrey Test
+
+
+- Fewer assumptions --> generally preferred to D-W
+
+- Procedure to test for the presence of AR(1) in random errors:
+
+1. After your original OLS regression, save residuals.
+
+2. Regress $e_t$ on $e_{t-1}$ and all regressors from your original regression.
+
+3. Test the null hypothesis that the coefficient on $e_{t-1}$ equals zero. (Use the usual t-test.) A rejection means significant evidence of autocorrelation.
+
+- Can easily be made robust to heteroskedasticity (just use robust std. errors in step 3)
+
+- Can also be modified to higher lags – AR(2), AR(3) etc. – just add more lags of the residuals in step 2 and test for joint significance of all lags
+
+
+
+---
+
+## R Command for Autocorrelation
+
+
+- The “growth” graph displays clusters of values: positive for several periods followed by a few of negative values, which is an indication of autocorrelation
+
+.scroll-output[
+```{r include=TRUE, message=FALSE, warning=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data")
+load(file = "okun.rda")
+okun.ts <- ts(okun, start=c(1985,2), end=c(2009,3),frequency=4)
+plot(okun.ts[,"g"], ylab="growth")
+```
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+
+---
+
+## R Command for Autocorrelation
+
+
+- The “unemployment” graph does not change as dramatically as growth but still shows persistence
+
+.scroll-output[
+```{r include=TRUE, message=FALSE, warning=FALSE}
+plot(okun.ts[,"u"], ylab="unemployment")
+```
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+
+---
+
+## R Command for Autocorrelation
+
+
+- The correlation between the growth rate and its first two lags
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+# create One-Period lag
+ggL1 <- data.frame(cbind(okun.ts[,"g"], lag(okun.ts[,"g"],-1)))
+names(ggL1) <- c("g","gL1")
+plot(ggL1)
+
+meang <- mean(ggL1$g, na.rm=TRUE)
+abline(v=meang, lty=2)
+abline(h=mean(ggL1$gL1, na.rm=TRUE), lty=2)
+
+
+# create Two-Period lag
+ggL2 <- data.frame(cbind(okun.ts[,"g"], lag(okun.ts[,"g"],-2)))
+names(ggL2) <- c("g","gL2")
+plot(ggL2)
+meang <- mean(ggL2$g, na.rm=TRUE)
+abline(v=meang, lty=2)
+abline(h=mean(ggL2$gL2, na.rm=TRUE), lty=2)
+```
+<br \>
+<br \>
+]
+
+
+---
+## R Command for Autocorrelation
+
+- Durbin-Watson Test
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+data(mtcars)
+model1 <- lm(mpg ~ disp+wt, data=mtcars)
+dwtest(model1)
+```
+
+*We can conclude that the residuals in this regression model are autocorrelated.*
+
+
+---
+## R Command for Autocorrelation
+
+- Breusch-Godfrey Test
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(lmtest)
+bgtest(model1)
+```
+
+*We can conclude that autocorrelation exists among the residuals at some order less than or equal to 3.*
+
+---
+## R Command for Autocorrelation
+
+- Newey-West standad errors
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+model2 <- lm(mpg ~ disp+wt, data=mtcars)
+summary(model2)
+unclass(coeftest(model2, vcov. = NeweyWest))
+```
+
+<br \>
+<br \>
+<br \>
+<br \>
+]
+
+---
+## R Command for Autocorrelation
+
+- Feasible Weighted Least Squares
+
+.scroll-output[
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+library(nlme)
+mod.gls <- gls(mpg ~ disp+wt, data=mtcars, correlation=corARMA(p=1), method="ML")
+summary(mod.gls)
+```
+
+
+<br \>
+<br \>
+<br \>
+]

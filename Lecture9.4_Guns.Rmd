@@ -1,0 +1,66 @@
+---
+title: "**Econometrics**"
+subtitle: "Exercise: The Guns Dataset"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/11/24 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+Instructions:
+
+- Load both the AER package and the `Guns` dataset.
+
+- Get yourself an overview over the dataset using the `summary()` function. Use `?Guns` for detailed information on the variables.
+
+- Verify that `Guns` is a balanced panel: extract the number of years and states from the dataset and assign them to the predefined variables years and states, respectively. Afterwards use these variables for a logical comparison: check that the panel is balanced.
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+<br />
+
+There is a controversial debate whether and if to what extent the right to carry a gun influences crime. Proponents of so-called “Carrying a Concealed Weapon” (CCW) laws argue that the deterrent effect of guns prevents crime, whereas opponents argue that the public availability of guns increases their usage and thus makes it easier to commit crimes. In the following exercises you will empirically investigate this topic. To begin with consider the following estimated model
+
+$$log(\hat violent_i) = 6.135 - 0.443 \times law_i$$
+
+with $i=1,2,.....,51$  where `violent` is the violent crime rate (incidents per 100000 residents) and `law` is a binary variable indicating the implementation of a CCW law (1 = yes, 0 = no), respectively.
+
+
+Instructions:
+
+- Extend and estimate the model by including state fixed effects using the function `plm()` and assign the model object to the predefined variable `model_se`. Can you think of an unobserved variable that is captured by this model specification?
+
+- Print a summary of the model which reports cluster robust standard errors.
+
+- Test whether the fixed state effects are jointly significant from zero. To do so use the function `pFtest()`. Use `?pFtest` for additional information.
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+<br />
+
+As touched upon at the end of the last exercise it is reasonable to also include time effects which is why we now consider the model
+
+$$log(\hat violent_{i,t}) = \beta_1 \times law_{i,t} + \alpha_i + \gamma_t + \epsilon_{i,t} $$
+ 
+for $i=1,2,.....,51$ and $t=1977,1978,.....,1999$. 
+
+
+```{r include=TRUE, message=FALSE, warning=FALSE}
+
+```
+

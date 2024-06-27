@@ -1,0 +1,172 @@
+---
+title: "**Econometrics**"
+subtitle: "R Exercises: Individual Wages"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/06 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+<br />
+
+## Individual Wages
+
+<br />
+
+
+We start by reading the "wages" dataset into R. First let us change to the folder that contains the data. You will have to adjust accordingly. The file contains a subsample of the US National Longitudinal Survey (NLS) for 1987.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(haven) # import Stata data
+wages1 <- read_dta("Data/wages1.dta")
+```
+
+We can first inspect the data:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(Hmisc)
+describe(wages1)
+```
+
+Obtain summary statistics
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+#library(pastecs)
+#stat.desc(wages1)
+#summary(wages1)
+library(stargazer)
+stargazer(as.data.frame(wages1), type = "text")
+```
+
+Since the variables have no labels we will add some.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(expss) # apply labels
+wages1 = apply_labels(wages1,
+  exper = "experience in years",
+  male = "1 if male, 0 otherwise",
+  school = "years of schooling",
+  wage = "wage in 1980 dollars per hour"
+)
+```
+
+
+We next ask for descriptive statistics on the variable *wage*
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+summary(wages1$wage)
+```
+
+Or, we can ask for wages by gender. One way of doing this is:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(dplyr)
+wages1 %>% group_by(male) %>% 
+  summarise(mean = mean(wage), median = median(wage), sd = sd(wage))
+
+wages1 %>% 
+  group_by(male) %>%  
+  summarise(quantile = scales::percent(c(0.25, 0.5, 0.75)),
+            wage = quantile(wage, c(0.25, 0.5, 0.75)))
+```
+
+
+Now, we estimate the equation:
+\begin{equation}
+wage_i=\beta_1+\beta_2 male_i + \epsilon_i 
+\end{equation}
+
+The results in table 2.1 are obtained with
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg1<-lm(wage~male, data = wages1)
+#summary(reg)
+library(stargazer)
+table1<-stargazer(reg1,type = "text")
+```
+
+
+Next we estimate the equation in Table 2.2:
+\begin{equation}
+wage_i=\beta_1+\beta_2 male_i +\beta_3 school_i + \beta_4 exper_i +\epsilon_i 
+\end{equation}
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg2<-lm(wage~male+school+exper, data = wages1)
+#summary(reg)
+table2<-stargazer(reg2,type = "text")
+```
+
+Now we present the above regressions in the same table:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+table2<-stargazer(reg1, reg2,type = "text")
+```
+
+
+And to test in R that $\beta_3=\beta_4=0$ we could follow the book and implement the test in terms of the $R^2$s. 
+
+$$F = \frac{(R_1^2-R_0^2)/J}{(1-R_1^2)/(N-K)}$$
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(lmtest)
+reg1<-lm(wage~male+school+exper, data = wages1)
+reg2<-lm(wage~male, data = wages1)
+anova(reg1, reg2)
+```
+
+A simpler alternative would be to use the `waldtest` in the `lmtest` package:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+waldtest(reg1, reg2)
+```
+
+Now we replicate Table 2.7
+
+First we create the "female" dummy variable
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+wages1<-wages1 %>% mutate(female=1-male)
+```
+
+And then we run the 3 regressions. We do not want to see the output of each regression but all results side-by-side compactly displayed in a table.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg1<-lm(wage~male, data = wages1)
+reg2<-lm(wage~female, data = wages1)
+reg3<-lm(wage~male+female-1, data = wages1)
+```
+
+We are now ready to produce a table similar to Table 2.7
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+table1<-stargazer(reg1, reg2, reg3,type = "text", 
+                  keep.stat = c("rsq", "n"),
+                  digits=4)
+```
+
+In the last regression, as the model does not have a constant, $R^2$ is much bigger. The real $R^2$ in column (3) should be the same as in column (2) See a discussion [here](https://stats.idre.ucla.edu/other/mult-pkg/faq/general/faq-why-are-r2-and-f-so-large-for-models-without-a-constant/)
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+table1<-stargazer(reg1, reg2, reg3,type = "text", 
+                  keep.stat = c("n", "f"),
+                  add.lines = list(c("R2", "0.0317", "0.0317", "0.0317")),
+                  digits=4,
+                  table.layout = "=ldc-tsa-n") # add F-statistic after statistic block
+```
+
+Takeaway: Be careful when writing your own regress command. Omitting a constant term can drastically change R-squared.
+
+<br />
+
+<br />

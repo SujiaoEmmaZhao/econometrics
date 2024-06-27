@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econometrics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Sujiao (Emma) ZHAO" />
+    <link href="Lecture4.1_Interpreting_Comparing_Regression_Models_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="class\bplim-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="class\bplim.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# <strong>Econometrics</strong>
+## <strong>2M3E03 Interpreting and Comparing Regression Models</strong>
+### Sujiao (Emma) ZHAO
+### 2021/10/13 (updated: 2021-10-25)
+
+---
+
+
+
+
+class: center, middle, inverse
+
+# **Interpreting and Comparing Regression Models**
+
+
+---
+
+## Motivations
+
+
+- Regression coefficients are typically presented as tables that are easy to understand.
+
+- Sometimes, estimates are difficult to interpret, especially for interaction or transformed terms (quadratic or cubic terms, polynomials, splines, and for more complex models.
+
+- In such cases, coefficients are no longer interpretable in a direct way and marginal effects are far easier to understand. 
+
+- Marginal effects measure the association between a change in the predictors and a change in the outcome. 
+
+    - It is an effect, not a prediction. 
+    
+    - It is a change, not a level. 
+
+---
+
+## Preliminaries
+
+- The symbol `\(\triangle\)` stands for change. So `\(\triangle x_j\)` stands for a change in the variable `\(x_j\)`
+
+- `\(\triangle x_j/x\)` is a relative change
+
+- Relative changes are always measured in percentage while “change” is measured in the same unit as the original variable
+
+- There is only one exception to the above rule: if a variable is in percentage then its change is in “percentage points”
+
+- Example: If an interest rate increases from 20% to 21% it increases by 1 percentage point (change) or 5% (relative change)
+
+---
+
+## Marginal Effects
+
+
+- We are often interested in understanding how a small change in an independent variable (say variable `\(x_j\)`) impacts the dependent variable `\(y\)` while holding all other variables constant.
+
+- **Marginal effects are partial derivatives of the regression equation with respect to each variable in the model.**
+
+- We know that if `\(E(y|x_i) = f(x_i)\)` then
+`$$\triangle E(y|x) \approx \frac{\partial f(x)}{\partial x_j} \triangle x_j$$`
+
+
+- Thus, we can conclude that when `\(x_j\)` changes by one unit, `\(E(y|x)\)` changes by `\(\frac{\partial f(x)}{\partial x_j}\)` holding every other variables constant.
+
+- The above is known as the **partial effect** of variable `\(x_j\)` on `\(E(y|x)\)`.
+
+- Remember that the “all other variables constant” condition is known as the *ceteris paribus* condition.
+
+
+---
+
+## Marginal Effects
+
+
+- We wish to explore the concept of **elasticity** and how we can use a regression analysis to estimate the various elasticities in which economists have an interest.
+
+    - *e.g., A 16 percent increase in price of gasoline has generated a 4 percent decrease in demand: 16% price change --&gt; 4% quantity change or .04/.16 = .25. --&gt; This is called an inelastic demand meaning a small response to the price change.* 
+    
+    - *Some goods have many substitutes: pears for apples for plums, for grapes, etc. etc. Here a small percentage change in price will induce a large percentage change in quantity demanded. The consumer will easily shift the demand to the close substitute.*
+
+
+---
+
+## Marginal Effects
+
+- Elasticity measures the impact of *a (ceteris paribus)* relative change of `\(x_j\)` in terms of a relative change on `\(E(y|x)\)`.
+
+`$$\frac{\triangle E(y|x)}{E(y|x)} \approx \frac{\partial f(x)}{\partial x_j} \frac{x_j}{f(x)} \frac{\triangle x_j}{x_j} = \frac{\partial log(f(x))}{\partial log(x_j)} \frac{\triangle x_j}{x_j}$$`
+
+
+(the last equality is true if `\(E(y|x) &gt; 0\)` and `\(x_j &gt; 0\)`)
+
+
+
+- A **semi-elasticity** measures the impact of a (ceteris paribus) change in `\(x_j\)` in terms of a relative change on `\(E(y|x)\)`
+
+`$$\frac{\triangle E(y|x)}{E(y|x)} \approx \frac{\partial f(x)}{\partial x_j} \frac{1}{f(x)} \triangle x_j = \frac{\partial log(f(x))}{\partial x_j} \triangle x_j$$`
+
+
+---
+
+## Interpreting the Linear Model
+
+
+- How do we interpret the coefficients of the model?
+
+`$$E(y_i|x_i)=\beta_1+\beta_2 x_{2i}+\beta_3 x_{3i} + ...+\beta_k x_{ki}$$` 
+Since `\(\frac{\partial E(y_i|x_i)}{\partial x_{ji}} = \beta_j\)` then the partial effect of `\(x_j\)` equals `\(\beta_j\)`.
+
+In other words: when `\(x_j\)` increases one unit, `\(E(y_i|x_i)\)` increases `\(\beta_j\)` units, *ceteris paribus*
+
+
+- But note that the elasticity of `\(E(y|x)\)` with respect to `\(x_j\)` equals `\(\beta_j \frac{x_j}{f(x)}\)` and the semi-elasticity is `\(\beta_j/f(x)\)`. Both depend on specific values of `\(x\)`.
+
+
+- In this case the partial effect of `\(x_j\)` has the “simpler” interpretation.
+
+
+---
+
+## Interpreting the Linear Model
+
+
+- But what is the partial effect of `\(x_2\)` if
+
+
+`$$E(y_i|x_i)=\beta_1+\beta_2 x_{2i}+\beta_3 x_{2i}^2 + ...+\beta_k x_{ki}$$` 
+
+Now `\(\frac{\partial E(y_i|x_i)}{\partial x_{2i}} = \beta_2 + 2\beta_3 x_{2i}\)` and thus the partial effect of `\(x_2\)` depends on the value of `\(x_2\)`
+
+
+
+- And what about the case
+
+`$$E(y_i|x_i)=\beta_1+\beta_2 x_{2i}+\beta_3 x_{2i} x_{3i} + ...+\beta_k x_{ki}$$` 
+Now `\(\frac{\partial E(y_i|x_i)}{\partial x_{2i}} = \beta_2 + \beta_3 x_{3i}\)` and thus the partial effect of `\(x_2\)` depends on the value of `\(x_3\)`
+
+
+---
+
+## Interpreting the Linear Model
+
+- How do we interpret the coefficients of the model?
+
+`$$E(log(y_i|x_i))=\beta_1+\beta_2 log(x_{2i})+\beta_3 log(x_{3i}) + ...+\beta_k log(x_{ki})$$` 
+
+Here `\(\frac{\partial E(log(y_i|x_i))}{\partial log(x_{2i})} = \beta_2\)` and thus in this model the coefficients have a direct interpretation as elasticities
+
+- Similarly in the model
+
+`$$E(log(y_i|x_i))=\beta_1+\beta_2 x_{2i}+\beta_3 x_{3i} + ...+\beta_k x_{ki}$$` 
+
+We have `\(\frac{\partial E(log(y_i|x_i))}{\partial x_{2i}} = \beta_2\)` and the coefficients can be read directly as semi-elasticities
+
+---
+
+## Functional Forms
+
+&lt;br /&gt;
+
+*There is a plethora of functional transforms one can think of, but what transforms do we use, and when?*
+
+&lt;br /&gt;
+
+.font80[
+
+| Transform |  Formula | Description | 
+| :--- | :--- |  :--- | 
+| **Units Change**  | x/1000 | Only used as a matter of convenience (to make results easier to read).  | 
+| **Logs**  | log(x)  | Changes interpreted on a relative scale. May help reduce the effect of outliers (e.g., CEO salary).  | 
+| **Squares**  | `\(x^2\)` | Allows for a u-shaped or inverted-u-shaped relationship (e.g., age vs wage).  | 
+| **Interactions**  | `\(x_1.x_2\)` | Effect of `\(x_1\)` depends on the level of `\(x_2\)` and vice versa.  | 
+
+]
+
+
+
+
+---
+
+## Functional Forms
+
+### Log Transformations
+
+- Log transformations are often recommended for skewed data, such as monetary measures. 
+
+    - One reason is to make data more “normal”, or symmetric.
+    
+    - Another reason is to help meet the assumption of constant variance in the context of linear modeling.
+    
+    - while it’s easy to implement a log transformation, it can complicate interpretation.
+    
+    
+---
+
+## Functional Forms
+
+### Log Transformations
+
+- Only the dependent/response variable is log-transformed - the case of semi-elasticity 
+
+    - E.g., what's the impact of a unit change in experience, say one year, on the percentage change in worker’s wage?
+    
+    - change in log(y) ≈ relative change in y
+    
+    - The formula `\(\triangle y/y =exp(\beta_j)-1\)` or `\(\% \triangle y =100 \times [exp(\beta_j)-1]\)` gives the percent increase (or decrease) in the response for every one-unit increase in the independent variable.
+    
+    - The coefficient is 0.198. For every one-unit increase in the independent variable, our dependent variable increases by about 22% `\(((exp(0.198) – 1) \times 100)\)`.
+    
+---
+
+## Functional Forms
+
+### Log Transformations
+
+- Only independent/predictor variable(s) is log-transformed. 
+
+    - E.g., by how many euros will sales increase if the firm spends X percent more on advertising?
+    
+    - The formula `\(\beta_j/100\)` tells us the unit increase (or decrease) in the response for every a 1% increase in the independent variable. 
+    
+    - The coefficient is 0.198. For every 1% increase in the independent variable, our dependent variable increases by about 0.002 (0.198/100). 
+    
+    - For x percent increase, multiply the coefficient by log(1.x). E.g., For every 10% increase in the independent variable, our dependent variable increases by about 0.198 * log(1.10) = 0.02.
+    
+    
+---
+
+## Functional Forms
+
+### Log Transformations
+
+
+- Both dependent/response variable and independent/predictor variable(s) are log-transformed - the case of elasticity 
+
+    - E.g., How responsive is the demand for Coca-Cola to changes in the price of Pepsi in percentage terms?
+
+    - Interpret the coefficient as the percent increase in the dependent variable for every 1% increase in the independent variable. 
+    
+    - The coefficient is 0.198. For every 1% increase in the independent variable, our dependent variable increases by about 0.20%. 
+    
+    - For x percent increase, calculate 1.x to the power of the coefficient, subtract 1, and multiply by 100. E.g., for every 20% increase in the independent variable, our dependent variable increases by about (1.20^0.198 – 1) * 100 = 3.7 percent.
+    
+    
+---
+
+## Functional Forms
+
+### Log Transformations
+
+.blue[.font120[**A Quick Help**]]
+
+| Instrument|  Main Features| 
+| :--- | :--- | 
+| `\(\: \triangle X \rightarrow \: \triangle  Y\)`  | No transformation |
+| `\(\: \triangle X \rightarrow  \% \triangle  Y\)`  | Only dependent variable(s) is log-transformed |
+| `\(\% \triangle X \rightarrow \: \triangle  Y\)`  | Only independent variable(s) is log-transformed |
+| `\(\% \triangle X \rightarrow  \% \triangle  Y\)`  | Both independent and dependent variable(s) are log-transformed |
+
+
+---
+
+## Functional Forms
+
+### Squares
+
+
+- Allow for a changing sign of the relationship
+
+- Note that while logarithms are non-linear transforms, they do not allow the relationship to change sign (log is strictly increasing)
+
+- Many nonlinear functions allow this, but the quadratic is the simplest one --&gt; hardly ever we use anything beyond that 
+
+- u or inverted-u shape? Determined by the sign of the coefficient on the squared term (positive --&gt; u; negative --&gt; inverted u)
+
+---
+
+## Functional Forms
+
+### Squares
+
+- E.g., wage vs. work experience
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/function_square.png" width=900 height=300&gt;
+&lt;/div&gt;
+
+
+---
+
+## Functional Forms
+
+### Interactions
+
+- Example: Does market reaction to CEO appointment differ for men and women?
+
+- Or: is the effect of CEO appointment on market reaction moderated by gender?
+
+- How do we formulate a model that allows the effect of CEO appointment to vary with gender?
+
+`$$\begin{aligned}
+Market \: Reaction &amp; = \beta_0 + \beta_1 CEO \: Appointment  \\
+&amp; + \beta_2 Female  \\
+&amp; + \beta_3 CEO \: Appointment \times Female  \\
+\end{aligned}$$`
+    
+---
+
+## Functional Forms
+
+- Even if we restrict ourselves to squares, logs, and interactions, there are many different functional forms we can produce with given variables; how do we choose?
+
+- Angrist and Pischke (2008): *Mostly Harmless Econometrics: An Empiricist’s Companion.*
+
+- We can use F-tests for joint significance test
+
+- Even though some statistical tests have been developed to detect functional form misspecification, we should use them sparingly. The most important criteria are:
+
+    - our research question and the underlying economic theory
+    
+    - the desired interpretation of the parameters
+
+---
+
+## Regression on Time-Series
+
+
+- Regressions with time-series values often include time (t) as a regressor (for simplicity we ommit other covariates)
+
+`$$E(y_i|t)=\beta_1+\beta_2 t$$` 
+
+
+- `\(t\)` assumes consecutive discrete values such as `\(t = 1, 2, 3, 4, 5, ...\)`
+
+- Assuming that `\(t\)` stands for years `\(\beta_2\)` can be interpreted as the “average annual change” in y
+
+`$$E(log(y_i|t)) = \beta_1 + \beta_2 t$$`
+
+- If `\(t\)` stood for years, `\(\beta_2\)` would be an estimate of the “average annual (continuous) growth rate”
+
+---
+
+## Regression on Discrete Variables
+
+- If `\(x_j\)` is a discrete variable (say a binary variable) then the partial effect can be computed by comparing `\(E(y|x)\)` at different settings of `\(x_j\)` while holding other variables constant
+
+- Suppose that `\(x_j\)` is a discrete variable with two possible values of 0 and 1 (dummy variable) and
+
+
+`$$E(y_i|x_i ) = \beta_1 + \beta_2 x_{2i} + \beta_3 x_{3i} + ... + \beta_k x_{ki}$$`
+
+- The marginal effect is now `\(E(y_i|x_i)_{x_j=1} − E(y_i|x_i)_{x_j=0} = \beta_j\)`
+
+- If the dependent variable is in logs, then the relative change `\(exp(\beta_j ) − 1\)` is the partial effect of the dummy
+
+---
+
+## R Commands: Marginal Effects
+
+- The `margins` package provides ways of calculating the marginal effects of variables to make the complex models more interpretable
+
+- It ports the functionality of Stata’s (closed source) `margins` command to (open source) R.
+
+
+- `margins` calculates average marginal effects which are the mean of these unit-specific partial derivatives over the same sample. 
+
+
+---
+
+## R Commands: Marginal Effects
+
+.scroll-output[
+
+
+
+```r
+library(margins)
+data(mtcars)
+reg &lt;- lm(mpg ~ cyl + hp + wt, data = mtcars)
+(m &lt;- margins(reg))
+```
+
+```
+##      cyl       hp     wt
+##  -0.9416 -0.01804 -3.167
+```
+
+```r
+summary(m)
+```
+
+```
+##  factor     AME     SE       z      p   lower   upper
+##     cyl -0.9416 0.5509 -1.7092 0.0874 -2.0214  0.1382
+##      hp -0.0180 0.0119 -1.5188 0.1288 -0.0413  0.0052
+##      wt -3.1670 0.7406 -4.2764 0.0000 -4.6185 -1.7155
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+]
+
+---
+
+## R Commands: Marginal Effects
+
+.scroll-output[
+
+
+```r
+library(margins)
+plot(m)
+```
+
+![](Lecture4.1_Interpreting_Comparing_Regression_Models_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+&lt;br /&gt;
+]
+---
+
+## R Commands: Marginal Effects
+
+- The [**`ggeffects`**](https://cran.r-project.org/web/packages/ggeffects/index.html) package ([Lüdecke 2018](https://joss.theoj.org/papers/10.21105/joss.00772)) aims at easily calculating marginal effects for a broad range of different regression models.
+
+-  **`ggeffects`** allows to interpret a statistical model by making predictions generated by the model when one holds the non-focal variables constant and varies the focal variable(s).
+
+- The **`ggeffects`** package provides a simple, user-friendly interface to calculate marginal effects, which is mainly achieved by one function: `ggpredict()`
+
+- `ggpredict()` holds non-focal terms constant at their mean value (if these are continuous) or at their reference level (for factors).
+
+---
+
+## R Commands: Marginal Effects
+
+- Independent from the type of regression model, the output is always the same, a data frame with a consistent structure.
+
+- The visualization of marginal effects makes it possible to intuitively get the idea of how predictors and outcome are associated, even for complex models.
+
+- The relationship can be differentiated depending on further predictors, which is useful e.g. for interaction terms.
+
+- `ggpredict()` requires at least one, but not more than four terms specified in the terms-argument.
+
+- With more than two variables, predictions can be grouped and faceted.
+
+- The names of these predictors need to be passed as character vector to `ggpredict()`
+
+
+- There is a dedicated [website](https://strengejacke.github.io/ggeffects/) that describes all the details of this package, including some vignettes with lots of examples.
+
+---
+
+## R Commands: Marginal Effects
+
+
+
+```r
+data(mtcars)
+m &lt;- lm(mpg ~ cyl, data = mtcars)
+coef(m)["cyl"]
+```
+
+```
+##      cyl 
+## -2.87579
+```
+
+
+---
+
+## R Commands: Marginal Effects
+
+.scroll-output[
+
+
+```r
+library(ggplot2)
+data(mtcars)
+ggplot(mtcars, aes(x = cyl, y = mpg)) + 
+  geom_point() +
+  geom_abline(intercept = coef(m)["(Intercept)"], 
+              slope = coef(m)["cyl"])
+```
+
+![](Lecture4.1_Interpreting_Comparing_Regression_Models_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+&lt;br /&gt;
+]
+
+
+---
+
+## R Commands: Marginal Effects
+
+For this simple linear model, the slope for the regression line is always the same for each value of our predictor, `\(cyl\)`. We can check this by generating predictions of our model.
+
+
+```r
+library(ggeffects)
+library(ggplot2)
+data(mtcars)
+m &lt;- lm(mpg ~ cyl, data = mtcars)
+ggpredict(m, terms = "cyl")
+```
+
+```
+## # Predicted values of mpg
+## 
+## cyl | Predicted |         95% CI
+## --------------------------------
+##   4 |     26.38 | [24.61, 28.15]
+##   6 |     20.63 | [19.51, 21.75]
+##   8 |     14.88 | [13.28, 16.47]
+```
+
+Question: what is the average value of Miles/gallon for observations with 6 cylinders, compared to observations with 4 cylinders?
+
+---
+
+## R Commands: Marginal Effects
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+`ggeffects` returns predictions for representative values of the focal variable(s), hence you see many predicted values (including confidence intervals) in the output for the different values of the focal term(s).
+
+---
+
+## R Commands: Marginal Effects
+
+.font80[
+
+
+
+If we now look at the differences between any two predicted values, we see that these are identical:
+
+
+```r
+# Difference between predicted values for cyl = 4 and 6
+pr &lt;- ggpredict(m, "cyl [4,6]")
+round(diff(pr$predicted), 2)
+```
+
+```
+## [1] -5.75
+```
+
+```r
+# Difference between predicted values for cyl = 6 and 8
+pr &lt;- ggpredict(m, "cyl [6,8]")
+round(diff(pr$predicted), 2)
+```
+
+```
+## [1] -5.75
+```
+
+The difference of predicted values that differ by 2 in the focal term, equals 2 times the regression coefficient, because the interpretation of a regression coefficient can be seen as average difference in the outcome, while being at the same levels of all other predictors.
+]
+
+**For simple linear models, the regression coefficient is also the marginal effect.**
+
+---
+
+## R Commands: Marginal Effects
+
+.font80[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+m &lt;- lm(mpg ~ hp + wt + cyl + am, data = mtcars)
+coef(m)["cyl"]
+```
+
+```
+##       cyl 
+## -0.745157
+```
+
+```r
+ggpredict(m, terms = "cyl")
+```
+
+```
+## # Predicted values of mpg
+## 
+## cyl | Predicted |         95% CI
+## --------------------------------
+##   4 |     21.72 | [19.08, 24.37]
+##   6 |     20.23 | [19.33, 21.13]
+##   8 |     18.74 | [16.49, 20.99]
+## 
+## Adjusted for:
+## * hp = 146.69
+## * wt =   3.22
+## * am =   0.41
+```
+]
+
+Now we see that the effect of cylinders on Miles/gallon is less pronounced when we take the confounders (i.e., Gross horsepower, weight, and Transmission) into account. 
+
+---
+
+## R Commands: Marginal Effects
+
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+m &lt;- lm(mpg ~ wt * hp + am, data = mtcars)
+p &lt;- ggpredict(m, c("hp", "wt", "am"))
+plot(p)
+```
+
+![](Lecture4.1_Interpreting_Comparing_Regression_Models_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+
+
+
+---
+
+## R Commands: Marginal Effects
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+m &lt;- lm(mpg ~ wt * cyl + am, data = mtcars)
+ggpredict(m, terms = c("wt", "cyl"))
+```
+
+```
+## # Predicted values of mpg
+## 
+## # cyl = 4
+## 
+##   wt | Predicted |         95% CI
+## ---------------------------------
+## 1.40 |     32.28 | [28.87, 35.70]
+## 2.00 |     28.71 | [26.65, 30.77]
+## 2.80 |     23.94 | [22.30, 25.58]
+## 3.40 |     20.37 | [17.58, 23.16]
+## 4.00 |     16.79 | [12.52, 21.07]
+## 5.40 |      8.45 | [ 0.48, 16.43]
+## 
+## # cyl = 6
+## 
+##   wt | Predicted |         95% CI
+## ---------------------------------
+## 1.40 |     26.74 | [23.70, 29.78]
+## 2.00 |     24.23 | [22.16, 26.30]
+## 2.80 |     20.88 | [19.69, 22.07]
+## 3.40 |     18.37 | [16.93, 19.81]
+## 4.00 |     15.86 | [13.59, 18.13]
+## 5.40 |     10.00 | [ 5.34, 14.65]
+## 
+## # cyl = 8
+## 
+##   wt | Predicted |         95% CI
+## ---------------------------------
+## 1.40 |     21.20 | [16.84, 25.55]
+## 2.00 |     19.75 | [16.37, 23.13]
+## 2.80 |     17.82 | [15.64, 20.00]
+## 3.40 |     16.37 | [14.89, 17.85]
+## 4.00 |     14.92 | [13.58, 16.27]
+## 5.40 |     11.54 | [ 8.51, 14.58]
+## 
+## Adjusted for:
+## * am = 0.41
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+]
+
+
+
+---
+
+## R Commands: Marginal Effects
+
+We can now plot the marginal effects
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+m &lt;- lm(mpg ~ wt * cyl + am, data = mtcars)
+p &lt;- ggpredict(m, terms = c("wt", "cyl"))
+plot(p)
+```
+
+![](Lecture4.1_Interpreting_Comparing_Regression_Models_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+
+
+---
+
+## R Commands: Marginal Effects
+
+`ggeffects` also allows easily calculating marginal effects at specific levels of other predictors. This is particularly useful for interaction effects with continuous variables.
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+m &lt;- lm(mpg ~ wt * hp + am, data = mtcars)
+ggpredict(m, c("hp", "wt"))
+```
+
+```
+## # Predicted values of mpg
+## 
+## # wt = 2.24
+## 
+##  hp | Predicted |         95% CI
+## --------------------------------
+##  50 |     28.47 | [26.64, 30.31]
+##  95 |     25.87 | [24.41, 27.34]
+## 145 |     22.99 | [21.33, 24.65]
+## 195 |     20.10 | [17.77, 22.43]
+## 240 |     17.50 | [14.40, 20.61]
+## 335 |     12.02 | [ 7.12, 16.91]
+## 
+## # wt = 3.22
+## 
+##  hp | Predicted |         95% CI
+## --------------------------------
+##  50 |     21.88 | [19.81, 23.95]
+##  95 |     20.49 | [19.03, 21.96]
+## 145 |     18.95 | [17.91, 20.00]
+## 195 |     17.42 | [16.21, 18.62]
+## 240 |     16.03 | [14.30, 17.76]
+## 335 |     13.10 | [ 9.95, 16.26]
+## 
+## # wt = 4.2
+## 
+##  hp | Predicted |         95% CI
+## --------------------------------
+##  50 |     15.29 | [10.81, 19.77]
+##  95 |     15.11 | [11.74, 18.49]
+## 145 |     14.92 | [12.68, 17.16]
+## 195 |     14.73 | [13.32, 16.14]
+## 240 |     14.56 | [13.08, 16.03]
+## 335 |     14.19 | [10.79, 17.59]
+## 
+## Adjusted for:
+## * am = 0.41
+```
+
+```r
+# p &lt;- ggpredict(m, c("hp", "wt"))
+# plot(p)
+```
+
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+]
+
+In this example, both variables of the interaction term have a larger range of values, which obscure the moderating effect.
+
+
+---
+
+## R Commands: Marginal Effects
+
+However, you can directly specify certain values, at which marginal effects should be calculated, or use "shortcuts" that compute convenient values, like mean +/- 1 SD etc (placed in square brackets directly after the term name and can vary for each model term).
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+m &lt;- lm(mpg ~ wt * hp + am, data = mtcars)
+p &lt;- ggpredict(m, c("hp", "wt[meansd]"))
+plot(p)
+```
+
+![](Lecture4.1_Interpreting_Comparing_Regression_Models_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+
+
+---
+
+## R Commands: Marginal Effects
+
+- `minmax`: minimum and maximum values (lower and upper bounds) of the variable are used.
+
+- `meansd`: uses the mean value as well as one standard deviation below and above mean value.
+
+- `zeromax`: is similar to the "minmax" option, however, 0 is always used as minimum value. This may be useful for predictors that don’t have an empirical zero-value.
+
+- `quart` calculates and uses the quartiles (lower, median and upper), including minimum and maximum value.
+
+- `quart2` calculates and uses the quartiles (lower, median and upper), excluding minimum and maximum value.
+
+- `all` takes all values of the vector.
+
+---
+
+## R Commands: Marginal Effects
+
+Here is an example with the argument "quart2"
+
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+m &lt;- lm(mpg ~ wt * hp + am, data = mtcars)
+p &lt;- ggpredict(m, c("hp", "wt [quart2]"))
+plot(p)
+```
+
+![](Lecture4.1_Interpreting_Comparing_Regression_Models_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+
+
+
+---
+
+## R Commands: Marginal Effects
+
+The `typical`- argument determines the function that will be applied to the covariates to hold these terms at constant values. By default, this is the mean-value, but other options (like "weighted.mean", "median" and "mode") are possible as well. 
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+m &lt;- lm(mpg ~ log(hp) + disp, data = mtcars)
+
+# "disp" is hold constant at its mean
+p&lt;-ggpredict(m, "hp", typical = "mean")
+p
+```
+
+```
+## # Predicted values of mpg
+## 
+##  hp | Predicted |         95% CI
+## --------------------------------
+##  50 |     25.84 | [22.03, 29.66]
+##  85 |     22.70 | [20.75, 24.64]
+## 120 |     20.65 | [19.59, 21.71]
+## 155 |     19.13 | [17.96, 20.30]
+## 195 |     17.77 | [15.98, 19.56]
+## 230 |     16.79 | [14.46, 19.13]
+## 265 |     15.95 | [13.12, 18.78]
+## 335 |     14.56 | [10.89, 18.24]
+## 
+## Adjusted for:
+## * disp = 230.72
+```
+
+```r
+plot(p)
+```
+
+![](Lecture4.1_Interpreting_Comparing_Regression_Models_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+]
+
+
+---
+
+## R Commands: Marginal Effects
+
+Use the `condition`-argument to define other values at which covariates should be held constant. `condition` requires a named vector, with the name indicating the covariate.
+
+
+
+```r
+# "disp" is hold constant at value 200
+ggpredict(m, "hp", condition = c(disp = 200))
+```
+
+```
+## # Predicted values of mpg
+## 
+##  hp | Predicted |         95% CI
+## --------------------------------
+##  50 |     26.53 | [23.06, 30.00]
+##  85 |     23.38 | [21.73, 25.04]
+## 120 |     21.34 | [20.31, 22.37]
+## 155 |     19.82 | [18.40, 21.24]
+## 195 |     18.46 | [16.34, 20.58]
+## 230 |     17.48 | [14.79, 20.17]
+## 265 |     16.64 | [13.45, 19.83]
+## 335 |     15.25 | [11.21, 19.29]
+```
+
+
+---
+
+## R Commands: Marginal Effects
+
+### In Short
+
+- marginal effects help answer the question: what is the effect of a 1 unit change in `\(x\)` on `\(y\)`?
+
+- average marginal effects help answer the question: what is the average effect of a 1 unit change in `\(x\)` on `\(y\)`?
+
+- `margins` estimates the average marginal effects at fixed values of some covariates and averaging over the remaining covariates.
+
+- `ggpredict()` helps answer the question: what do I expect the outcome to be if `\(x\)` = 1 (or any other specific value or level)?
+
+
+---
+
+## Selecting the Set of Regressors
+
+- What happens when a relevant variable is excluded?
+
+    - If the omitted variable is uncorrelated with the included variables, the OLS estimators remain unbiased (although with higher variance).
+    
+    - If the omitted variable is correlated with the included variables then the OLS estimators become biased - this is called the **omitted variable bias**
+
+- Needlessly including irrelevant variables is not as dangerous. The OLS estimator remains unbiased but its precision is decreased (has higher variance)
+
+---
+
+## Selecting the Set of Regressors
+
+.font80[
+
+
+- Economic theory should drive the specification
+
+- It is ok to have non-significant regressors
+
+- If there is no guidance from economic theory and we must choose between non-nested models we can use the following criteria:
+
+- Akaike’s Information Criterion (AIC)
+    
+`$$AIC = log(\frac{1}{N}\sum_{i=1}^{N} e_i^2) + 2 \frac{k}{N}$$`
+
+
+- Schwarz Bayesian Information Criterion
+    
+`$$BIC = log(\frac{1}{N}\sum_{i=1}^{N} e_i^2) + \frac{k}{N} log(N)$$`
+
+
+- Models with lower AIC or BIC are preferred
+
+- BIC is preferred asymptotically but AIC works better in small samples
+
+]
+
+---
+
+## R Commands: Selection of Predictors
+
+The BIC and AIC can be computed through the functions BIC and AIC. They take a model as the input.
+
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+mod1 &lt;- lm(mpg ~ log(hp) + disp, data = mtcars)
+mod2 &lt;- lm(mpg ~ log(hp) + disp + wt, data = mtcars)
+mod3 &lt;- lm(mpg ~ log(hp) + disp + wt + cyl, data = mtcars)
+mod4 &lt;- lm(mpg ~ log(hp) + disp + wt + cyl + vs, data = mtcars)
+
+# BICs
+BIC(mod1)
+```
+
+```
+## [1] 169.1145
+```
+
+```r
+BIC(mod2) 
+```
+
+```
+## [1] 159.0931
+```
+
+```r
+BIC(mod3) 
+```
+
+```
+## [1] 160.7905
+```
+
+```r
+BIC(mod4)
+```
+
+```
+## [1] 164.2484
+```
+
+```r
+# AICs
+AIC(mod1)
+```
+
+```
+## [1] 163.2516
+```
+
+```r
+AIC(mod2) 
+```
+
+```
+## [1] 151.7644
+```
+
+```r
+AIC(mod3) 
+```
+
+```
+## [1] 151.9961
+```
+
+```r
+AIC(mod4)
+```
+
+```
+## [1] 153.9883
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+
+---
+
+## R Commands: Selection of Predictors
+
+`MASS::stepAIC` function helps navigating a ocean of models by implementing stepwise model selection which will iteratively add predictors that decrease an information criterion and/or remove those that increase it, depending on the mode of stepwise search that is performed.
+
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+# Full model
+mod &lt;- lm(mpg ~ ., data = mtcars)
+# With AIC (k = 2 gives the AIC)
+modAIC &lt;- MASS::stepAIC(mod, k = 2)
+```
+
+```
+## Start:  AIC=70.9
+## mpg ~ cyl + disp + hp + drat + wt + qsec + vs + am + gear + carb
+## 
+##        Df Sum of Sq    RSS    AIC
+## - cyl   1    0.0799 147.57 68.915
+## - vs    1    0.1601 147.66 68.932
+## - carb  1    0.4067 147.90 68.986
+## - gear  1    1.3531 148.85 69.190
+## - drat  1    1.6270 149.12 69.249
+## - disp  1    3.9167 151.41 69.736
+## - hp    1    6.8399 154.33 70.348
+## - qsec  1    8.8641 156.36 70.765
+## &lt;none&gt;              147.49 70.898
+## - am    1   10.5467 158.04 71.108
+## - wt    1   27.0144 174.51 74.280
+## 
+## Step:  AIC=68.92
+## mpg ~ disp + hp + drat + wt + qsec + vs + am + gear + carb
+## 
+##        Df Sum of Sq    RSS    AIC
+## - vs    1    0.2685 147.84 66.973
+## - carb  1    0.5201 148.09 67.028
+## - gear  1    1.8211 149.40 67.308
+## - drat  1    1.9826 149.56 67.342
+## - disp  1    3.9009 151.47 67.750
+## - hp    1    7.3632 154.94 68.473
+## &lt;none&gt;              147.57 68.915
+## - qsec  1   10.0933 157.67 69.032
+## - am    1   11.8359 159.41 69.384
+## - wt    1   27.0280 174.60 72.297
+## 
+## Step:  AIC=66.97
+## mpg ~ disp + hp + drat + wt + qsec + am + gear + carb
+## 
+##        Df Sum of Sq    RSS    AIC
+## - carb  1    0.6855 148.53 65.121
+## - gear  1    2.1437 149.99 65.434
+## - drat  1    2.2139 150.06 65.449
+## - disp  1    3.6467 151.49 65.753
+## - hp    1    7.1060 154.95 66.475
+## &lt;none&gt;              147.84 66.973
+## - am    1   11.5694 159.41 67.384
+## - qsec  1   15.6830 163.53 68.200
+## - wt    1   27.3799 175.22 70.410
+## 
+## Step:  AIC=65.12
+## mpg ~ disp + hp + drat + wt + qsec + am + gear
+## 
+##        Df Sum of Sq    RSS    AIC
+## - gear  1     1.565 150.09 63.457
+## - drat  1     1.932 150.46 63.535
+## &lt;none&gt;              148.53 65.121
+## - disp  1    10.110 158.64 65.229
+## - am    1    12.323 160.85 65.672
+## - hp    1    14.826 163.35 66.166
+## - qsec  1    26.408 174.94 68.358
+## - wt    1    69.127 217.66 75.350
+## 
+## Step:  AIC=63.46
+## mpg ~ disp + hp + drat + wt + qsec + am
+## 
+##        Df Sum of Sq    RSS    AIC
+## - drat  1     3.345 153.44 62.162
+## - disp  1     8.545 158.64 63.229
+## &lt;none&gt;              150.09 63.457
+## - hp    1    13.285 163.38 64.171
+## - am    1    20.036 170.13 65.466
+## - qsec  1    25.574 175.67 66.491
+## - wt    1    67.572 217.66 73.351
+## 
+## Step:  AIC=62.16
+## mpg ~ disp + hp + wt + qsec + am
+## 
+##        Df Sum of Sq    RSS    AIC
+## - disp  1     6.629 160.07 61.515
+## &lt;none&gt;              153.44 62.162
+## - hp    1    12.572 166.01 62.682
+## - qsec  1    26.470 179.91 65.255
+## - am    1    32.198 185.63 66.258
+## - wt    1    69.043 222.48 72.051
+## 
+## Step:  AIC=61.52
+## mpg ~ hp + wt + qsec + am
+## 
+##        Df Sum of Sq    RSS    AIC
+## - hp    1     9.219 169.29 61.307
+## &lt;none&gt;              160.07 61.515
+## - qsec  1    20.225 180.29 63.323
+## - am    1    25.993 186.06 64.331
+## - wt    1    78.494 238.56 72.284
+## 
+## Step:  AIC=61.31
+## mpg ~ wt + qsec + am
+## 
+##        Df Sum of Sq    RSS    AIC
+## &lt;none&gt;              169.29 61.307
+## - am    1    26.178 195.46 63.908
+## - qsec  1   109.034 278.32 75.217
+## - wt    1   183.347 352.63 82.790
+```
+
+```r
+# The result is an lm object
+summary(modAIC)
+```
+
+```
+## 
+## Call:
+## lm(formula = mpg ~ wt + qsec + am, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4811 -1.5555 -0.7257  1.4110  4.6610 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   9.6178     6.9596   1.382 0.177915    
+## wt           -3.9165     0.7112  -5.507 6.95e-06 ***
+## qsec          1.2259     0.2887   4.247 0.000216 ***
+## am            2.9358     1.4109   2.081 0.046716 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2.459 on 28 degrees of freedom
+## Multiple R-squared:  0.8497,	Adjusted R-squared:  0.8336 
+## F-statistic: 52.75 on 3 and 28 DF,  p-value: 1.21e-11
+```
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+
+---
+
+## R Commands: Selection of Predictors
+
+`MASS::stepAIC` function helps navigating a ocean of models by implementing stepwise model selection which will iteratively add predictors that decrease an information criterion and/or remove those that increase it, depending on the mode of stepwise search that is performed.
+
+
+.scroll-output[
+
+
+```r
+library(ggeffects)
+data(mtcars)
+# Full model
+mod &lt;- lm(mpg ~ ., data = mtcars)
+# With BIC (k = log(n))
+modBIC  &lt;- MASS::stepAIC(mod, k = log(nrow(mtcars)))
+```
+
+```
+## Start:  AIC=87.02
+## mpg ~ cyl + disp + hp + drat + wt + qsec + vs + am + gear + carb
+## 
+##        Df Sum of Sq    RSS    AIC
+## - cyl   1    0.0799 147.57 83.572
+## - vs    1    0.1601 147.66 83.590
+## - carb  1    0.4067 147.90 83.643
+## - gear  1    1.3531 148.85 83.847
+## - drat  1    1.6270 149.12 83.906
+## - disp  1    3.9167 151.41 84.394
+## - hp    1    6.8399 154.33 85.006
+## - qsec  1    8.8641 156.36 85.423
+## - am    1   10.5467 158.04 85.765
+## &lt;none&gt;              147.49 87.021
+## - wt    1   27.0144 174.51 88.937
+## 
+## Step:  AIC=83.57
+## mpg ~ disp + hp + drat + wt + qsec + vs + am + gear + carb
+## 
+##        Df Sum of Sq    RSS    AIC
+## - vs    1    0.2685 147.84 80.165
+## - carb  1    0.5201 148.09 80.219
+## - gear  1    1.8211 149.40 80.499
+## - drat  1    1.9826 149.56 80.534
+## - disp  1    3.9009 151.47 80.942
+## - hp    1    7.3632 154.94 81.665
+## - qsec  1   10.0933 157.67 82.224
+## - am    1   11.8359 159.41 82.575
+## &lt;none&gt;              147.57 83.572
+## - wt    1   27.0280 174.60 85.488
+## 
+## Step:  AIC=80.16
+## mpg ~ disp + hp + drat + wt + qsec + am + gear + carb
+## 
+##        Df Sum of Sq    RSS    AIC
+## - carb  1    0.6855 148.53 76.847
+## - gear  1    2.1437 149.99 77.160
+## - drat  1    2.2139 150.06 77.175
+## - disp  1    3.6467 151.49 77.479
+## - hp    1    7.1060 154.95 78.201
+## - am    1   11.5694 159.41 79.110
+## - qsec  1   15.6830 163.53 79.925
+## &lt;none&gt;              147.84 80.165
+## - wt    1   27.3799 175.22 82.136
+## 
+## Step:  AIC=76.85
+## mpg ~ disp + hp + drat + wt + qsec + am + gear
+## 
+##        Df Sum of Sq    RSS    AIC
+## - gear  1     1.565 150.09 73.717
+## - drat  1     1.932 150.46 73.795
+## - disp  1    10.110 158.64 75.489
+## - am    1    12.323 160.85 75.932
+## - hp    1    14.826 163.35 76.426
+## &lt;none&gt;              148.53 76.847
+## - qsec  1    26.408 174.94 78.618
+## - wt    1    69.127 217.66 85.610
+## 
+## Step:  AIC=73.72
+## mpg ~ disp + hp + drat + wt + qsec + am
+## 
+##        Df Sum of Sq    RSS    AIC
+## - drat  1     3.345 153.44 70.956
+## - disp  1     8.545 158.64 72.023
+## - hp    1    13.285 163.38 72.965
+## &lt;none&gt;              150.09 73.717
+## - am    1    20.036 170.13 74.261
+## - qsec  1    25.574 175.67 75.286
+## - wt    1    67.572 217.66 82.146
+## 
+## Step:  AIC=70.96
+## mpg ~ disp + hp + wt + qsec + am
+## 
+##        Df Sum of Sq    RSS    AIC
+## - disp  1     6.629 160.07 68.844
+## - hp    1    12.572 166.01 70.011
+## &lt;none&gt;              153.44 70.956
+## - qsec  1    26.470 179.91 72.583
+## - am    1    32.198 185.63 73.586
+## - wt    1    69.043 222.48 79.380
+## 
+## Step:  AIC=68.84
+## mpg ~ hp + wt + qsec + am
+## 
+##        Df Sum of Sq    RSS    AIC
+## - hp    1     9.219 169.29 67.170
+## &lt;none&gt;              160.07 68.844
+## - qsec  1    20.225 180.29 69.186
+## - am    1    25.993 186.06 70.193
+## - wt    1    78.494 238.56 78.147
+## 
+## Step:  AIC=67.17
+## mpg ~ wt + qsec + am
+## 
+##        Df Sum of Sq    RSS    AIC
+## &lt;none&gt;              169.29 67.170
+## - am    1    26.178 195.46 68.306
+## - qsec  1   109.034 278.32 79.614
+## - wt    1   183.347 352.63 87.187
+```
+
+```r
+# The result is an lm object
+summary(modBIC)
+```
+
+```
+## 
+## Call:
+## lm(formula = mpg ~ wt + qsec + am, data = mtcars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.4811 -1.5555 -0.7257  1.4110  4.6610 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   9.6178     6.9596   1.382 0.177915    
+## wt           -3.9165     0.7112  -5.507 6.95e-06 ***
+## qsec          1.2259     0.2887   4.247 0.000216 ***
+## am            2.9358     1.4109   2.081 0.046716 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2.459 on 28 degrees of freedom
+## Multiple R-squared:  0.8497,	Adjusted R-squared:  0.8336 
+## F-statistic: 52.75 on 3 and 28 DF,  p-value: 1.21e-11
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

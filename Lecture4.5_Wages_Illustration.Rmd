@@ -1,0 +1,214 @@
+---
+title: "**Econometrics**"
+subtitle: "3.6 Illustration: Explaining Individual Wages"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/13 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+<br />
+
+
+We start by reading the "bwages" dataset into Stata.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+library(haven) # import Stata data
+wages1 <- read_dta("bwages.dta")
+```
+
+Next we add labels to the variables
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(expss) # apply labels
+wages1 = apply_labels(wages1,
+                      wage = "before-tax hourly wage rate, in euros per hour",
+                      male = "1 if male, 0 otherwise",
+                      educ = "education level",
+                      exper = "experience in years"
+)
+
+wages1$male2 <- factor(wages1$male,
+                       levels = c(1,0),
+                       labels = c("male", "female"))
+
+wages1$educ2 <- factor(wages1$educ,
+                       levels = c(1,2,3,4,5),
+                       labels = c("primary school", "lower vocational training", "intermediate level", "higher vocational training", "university level"))
+```
+
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(Hmisc)
+describe(wages1)
+```
+
+And now inspect the data.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+head(wages1, 10)
+```
+
+Next we obtain the results similar to table 3.6
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(dplyr)
+library(stargazer)
+library(doBy)
+
+wstat<-as.data.frame(wages1[, c(1,3,4,7,8)])
+
+summaryBy(wage + educ + exper ~ male2, data = wstat,
+          FUN = function(x) { c(mean = mean(x), std = sd(x)) } )
+
+
+
+# Alternative solutions
+
+# library(purrr)
+# wstat %>% split(. $male2) %>% walk(~ stargazer(., type = "text"))
+
+# wstat %>% split(. $male2) %>% map(summary)
+
+# by(wstat, wstat$male2, summary)
+# by(wstat[,1:3], wstat$male2, stargazer, type = 'text')
+# 
+# stargazer(subset(wstat, wstat$male2=="male"), title="Male", type = "text")
+# stargazer(subset(wstat[,1:3], wstat$male2=="female"), title="Female", type = "text")
+# 
+
+
+```
+
+and to obtain Table 3.7 we do
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg<-lm(wage~male + educ + exper, data = wages1)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text")
+```
+
+In table 3.8 we add $exper^2$ as an additional regressor.
+
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg<-lm(wage~male + educ + exper + I(exper^2), data = wages1)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text")
+```
+
+
+Now plot the residual versus fitted plot as in Figure 3.1
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(broom)
+library(ggplot2)
+
+augmented_reg <- augment(reg)
+
+ggplot(augmented_reg, aes(x = .fitted, y = .resid), main="Residual Versus Fitted Value") + 
+  geom_point()
+```
+
+
+
+We now proceed to estimation of the model in Table 3.9. The dependent variable is now the logarithm of wage.
+
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg<-lm(lnwage~male + lneduc + lnexper + I(lnexper^2), data = wages1)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text", digits=4)
+```
+
+
+and we replicate Figure 3.2
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(broom)
+library(ggplot2)
+
+augmented_reg <- augment(reg)
+
+ggplot(augmented_reg, aes(x = .fitted, y = .resid), main="Residual Versus Fitted Value") + 
+  geom_point()
+```
+
+
+
+And next we implement the test on (3.41)
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(car)
+linearHypothesis(reg,c("lnexper = 0","I(lnexper^2) = 0"), test="F")
+```
+
+
+To replicate Table 3.11 we do
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+is.factor(wages1$educ2)
+reg<-lm(lnwage~male + educ2 + lnexper, data = wages1)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text")
+```
+
+You can also use the factor function within the lm function, saving the step of creating the factor variable first.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg<-lm(lnwage~male + factor(educ) + lnexper, data = wages1)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text", digits=4)
+```
+
+
+Next we estimate the regression in Table 3.12
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg<-lm(lnwage~ male2 * educ2 + male2 * lnexper, data = wages1)
+# reg<-lm(lnwage~ factor(male) * factor(educ) + factor(male) * lnexper, data = wages1)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text")
+```
+
+
+And we test if all interactions with male are identical to 0.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(car)
+## test all interaction coefficients equal to 0
+coefs <- names(coef(reg))
+#coefs
+linearHypothesis(reg,coefs[grep(":", coefs)], verbose=TRUE, test="F")
+```
+
+
+<br />
+
+<br />

@@ -1,0 +1,98 @@
+---
+title: "**Econometrics**"
+subtitle: "R Exercises: Individual Wages"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/09/29 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+<br />
+
+## Individual Wages
+
+<br />
+
+
+1. Read the "wages" dataset (wages1.dta) into R (using read_dta from haven). 
+
+```{r eval=FALSE}
+
+```
+
+<br />
+
+2. Inspect the data
+
+```{r eval=FALSE}
+
+```
+
+<br />
+
+3. Obtain summary statistics
+
+```{r eval=FALSE}
+
+```
+
+<br />
+
+4. Add labels to the variables
+
+```{r eval=FALSE}
+library(expss) # apply labels
+wages1 = apply_labels(wages1,
+  exper = "experience in years",
+  male = "1 if male, 0 otherwise",
+  school = "years of schooling",
+  wage = "wage in 1980 dollars per hour"
+)
+```
+
+<br />
+
+5. Obtain descriptive statistics on the variable *wage*
+
+
+```{r eval=FALSE}
+
+```
+
+<br />
+
+6. Obtain descriptive statistics on wages by gender. 
+
+```{r eval=FALSE}
+
+```
+
+<br />
+
+7. Now, we estimate the following equation and replicate the results in table 2.1
+\begin{equation}
+wage_i=\beta_1+\beta_2 male_i + \epsilon_i 
+\end{equation}
+
+
+```{r eval=FALSE}
+
+```
+
+<br />
+
+8. Next we estimate the equation in Table 2.2:
+\begin{equation}
+wage_i=\beta_1+\beta_2 male_i +\beta_3 school_i + \beta_4 exper_i +\epsilon_i 
+\end{equation}
+
+```{r eval=FALSE}
+
+```
+
+

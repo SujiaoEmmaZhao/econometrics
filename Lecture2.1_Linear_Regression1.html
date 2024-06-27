@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econometrics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Sujiao (Emma) ZHAO" />
+    <link href="Lecture2.1_Linear_Regression1_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="class\bplim-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="class\bplim.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# <strong>Econometrics</strong>
+## <strong>2M3E03 The Linear Regression Model</strong>
+### Sujiao (Emma) ZHAO
+### 2021/09/29 (updated: 2021-10-06)
+
+---
+
+
+
+
+
+class: center, middle, inverse
+
+# **The Linear Regression Model**
+
+
+---
+
+## A Quick Review
+
+- The linear regression model in combination with the method of ordinary least squares (OLS) is one of the cornerstones of econometrics.
+
+- For each observation *“i”* it is assumed that:
+
+`$$y_i=\beta_1+\beta_2 x_{2i}+\beta_3 x_{3i} + ...+\beta_k x_{ki} + \epsilon_i$$` 
+
+- What do all the symbols `\((y,\beta, x,. . . etc)\)` mean?
+
+- More concisely, 
+
+`$$y_i=x_{i}^{'}\beta  + \epsilon_i$$` 
+or in matrix terms,
+
+`$$y=X\beta  + \epsilon$$` 
+
+
+---
+
+## A Quick Review
+
+where the matrices are defined as:
+
+`$$x_{i}^{'} =
+ \begin{bmatrix}
+  1&amp;x_{2i} &amp; x_{3i} &amp; \cdots &amp; x_{ki}
+ \end{bmatrix}$$`
+ 
+ 
+`$$y =
+ \begin{bmatrix}
+  y_{1} \\
+  y_{2} \\
+  \vdots \\
+  y_{N} 
+ \end{bmatrix}$$`
+ 
+
+
+`$$X =
+  \begin{bmatrix}
+      1 &amp; x_{11} &amp; x_{21} &amp; \dots  &amp; x_{k1} \\
+      1 &amp; x_{12} &amp; x_{22} &amp; \dots  &amp; x_{k2} \\
+      \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+      1 &amp; x_{1N} &amp; x_{2N} &amp; \dots  &amp; x_{kN}
+  \end{bmatrix}$$`
+
+
+---
+
+## A Quick Review
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+ 
+`$$\beta =
+ \begin{bmatrix}
+  \beta_{1} \\
+  \beta_{2} \\
+  \vdots \\
+  \beta_{k} 
+ \end{bmatrix}$$`
+ 
+
+
+ 
+`$$\epsilon =
+ \begin{bmatrix}
+  \epsilon_{1} \\
+  \epsilon_{2} \\
+  \vdots \\
+  \epsilon_{N} 
+ \end{bmatrix}$$`
+
+
+
+---
+
+## The Least Squares Solution
+
+- Our mission is to fit the model, which will give us the best estimates for `\(\beta_1\)`, `\(\beta_2\)`, ..., `\(\beta_{k}\)`
+
+- The least squares estimators minimize:
+
+`$$Q = \sum_{i=1}^N (y_i-x_{i}^{'}\tilde\beta)^2$$`
+
+or
+
+`$$Q = \sum_{i=1}^N (y_i - \tilde\beta_{1}-\tilde\beta_{2}x_{2i}-\tilde\beta_{3}x_{3i}-...-\tilde\beta_{k}x_{ki})^2$$`
+
+where
+
+`$$\beta^{'} =
+ \begin{bmatrix}
+  \tilde\beta_{1} &amp; \tilde\beta_{2} &amp; \cdots &amp; \tilde\beta_{k}
+ \end{bmatrix}$$`
+ 
+are values to be chosen
+ 
+
+---
+
+## The Least Squares Solution
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+- The solution is
+
+`$$\hat\beta = b = (X^{'}X)^{-1}X^{'}y$$` 
+
+
+- The fitted values are given by
+
+`$$\hat y_i = x_{i}^{'}b$$`
+
+
+- and the residuals are
+
+`$$e_i = y_i - \hat y_i$$`
+
+
+
+---
+
+## The Least Squares Solution
+
+### Simple Linear Regression
+
+
+
+- A simple linear regression is just a particular case and is modeled as a linear relationship with an error term as follows:
+
+
+`$$y_i=\beta_1+\beta_2 x_{2i} + \epsilon_i$$`
+
+- We can solve for the slope coefficient `\(b_2\)` and the constant `\(b_1\)` as
+
+`$$b_2= (X^{'}X)^{-1}X^{'}y = \frac{\sum_{i=1}^N (x_i-\bar x)(y_i-\bar y)}{\sum_{i=1}^N (x_i-\bar x)^2}$$`
+
+`$$b_1=\bar y - b_22\bar x$$`
+
+---
+
+## The Least Squares Solution
+
+### Simple Linear Regression
+
+&lt;div align="left"&gt;
+&lt;img src="pictures/ch2_p7.png" width=800 height=500&gt;
+&lt;/div&gt;
+
+
+
+---
+## Is OLS a Good Estimator?
+
+- The properties of an estimator depend on the assumptions made about the data generating process
+
+- The most common ones for OLS are the **Gauss Markov assumptions (GMA)**
+
+- Under the **GMA** the **OLS** has nice properties
+
+- These are very strong assumptions and often are not satisfied
+
+- We need to understand how essential the **GMA** are and how they can be relaxed
+
+- The model is useful only if there is a fairly linear relationship between the predictors and the response, but that requirement is much less restrictive than you might think (e.g. see transformation).
+
+
+---
+## Properties of the OLS Estimator
+
+The **GMA** are:
+
+- A.1: `\(E(\epsilon_i) = 0\)` for all `\(i\)`
+
+- A.2: All error terms `\({\epsilon_i, ..., \epsilon_N}\)` are independent of all `\({x_1, ..., x_N}\)` for all variables
+
+- A.3: `\(V(\epsilon_i) = \sigma^2\)` (homoskedasticity) for all `\(i\)`
+
+- A.4: `\(cov(\epsilon_i, \epsilon_j) = 0\)`, for all `\(i, i \neq j\)` (no autocorrelation)
+
+or, in matrix terms,
+
+`$$E(\epsilon|X) = E(\epsilon) = 0$$`
+`$$V(\epsilon|X) = V(\epsilon) = \sigma^2I_N$$`
+
+
+---
+## B.L.U.E
+
+These assumptions imply:
+
+- `\(E(y_i |x_i ) = x_i^{'}b\)`
+
+- If A.2 holds then we can treat the explanatory variables as fixed (deterministic)
+
+- If A.1 and A.2 hold then `\(E(b) = \beta\)` (unbiasedness)
+
+- If A.1, A.2, A.3 and A.4 hold then the variance of the OLS estimator is
+
+`$$V(b) = \sigma^2 (X^{'}X)^{−1}$$`
+
+and the `\(b\)` OLS estimator is BLUE (Best Linear Unbiased Estimator)
+
+---
+## The Estimator for the Variance
+
+- The variance `\(\sigma^2\)` can be estimated as
+
+`$$\sigma^2 = s^2 = \frac{\sum_{} e_i^2}{N-k}$$`
+
+where `\(N − k\)` is a degree of freedom correction
+
+- Under assumptions A.1-A.4, `\(s^2\)` is unbiased for `\(\sigma^2\)`
+
+- The estimator for V(b) (the variance-covariance matrix) is
+
+`$$\hat V(b) = s^2 (X^{'}X)^{−1}$$`
+
+The square root of the `\(k_{th}\)` diagonal element is the standard error of `\(b_k\)` and the off-diagonal elements are the covariances
+
+
+---
+##The Distribution of b
+
+&lt;br /&gt;
+
+If we assume
+
+- A.5: `\(\epsilon_i\)` are normally distributed with `\(\epsilon\)` ~ `\(N(0, \sigma^2I)\)` (the `\(\epsilon_i\)` are independent drawings from a normal distribution with zero mean and constant variance `\(\sigma^2\)`)
+
+- A.5 replaces A.1+A.3+A.4
+
+- Under A.2+A.5, then `\(b \sim N(\beta, \sigma^2(X^{'}X)^{−1})\)`
+
+
+---
+## Goodness of Fit
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/R_Squared.png" width=550 height=550&gt;
+&lt;/div&gt;
+
+
+---
+## Goodness of Fit
+
+&lt;br /&gt;
+
+- If the model contains an intercept we know that `\(\sum_{1}^N {e_i} = 0\)`. In this case
+
+`$$\hat V(y_i) = \hat V(\hat y_i) + \hat V(e_i)$$`
+
+
+and
+
+`$$R^2 = \frac{\hat V(\hat y_i)} {\hat V(y_i)} = 1 - \frac{\hat V(e_i)} {\hat V(y_i)}$$`
+
+- The `\(R^2\)` measures the quality of the linear approximation by the model
+
+- Generally `\(0 \leq R^2 \leq 1\)`
+
+- What if the model does not contain an intercept?
+
+
+---
+## Goodness of Fit
+
+&lt;br /&gt;
+
+
+- If `\(\sum_{1}^N e_i=0\)` then `\(R^2\)` is also the squared correlation between the observed and fitted values of `\(y_i\)`
+
+`$$R^2 = corr^2(y_i, \hat y_i)$$`
+
+- `\(R^2\)` will never decrease if a variable is added
+
+- The adjusted `\(R^2\)`:
+
+`$$\bar R^2 = 1- \frac{(1-R^2)(N-1)}{N-K-1}$$`
+
+
+---
+
+## R Commands
+
+### Simple Regression
+
+The `lm` function performs a linear regression and reports the coefficients.
+
+.scroll-output[
+
+
+
+```r
+y&lt;-c(82,98,76,68,84,99,67,58,50,78)
+x &lt;-c(4,2,2,3,1,0,4,8,7,3)
+lm(y ~ x)
+```
+
+```
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Coefficients:
+## (Intercept)            x  
+##       94.33        -5.39
+```
+
+Or if your data is in columns in a data frame:
+
+
+```r
+library(data.table)
+y&lt;-c(82,98,76,68,84,99,67,58,50,78)
+x &lt;-c(4,2,2,3,1,0,4,8,7,3)
+df &lt;- data.table(Y = y, X = x)
+lm(Y ~ X, data = df)
+```
+
+```
+## 
+## Call:
+## lm(formula = Y ~ X, data = df)
+## 
+## Coefficients:
+## (Intercept)            X  
+##       94.33        -5.39
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+
+&lt;br /&gt;
+
+
+]
+
+
+
+---
+
+## R Commands
+
+### Multiple Regression
+
+You have several predictor variables (e.g., u, v, and w) and a response variable, y.
+
+Save the regression model in a variable, say m:
+
+
+```r
+lm(y ~ u + v + w)
+```
+
+
+
+
+```r
+y&lt;-c(82,98,76,68,84,99,67,58,50,78)
+x1 &lt;-c(4,2,2,3,1,0,4,8,7,3)
+x2 &lt;-c(620,750,500,520,540,690,590,490,450,560)
+lm(y ~ x1 + x2)
+```
+
+```
+## 
+## Call:
+## lm(formula = y ~ x1 + x2)
+## 
+## Coefficients:
+## (Intercept)           x1           x2  
+##    33.42231     -3.34018      0.09446
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+
+summary(m) # Key statistics, such as $R^2$, the F statistic, and the residual standard error
+anova(m) # ANOVA table
+coefficients(m) # Model coefficients
+coef(m) # Same as coefficients(m)
+confint(m) # Confidence intervals for the regression coefficients
+deviance(m) # Residual sum of squares
+effects(m) # Vector of orthogonal effects
+fitted(m) # Vector of fitted y values
+residuals(m) # Model residuals
+resid(m) # Same as residuals(m)
+vcov(m) # Variance–covariance matrix of the main parameters
+```
+
+
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+summary(m) 
+```
+
+```
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##    1    2    3    4    5 
+## -0.8  0.6  1.0 -0.6 -0.2 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)   2.2000     0.9381   2.345    0.101
+## x             0.6000     0.2828   2.121    0.124
+## 
+## Residual standard error: 0.8944 on 3 degrees of freedom
+## Multiple R-squared:    0.6,	Adjusted R-squared:  0.4667 
+## F-statistic:   4.5 on 1 and 3 DF,  p-value: 0.124
+```
+
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+coefficients(m) 
+```
+
+```
+## (Intercept)           x 
+##         2.2         0.6
+```
+
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+confint(m) # 95% confidence intervals
+```
+
+```
+##                  2.5 %   97.5 %
+## (Intercept) -0.7853993 5.185399
+## x           -0.3001317 1.500132
+```
+
+
+
+.pull-left[
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/Linear_Regression4.png" width=400 height=280&gt;
+&lt;/div&gt;
+
+]
+
+.pull-right[
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/Linear_Regression5.png" width=400 height=280&gt;
+&lt;/div&gt;
+
+]
+
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+anova(m)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: y
+##           Df Sum Sq Mean Sq F value Pr(&gt;F)
+## x          1    3.6     3.6     4.5  0.124
+## Residuals  3    2.4     0.8
+```
+
+
+
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+deviance(m)
+```
+
+```
+## [1] 2.4
+```
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+vcov(m)
+```
+
+```
+##             (Intercept)     x
+## (Intercept)        0.88 -0.24
+## x                 -0.24  0.08
+```
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+residuals(m)
+```
+
+```
+##    1    2    3    4    5 
+## -0.8  0.6  1.0 -0.6 -0.2
+```
+
+---
+
+## R Commands
+
+### Getting regression statistics
+
+
+```r
+x&lt;-c(1,2,3,4,5)
+y&lt;-c(2,4,5,4,5)
+m&lt;-lm(y~x)
+fitted(m)
+```
+
+```
+##   1   2   3   4   5 
+## 2.8 3.4 4.0 4.6 5.2
+```
+
+
+---
+
+## Linear Regression: An Example
+
+$$
+Estimated Grades = \beta_0 + \beta_1Absenses + \beta_2SATScores
+$$
+.scroll-output[
+
+
+```r
+# Dependent variables
+Grades&lt;-c(82,98,76,68,84,99,67,58,50,78)
+# Independent variables
+Absences &lt;-c(4,2,2,3,1,0,4,8,7,3)
+SATScores &lt;-c(620,750,500,520,540,690,590,490,450,560)
+
+# Creating Regression Equations
+regression&lt;-lm(Grades~Absences+SATScores)
+# Show the results
+summary(regression)
+```
+
+```
+## 
+## Call:
+## lm(formula = Grades ~ Absences + SATScores)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -8.791 -1.809  1.060  2.691  5.016 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) 33.42231   13.58416   2.460  0.04344 * 
+## Absences    -3.34018    0.77323  -4.320  0.00348 **
+## SATScores    0.09446    0.02067   4.569  0.00258 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.729 on 7 degrees of freedom
+## Multiple R-squared:  0.9308,	Adjusted R-squared:  0.911 
+## F-statistic: 47.07 on 2 and 7 DF,  p-value: 8.724e-05
+```
+
+```r
+confint(regression) # 95% confidence intervals
+```
+
+```
+##                   2.5 %     97.5 %
+## (Intercept)  1.30087812 65.5437488
+## Absences    -5.16857771 -1.5117782
+## SATScores    0.04556814  0.1433436
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+
+---
+
+## Linear Regression: An Example
+
+.scroll-output[
+
+```r
+library(readxl)
+# Dependent variables
+#Grades&lt;-c(82,98,76,68,84,99,67,58,50,78)
+# Independent variables
+#Absences &lt;-c(4,2,2,3,1,0,4,8,7,3)
+#SATScores &lt;-c(620,750,500,520,540,690,590,490,450,560)
+
+grades &lt;- read_excel("Data/grades.xlsx")
+
+# Creating Regression Equations
+#regression&lt;-lm(grades$Grades~grades$Absences+grades$SATScores)
+regression&lt;-lm(Grades~Absences+SATScores, data = grades)
+# Show the results
+summary(regression)
+```
+
+```
+## 
+## Call:
+## lm(formula = Grades ~ Absences + SATScores, data = grades)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -8.791 -1.809  1.060  2.691  5.016 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) 33.42231   13.58416   2.460  0.04344 * 
+## Absences    -3.34018    0.77323  -4.320  0.00348 **
+## SATScores    0.09446    0.02067   4.569  0.00258 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.729 on 7 degrees of freedom
+## Multiple R-squared:  0.9308,	Adjusted R-squared:  0.911 
+## F-statistic: 47.07 on 2 and 7 DF,  p-value: 8.724e-05
+```
+
+```r
+confint(regression) # 95% confidence intervals
+```
+
+```
+##                   2.5 %     97.5 %
+## (Intercept)  1.30087812 65.5437488
+## Absences    -5.16857771 -1.5117782
+## SATScores    0.04556814  0.1433436
+```
+
+```r
+anova(regression)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Grades
+##           Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Absences   1 1638.58 1638.58  73.261 5.906e-05 ***
+## SATScores  1  466.85  466.85  20.873  0.002578 ** 
+## Residuals  7  156.57   22.37                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+
+
+---
+
+## Linear Regression: An Example
+
+[Stargazer Cheetsheets](https://www.jakeruss.com/cheatsheets/stargazer/)
+
+.scroll-output[
+
+```r
+library(readxl)
+grades &lt;- read_excel("Data/grades.xlsx")
+
+# Creating Regression Equations
+reg1&lt;-lm(Grades~Absences, data = grades)
+reg2&lt;-lm(Grades~SATScores, data = grades)
+reg3&lt;-lm(Grades~Absences+SATScores, data = grades)
+reg4&lt;-lm(Grades~Absences*SATScores, data = grades)
+
+library(stargazer)
+
+table1&lt;-stargazer(reg1, reg2, reg3, reg4, type = "text", 
+                  keep.stat = c("n", "adj.rsq"),
+                  title="Results", align=TRUE)
+```
+
+```
+## 
+## Results
+## ========================================================
+##                             Dependent variable:         
+##                    -------------------------------------
+##                                   Grades                
+##                       (1)      (2)       (3)      (4)   
+## --------------------------------------------------------
+## Absences           -5.390***          -3.340***  -2.126 
+##                     (1.175)            (0.773)  (4.885) 
+##                                                         
+## SATScores                    0.146*** 0.094***  0.100** 
+##                              (0.030)   (0.021)  (0.031) 
+##                                                         
+## Absences:SATScores                               -0.002 
+##                                                 (0.009) 
+##                                                         
+## Constant           94.326***  -7.526  33.422**   30.535 
+##                     (4.875)  (17.426) (13.584)  (18.553)
+##                                                         
+## --------------------------------------------------------
+## Observations          10        10       10        10   
+## Adjusted R2          0.690    0.715     0.911    0.897  
+## ========================================================
+## Note:                        *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+]
+---
+
+&lt;br /&gt;
+
+
+.pull-left[
+
+n = Sample Size
+
+p = regressors
+
+
+Degree of Dreedom = 10 (n) - 3 (p) = 7
+
+[Critical Value](https://www.sjsu.edu/faculty/gerstman/StatPrimer/t-table.pdf) = 2.365 
+
+`\(\hat \beta_0\)` = 33.422
+
+**Std. Error** of `\(\beta_0\)` = 13.584
+
+The confidence interval of `\(\beta_0\)` = 
+[33.422-2.365×13.584, 33.422+2.365×13.584] =
+[1.296,65.548]
+
+
+**t Value** = `\(Estimate \div Std. Error\)`
+
+]
+
+.pull-right[
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/Linear_Regression6.png" width=300 height=200&gt;
+&lt;/div&gt;
+]
+
+
+
+
+
+---
+
+## More R Commands for Regression
+
+.scroll-output[
+
+Performing linear regression without an intercept
+
+
+```r
+lm(y ~ x + 0)
+```
+
+Performing linear regression with interaction terms
+
+
+```r
+lm(y ~ u * v)
+lm(y ~ u + v + u:v)
+```
+
+Regressing on a subset of your data
+
+
+```r
+lm(y ~ x1, subset=1:100)          # Use only x[1:100]
+lm(y ~ x1, subset=(x&gt;10 &amp; x&lt;15))  
+```
+
+
+Using an expression inside a regression formula
+
+
+
+```r
+lm(y ~ I(u + v)) 
+lm(y ~ u + I(u ^ 2))
+lm(y ~ u + u ^ 2) # won't estimate the effect for the quadratic term of u
+```
+
+Regressing on a polynomial
+
+
+
+```r
+lm(y ~ poly(x, 3, raw = TRUE))
+```
+
+Regressing on transformed data
+
+
+```r
+lm(log(y) ~ x)
+```
+
+Predicting values
+
+
+```r
+m &lt;- lm(y ~ u + v + w)
+preds &lt;- data.frame(
+  u = c(3.0, 3.1, 3.2, 3.3),
+  v = c(3.9, 4.0, 4.1, 4.2),
+  w = c(5.3, 5.5, 5.7, 5.9)
+)
+predict(m, newdata = preds)
+```
+
+
+
+&lt;br /&gt;
+
+
+]
+
+---
+
+## More R Commands for Regression
+
+Plotting Regression Residuals
+
+.scroll-output[
+
+
+```r
+y&lt;-c(82,98,76,68,84,99,67,58,50,78)
+x1 &lt;-c(4,2,2,3,1,0,4,8,7,3)
+x2 &lt;-c(620,750,500,520,540,690,590,490,450,560)
+m &lt;- lm(y ~ x1 + x2)
+
+library(broom)
+library(ggplot2)
+
+augmented_m &lt;- augment(m)
+
+ggplot(augmented_m, aes(x = .fitted, y = .resid), main="Residual Versus Fitted Value") + 
+  geom_point()
+```
+
+![](Lecture2.1_Linear_Regression1_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+
+
+&lt;br /&gt;
+
+
+]
+
+---
+
+## Indicators for Good Estimates
+
+- **Are the coefficients significant?**
+
+       - Check the coefficient’s t statistics and p-values
+
+- **Is the model useful?**
+
+       - Check the `\(R^2\)`
+       
+- **Is the model statistically significant?**
+
+       - Check the F statistic
+
+- **Does the model fit the data well?**
+
+       - Plot the residuals and check the regression diagnostics
+
+- **Does the data satisfy the assumptions behind linear regression?**
+
+       - Check whether the diagnostics confirm that a linear model is reasonable for your data.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

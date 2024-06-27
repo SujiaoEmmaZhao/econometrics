@@ -1,0 +1,75 @@
+---
+title: "**Econometrics**"
+subtitle: "Difference in Differences: Panel Data"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/12/02 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+##  Data Preparation
+
+- Create a dummy variable to indicate the time when the treatment started. Lets assume that treatment started in 1994. In this case, years before 1994 will have a value of 0 and 1994+ a 1. If you already have this skip this step.
+
+- Create a dummy variable to identify the group exposed to the treatment. In this example lets assumed that countries with code E, F, and G were treated (=1). Other countries were not treated (=0). If you already have this skip this step.
+
+- Create an interaction between time and treated. We will call this interaction ‘did’.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+# Getting sample data.
+library(foreign)
+mydata = read.dta("Panel101.dta")
+mydata$time = ifelse(mydata$year >= 1994, 1, 0)
+mydata$treated = ifelse(mydata$country == "E" |
+  mydata$country == "F" |
+  mydata$country == "G", 1, 0)
+mydata$did = mydata$time * mydata$treated
+```
+
+
+## Estimating the DID estimator
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+didreg = lm(y ~ treated + time + did, data = mydata)
+#summary(didreg)
+stargazer(didreg, type="text", digits=2)
+```
+
+The coefficient for ‘did’ is the differences-in-differences estimator. The effect is significant at 10% with the treatment having a negative effect.
+
+
+Now estimate the DID estimator (using the multiplication method, no need to generate the interaction)
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+didreg1 = lm(y ~ treated*time, data = mydata)
+#summary(didreg1)
+stargazer(didreg1, type="text", digits=2)
+```
+
+The coefficient for ‘treated#time’ is the differences-indifferences estimator (‘did’ in the previous example). The effect is significant at 10% with the treatment having a negative effect.
+
+## Estimate the difference-in-differences effect using the fixed effects model
+
+With panel data we can estimate the difference-in-differences effect using a fixed effects regression with unit and period fixed effects. Or equivalently we can use regression with the dependent variable in first differences:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(plm)
+library(lmtest)
+mydata2<-pdata.frame(mydata, index=c("country", "year"))
+didreg2 <- plm(y ~ treated*time, data = mydata2, index = c("country", "year"), model = "within")
+didreg3<-coeftest(didreg2, vcov=function(x) vcovHC(x, cluster="group", type="HC1"))
+stargazer(didreg3, type="text", digits=2)
+```
+
+<br />

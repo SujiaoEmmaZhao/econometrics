@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Microeconometrics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Sujiao (Emma) ZHAO" />
+    <link href="Lecture7.1_Microeconometrics_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="class\bplim-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="class\bplim.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# <strong>Microeconometrics</strong>
+### Sujiao (Emma) ZHAO
+### 2021/11/10 (updated: 2021-11-09)
+
+---
+
+
+
+
+
+## About this course
+
+.font120[
+.blue[
+**Microeconometrics**
+]
+]
+
+*The analysis of individual-level data on the economic behavior of individuals or firms using econometric methods applied to cross-section and panel data.*
+
+.font85[
+1. Heteroskedasticity and Autocorrelation
+
+2. Instrumental Variables(IV)
+
+3. Models for Panel Data
+
+4. Special Issue 1: Difference in Difference
+
+5. Maximum likelihood Estimation
+
+6. Models with Limited Dependent Variables (binary Choice, Multiresponse, Tobit, and Duration)
+
+7. Special Issue 2: Regression Discontinuity Design
+]
+
+
+---
+
+## Working Method
+.font100[
+- Presencial
+- Expository classes + Laboratorial work
+]
+
+## Pre-requirements
+.font100[
+- Introductory Econometrics at the undergraduate level
+
+- Estimation of Linear Models at the graduate level
+]
+
+
+## Software
+.font100[
+- R
+]
+
+
+---
+
+## Policies
+.font100[
+- Do reading before class
+
+- Do exercises after class to check your understanding
+
+- Ask questions in the course
+
+- Students must attend at least 75% of classes to be eligible for exams
+]
+
+
+
+## Evaluation 
+.font100[
+- Test
+
+- Project Work and Group Presentation
+
+    - The final grade is the average of the two evaluations.
+    - A minimum of 10 is required in each evaluation
+]
+
+
+## [Contact](up649687@g.uporto.pt) 
+
+
+---
+
+
+# References
+
+.font100[
+
+**Textbooks**
+
+#### Marno Verbeek (2017), A Guide to Modern Econometrics, 5th ed. Wiley, ISBN 9781119401100. 
+
+#### William H. Greene (2020), Econometric Analysis, 8th ed. Pearson, ISBN: 978-0-13-446136-6.
+
+#### Jeffrey M. Wooldridge (2012), Introductory Econometrics: A Modern Approach, 5th ed. Cenage Learning, ISBN 978-1111531041. 
+
+#### Jeffrey M. Wooldridge (2010), Econometric Analysis of Cross Section and Panel Data, 2nd ed. The MIT Press, ISBN: 9780262232586. 
+
+#### Joseph Adler (2012), R in a Nutshell, 2nd ed. Reilly, ISBN 978-1-449-31208-4.
+
+
+]
+
+---
+
+
+# References
+
+.font100[
+
+**Programming**
+
+#### [R Cookbook, 2nd Edition](https://rc2e.com/)
+
+#### [Introduction to Econometrics with R](https://www.econometrics-with-r.org/): Practice with the exercises!
+
+#### [Introductory Econometrics Examples](https://justinmshea.github.io/wooldridge/articles/Introductory-Econometrics-Examples.html#chapter-13-pooling-cross-sections-across-time-simple-panel-data-methods-1)
+
+#### [Reproducible Finance with R](http://www.reproduciblefinance.com/start-here/)
+
+
+#### Christopher F. Baum (2016), An Introduction to Stata Programming, 2nd ed. Stata Press, ISBN: 978-1-59718-150-1.
+
+
+]
+
+
+
+
+
+---
+
+# About the Project
+
+&lt;br \&gt;
+
+.font120[
+.blue[
+**Replication of Empirical Studies in Economics**
+]
+]
+
+&lt;br \&gt;
+
+- Replicate a paper published in an Economics journal that uses econometric techniques that are covered in class
+
+- The selected paper should have the code and data publicly available
+
+- Groups have a minimum of 2 and a maximum of 4 students
+
+- You should submit the project proposal by Friday, Nov 26
+
+
+---
+
+# Data and Code Repositories
+
+- [IPCSR](https://www.openicpsr.org/openicpsr/repository/)
+
+- [Dataverse](https://dataverse.harvard.edu/)
+
+- [Mendeley Data](https://data.mendeley.com/)
+
+- [Zenodo](https://zenodo.org/)
+
+- [ZBW](https://journaldata.zbw.eu/journals)
+
+- [GESIS](https://search.gesis.org/)
+
+- [Datacite](https://datacite.org/)
+
+- [Replication Wiki](https://replication.uni-goettingen.de/wiki/index.php/Main_Page)
+
+
+---
+
+# Journals with Open Datasets
+
+- [RFE Replication](https://www.aeaweb.org/rfe/showCat.php?cat_id=9)
+
+- AEA Journals, materials in [IPCSR](https://www.openicpsr.org/openicpsr/repository/)
+
+    - [American Economic Review](https://www.aeaweb.org/journals/aer)
+    - [AER: Insights](https://www.aeaweb.org/journals/aeri)
+    - [AEJ: Applied Economics](https://www.aeaweb.org/journals/app)
+    - [AEJ: Economic Policy](https://www.aeaweb.org/journals/pol)
+    - [AEJ: Macroeconomics](https://www.aeaweb.org/journals/mac)
+    - [AEJ: Microeconomics](https://www.aeaweb.org/journals/mic)
+    - [AEA: Papers&amp;Proceedings](https://www.aeaweb.org/journals/pandp)
+
+- [Econometrica](https://onlinelibrary.wiley.com/journal/14680262)
+
+---
+
+# Journals with Open Datasets - Cont'd
+
+- [The Quarterly Journal of Economics](https://academic.oup.com/qje) (materials in Harvard [Dataverse](https://dataverse.harvard.edu/))
+
+- [The Journal of Political Economy](https://www.journals.uchicago.edu/toc/jpe/current) (materials in site)
+
+- [Review of Economic Studies](https://academic.oup.com/restud/issue) (materials in [Zenodo](https://zenodo.org/))
+
+- [Review of Economics and Statistics](https://direct.mit.edu/rest/issue) (materials in Harvard [Dataverse](https://dataverse.harvard.edu/))
+
+- [Economic Journal](https://academic.oup.com/ej/issue) (materials in site)
+
+- [Oxford Economic Papers](https://academic.oup.com/oep/issue) (materials in site)
+
+- [Journal of Labor Economics](https://www.journals.uchicago.edu/toc/jole/current) (materials in site)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

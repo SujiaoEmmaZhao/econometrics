@@ -1,0 +1,176 @@
+---
+title: "**Econometrics**"
+subtitle: "Dummy variables"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/10/13 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/")
+```
+
+
+<br />
+
+
+We will illustrate the use of dummy variables with an application in R. R uses factor vectors to represent dummy or categorical data. Factors can be ordered or unordered. Factor vectors are built on top of integer vectors and include a unique label for each integer. 
+
+
+We start by reading a dataset.
+
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+library(haven) # import Stata data
+housing2 <- read_dta("housing2.dta")
+```
+
+These data contains records for over 5,000 individual house sales with information on characteristics of the house
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(Hmisc)
+describe(housing2)
+```
+
+Next we run summary statistics
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+stargazer(as.data.frame(housing2), type = "text")
+```
+
+
+We start by regressing price on a constant only.
+
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+print("Regression 1")
+reg1<-lm(price~1, data = housing2)
+stargazer(reg1, type="text", digits=8)
+
+```
+
+
+A couple things are worth mentioning: the estimate for the $\beta_1$ is the mean of price and the $R^2$ is zero.
+
+Next we will run several different specification with the single purpose of illustrating how to handle dummies in R. We start by adding a dummy variable that takes the value 1 if the house was built after 2000. First we tabulate the variable
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+#table(housing2$built01plus)
+library(epiDisplay)
+# he tab1() function also prints a bar chart to show relative frequencies by default.
+tab1(housing2$built01plus, sort.group = "decreasing", cum.percent = TRUE)
+```
+
+
+and now we run the regression.
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg<-lm(price~built01plus, data = housing2)
+# summary(reg)
+# anova(reg)
+library(stargazer)
+stargazer(reg, type="text")
+```
+
+
+The estimate associated with $\beta_1$ is the average price of a house built before 2001 while the estimate for $\beta_2$ gives the difference between the average prices for the two periods.
+
+
+We can easily confirm this:
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(dplyr)
+housing2  %>%  group_by(built01plus) %>% summarise_at(vars(price), funs(mean))
+```
+
+What if I wanted to define the dummy the other way around, taking the value 1 for the period before 2001 and 0 elsewhere? 
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+housing2$before2000 <- ifelse(housing2$built01plus == 0, 1, 0)
+
+reg<-lm(price~before2000, data = housing2)
+# summary(reg)
+# anova(reg)
+library(stargazer)
+stargazer(reg, type="text")
+```
+
+
+
+If we use a character vector as an argument in `lm`, R will treat the vector as a set of dummy variables. The number of dummies will be the number of characteristics (unique observations) minus 1.Take the variable *bedrooms*. Suppose that we want to run a regression that includes a dummy variable for each number of bedrooms. 
+
+First, check levels in the variable *bedrooms*.
+```{r include=TRUE, warning = FALSE, message=FALSE}
+housing2  %>%  group_by(bedrooms) %>% summarise_at(vars(price), funs(mean))
+```
+
+Then we run regressions on the newly created factor variable *bedrooms2*.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+housing2$bedrooms2 <- factor(housing2$bedrooms,
+                       levels = c(1,2,3,4,5,6),
+                       labels = c("one bedroom", "two bedrooms", "three bedrooms", "four bedrooms", "five bedrooms", "six bedrooms"))
+
+reg<-lm(price~bedrooms2, data = housing2)
+# summary(reg)
+# anova(reg)
+library(stargazer)
+stargazer(reg, type="text", digits=4)
+```
+
+
+
+We can set a specific reference category by explicitly placing one of the levels first when specifying the level. Say now we want to use "three bedrooms" as our reference category.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+housing2$bedrooms3 <- factor(housing2$bedrooms,
+                       levels = c(3,1,2,4,5,6),
+                       labels = c("three bedrooms", "one bedroom", "two bedrooms", "four bedrooms", "five bedrooms", "six bedrooms"))
+
+reg<-lm(price~bedrooms3, data = housing2)
+# summary(reg)
+# anova(reg)
+library(stargazer)
+stargazer(reg, type="text", digits=4)
+```
+
+Another possibility is to not use a base category, but now we better drop the constant or we will have a perfect multicollinearity problem. 
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+reg<-lm(price~bedrooms2+0, data = housing2)
+summary(reg)
+anova(reg)
+library(stargazer)
+stargazer(reg, type="text", digits=4)
+```
+
+
+
+Finally, what if we want to include a dummy only "6 bedrooms"? It is very easy to create individual dummies based on a categorical variable. 
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+housing2$bedroom6<-ifelse(housing2$bedrooms == 6, 1, 0)
+#housing2$bedroom6 = as.integer(housing2$bedrooms == 6)
+reg<-lm(price~bedroom6+0, data = housing2)
+# summary(reg)
+# anova(reg)
+library(stargazer)
+stargazer(reg, type="text", digits=4)
+```
+
+
+
+<br />
+
+<br />

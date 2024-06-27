@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econometrics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Sujiao (Emma) ZHAO" />
+    <link href="Lecture3.1_Linear_Regression2_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="class\bplim-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="class\bplim.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# <strong>Econometrics</strong>
+## <strong>2M3E03 The Linear Regression Model</strong>
+### Sujiao (Emma) ZHAO
+### 2021/10/06 (updated: 2021-12-09)
+
+---
+
+
+
+
+
+class: center, middle, inverse
+
+# **The Linear Regression Model**
+
+# **Cont'd**
+---
+
+## A Review on **GMA**
+
+- A.1: `\(E(\epsilon_i) = 0\)` for all `\(i\)`
+
+- A.2: `\(E(\epsilon_i|x_{i}) = 0\)` 
+
+**Under A.1 and A.2, the OLS estimator is unbiased**
+
+`$$E(\hat \beta) = \beta$$`
+With many samples, the average value of the coefficient will be the population parameter.
+
+- A.3: `\(V(\epsilon_i) = \sigma^2\)` (homoskedasticity) for all `\(i\)`
+
+- A.4: `\(cov(\epsilon_i, \epsilon_j) = 0\)`, for all `\(i, i \neq j\)` (no autocorrelation)
+
+**Under A.1-A.4, the OLS estimator is BLUE**
+
+
+---
+
+## A Review on **GMA**
+
+- If `\(E(\epsilon_i|x_{ij}) \neq 0\)`, `\(E(\hat \beta) \neq b\)`
+
+    - OLS estimators are biased
+    - Endogeneity
+
+- When this assumption can be violated?
+
+    - Omitted Variable Bias
+    
+    - Functional Misspecification
+    
+    - Reverse Causality
+    
+    - Measurement Error
+
+---
+## A Review on **GMA**
+
+&lt;br /&gt;
+
+If we assume
+
+- A.5: `\(\epsilon_i\)` are normally distributed with `\(\epsilon\)` ~ `\(N(0, \sigma^2I)\)` (the `\(\epsilon_i\)` are independent drawings from a normal distribution with zero mean and constant variance `\(\sigma^2\)`)
+
+- A.5 replaces A.1+A.3+A.4
+
+- Under A.2+A.5, then `\(b \sim N(\beta, \sigma^2(X^{'}X)^{−1})\)`
+
+
+---
+
+## Hypothesis Testing
+
+### Tests Based on the OLS Estimator
+
+&lt;br /&gt;
+
+- A test implies a restriction(s) upon the coefficent(s) of the model. This is called the “null hypothesis”
+
+- We can check whether our estimates “deviate” significantly from these restrictions by means of a statistical test
+
+- If they do, we reject the hypothesis that the restrictions are true
+
+- We never “accept the null hypothesis”!
+
+- To perform a test we need a test statistic which is computed from the sample and has a know distribution if the null hypothesis is true
+
+
+---
+
+## Hypothesis Testing
+
+### Tests Involving One Restriction
+
+.font85[
+
+- If A.1-A.5 hold then the OLS estimators have an exact `\(t\)` distribution with `\(N − K\)` degrees of freedom where we replace `\(\sigma^2\)` by `\(s^2\)`
+
+`$$\sigma^2 = s^2 = \frac{\sum_{} e_i^2}{N-K}$$`
+
+- If all but A.5 does not hold then t-distribution holds approximately. The approximation improves as `\(N\)` becomes larger
+
+- To test `\(H0: \beta_j=q\)` we use the statistic
+`$$t = \frac{b_j − q}{se(b_j)} \sim t(N − K)$$`
+
+
+where `\(se(b_j)\)` is the standard error of `\(b_j\)`
+
+- We reject the null hypothesis if the absolute value of `\(t\)` is “too large”
+
+]
+---
+## Hypothesis Testing
+
+### Tests Involving More Restrictions
+
+.font85[
+- For more general tests we can use
+
+`$$H_0: R\beta = q$$`
+
+
+`$$H_a: R\beta \neq q$$`
+
+`\(R\)` is a matrix with `\(J\)` rows and `\(K\)` columns. 
+
+`$$J \leq K$$`
+
+Since `$$b \sim N(\beta,Var(b))$$`
+
+then `$$Rb - q \sim N(R\beta - q, RVar(b)R^{'})$$`
+
+]
+
+---
+## Hypothesis Testing
+
+### Tests Involving More Restrictions
+
+&lt;br /&gt;
+
+- The Wald test for `\(H_0: R\beta = q\)` is
+
+`$$W = (Rb − q)^{'} \{ R\widehat {Var}(b)R{'} \}^{−1}(Rb − q) \sim \chi^2(J)$$`
+
+where `\(\widehat {Var}(b)\)` is a consistent estimator of `\(Var(b)\)`. Large values of the Wald test lead to rejection of the null hypothesis. 
+
+- A common alternative is the F-statistic `\(F = W/J \sim F(J,N − K)\)`
+
+
+---
+## Hypothesis Testing
+
+### An Alternative Formulation
+
+.font85[
+
+- Estimate the model twice
+
+    - once without the restrictions (full model)
+    
+    - once with the restrictions imposed (restricted model)
+
+
+- Let `\(S_0\)` be the sum of squared residuals of the restricted model and `\(S_1\)` be the sum of squared residuals of the full model (obviously `\(S_0 \geq S_1\)`)
+
+
+- Compute the statistic
+`$$F = \frac {(S_0 − S_1)/J}{S_1/(N − K)}$$`
+
+
+- Under the null `\(F\)` has an F-distribution with `\(J\)` and `\(N − K\)` degrees of freedom
+
+
+- We reject if `\(F\)` is “too large”
+]
+
+---
+## Hypothesis Testing
+
+### Another Formulation of the Same Test
+
+- If the full and restricted model have the same dependent variable then the above test can be rewritten as
+
+`$$F = \frac{(R_1^2-R_0^2)/J}{(1-R_1^2)/(N-K)}$$`
+
+
+- Where `\(R_1^2\)` is the `\(R^2\)` of the full model and `\(R_0^2\)` is the `\(R^2\)` of the restricted model (obviously `\(R_1^2 \geq R_0^2\)`)
+
+
+---
+## Hypothesis Testing
+
+### Error Types
+
+.pull-left[
+
+
+&lt;br /&gt;
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/Error_Types.png" width=500 height=350&gt;
+&lt;/div&gt;
+]
+
+--
+
+.pull-right[
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/Error_Types2.png" width=450 height=250&gt;
+&lt;/div&gt;
+
+]
+
+
+---
+## Hypothesis Testing
+
+### Error Types, Size and Power
+
+- Type I error (the size `\(\alpha\)` of the test) is the probability of rejecting the null hypothesis when it actually is true. Prob(Type I error) = `\(\alpha\)` - the level of significance
+
+    - A size of `\(\alpha\)` corresponds to a confidence level of 1 − `\(\alpha\)`
+
+- Type II error is the probability of not rejecting the null hypothesis given that it is false. Prob(Type II error) = `\(\beta\)`
+
+    - The probability of not making a type II error is the **power** of the test
+
+- For a given sample size there is a trade-off between the two error types
+
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/Error_Types3.png" width=400 height=150&gt;
+&lt;/div&gt;
+
+
+---
+## Hypothesis Testing
+
+###  p-Values and Confidence Interval
+
+- The p-value is the marginal significance level for which the null hypothesis is rejected (not a probability!)
+
+    - e.g., 100 coin flips. If the coin was fair, how likely is 90 heads? --&gt; Pretty unlikely!
+    
+    - Under the null hypothesis, the **p-value** is the probability of getting a sample as or more extreme than our own.
+    
+- Confidence interval is a range of values for an unknown parameter. It has an associated confidence level chosen by the researcher.
+
+    - e.g., we are 95% confident that the parameter lies between two values.
+
+- Statistical vs economic significance
+
+---
+## Asymptotic Properties of OLS
+
+- Asymptotic theory refers to the question of what happens if, hypothetically, the sample size grows infinitely large
+
+- If some assumptions are violated the properties of the OLS estimator will change. Exact properties will be replaced by asymptotic properties which are used to approximate the properties of an estimator in a given sample
+
+- Consistency
+
+    - An estimator `\(\hat \beta\)` is consistent if it converges in proability to the population parameter `\(\beta\)` as the sample size n increases
+    
+    `$$plim \: b = \beta, \: where \: n \to\infty$$`
+    
+    
+- Unbiasedness is ideal and holds with any sample size. But if unbiasedness cannot be achieved, then at least consistency can be achieved with a large sample.
+
+
+---
+## Asymptotic Properties of OLS
+
+&lt;br /&gt;
+
+**Chebyshev’s inequality**: the probability that a random variable `\(z\)` deviates more than a positive number `\(\delta\)` from its mean is bounded by its variance divided by `\(\delta^2\)` (see Equation 2.67)
+
+`$$P\{|z-E(z)| &gt; \delta\} &lt; \frac{V(z)}{\delta^2}, \: for \: all \: \delta&gt;0$$`
+
+- A.6: `\(\frac{1}{N} \sum_{i=1}^{N} {x_i x_i^{'}}\)` converges to a finite nonsingular matrix
+
+- A.6 is a regularity condition satisfied in most empirical applications that assures the existence of a finite limit
+
+- **Under A.1-A.4 b is consistent provided A.6 is satisfied**
+
+---
+## Asymptotic Properties of OLS
+
+&lt;br /&gt;
+
+
+- A.7: `\(E(\epsilon_i x_i ) = 0\)` for all xs.
+
+- **Under A.6 and A.7 alone **b** is consistent**
+
+- Thus the OLS estimator **b** is consistent for `\(\beta\)` under conditions A.6 and A.7, which are much weaker than the GMA conditions required for unbiasedness (A.1-A.4)
+
+
+---
+## Asymptotic Properties of OLS
+
+
+&lt;br /&gt;
+
+- Under assumptions A.1-A.4 (and A.6) it holds that **b** is asymptotically normal
+
+- This means that in finite samples, **b** has approximately a normal distribution (the approximation is better the larger the sample)
+
+- A.8: `\(x_i\)` and `\(\epsilon_i\)` are independent 
+
+- A.8 is a less restrictive assumption
+
+- A.1 and A.8 imply A.7
+
+    - remember the general result that if X and Y are independent then E(XY)=E(X)E(Y)
+
+- Replacing A.2 by A.8 does not affect the distributional results
+
+
+
+---
+## Monte Carlo Simulations
+
+**Monte Carlo simulations** are a method of analysis based on repeated sampling from stochastic process and then the computing test statistics or estimators from those articial samples.
+
+- In econometrics, it is typically used to examine the finite sample properties of statistical tests and estimators that are proved to have certain asymptotic theoretical properties.
+
+- e.g., The OLS estimator converges in probability to the population parameter as the sample size tends to infinity (under certain conditions).
+
+---
+## Monte Carlo Simulations
+
+- **Why are Monte Carlo Simulations so important?**
+
+- Many of the proven properties of estimators or tests are asymptotic in nature, so how do they perform in finite sample? --&gt; How big of a sample do we need for these theoretical properties to manifest?
+
+    - All datasets are finite, and unfortunately, many are quite small.
+    
+- Your estimator or test many only work well for a small number of data generating process (e.g., Normally distributed data or uniform)    
+
+- Simulations can help you compare your estimator with other estimators.
+
+- **Yet, note that Monte Carlo Simulations are not substitutes for analytical proofs.**
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,111 @@
+---
+title: "**Econometrics**"
+subtitle: "Multinomial Logit Model in R"
+author: "Sujiao (Emma) ZHAO"
+date: "2021/12/10 (updated: `r Sys.Date()`)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+## setting working directory
+opts_knit$set(root.dir = "C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+```
+
+
+
+<br />
+
+## Reminder
+
+- If outcome or dependent variable is binary and in the form 0/1, then use logit or probit models.
+
+- If outcome or dependent variable is categorical but are ordered (i.e. low to high), then use ordered logit or ordered probit models.
+
+- **If outcome or dependent variable is categorical without any particular order, then use multinomial logit.**
+
+
+<br />
+
+## Running a Multinomial Logit Model
+
+- Getting sample data
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(foreign)
+setwd("C:/Users/bpu058246/Desktop/Teaching/Econometria/Lectures/Data/")
+mydata = read.csv("hsb2.csv")
+```
+
+- Checking the output (dependent) variable
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+table(mydata$ses)
+```
+
+By default the first category is the reference. We can change it so ‘middle’ is the reference type. For gender, we set male as the reference.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+mydata$ses2 = factor(mydata$ses,
+                       levels = c("middle","low","high"))
+mydata$female = factor(mydata$gender,
+                       levels = c("male","female"))
+```
+
+
+- Running the multinomial logit model using the `multinom()` function
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(nnet)
+multi1 = multinom(ses2 ~ science + socst + female, data=mydata)
+summary(multi1)
+```
+
+Coefficients: these are the logit coefficients relative to the reference category. For example, under ‘science’, the -0.02 suggests that for one unit increase in ‘science’ score, the **logit coefficient** for ‘low’ relative to ‘middle’ will go down by that amount, -0.02. In other words, if your science score increases one unit, your chances of staying in the middle ses category are higher compared to staying in low ses.
+
+Arrange the results in a table
+```{r include=TRUE, warning = FALSE, message=FALSE}
+library(stargazer)
+stargazer(multi1, type="text")
+```
+
+## Odds Ratio
+
+The Estimate column shows the coefficients in log-odds form. To get the odds ratio, you need explonentiate the logit coefficient.
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+multi1.rrr = exp(coef(multi1))
+multi1.rrr
+stargazer(multi1, type="text", coef=list(multi1.rrr), p.auto=FALSE)
+```
+
+Keeping all other variables constant, if your science score increases one unit, you are 0.977 times more likely to stay in the low ses category as compared to the middle ses category (the risk or odds is 2.3% lower). The coefficient, however, is not significant.
+
+Keeping all other variables constant, if your science score increases one unit, you are 1.023 times more likely to stay in the high ses category as compared to the middle ses category (the risk or odds is 2.3% higher). The coefficient, however, is not significant.
+
+## Predicted Probabilities
+
+**Use "probs" for predicted probabilities**
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+allmean <- data.frame(science=rep(mean(mydata$science),2),
+socst=rep(mean(mydata$socst),2),
+female = c("male","female"))
+allmean
+```
+
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+pred.prob <- predict(multi1, newdata=allmean, type="probs")
+pred.prob <-cbind(allmean, pred.prob)
+pred.prob
+```
+
+**Use "class" for the predicted category**
+
+```{r include=TRUE, warning = FALSE, message=FALSE}
+pred.class <- predict(multi1, newdata=allmean, type="class")
+pred.class <-cbind(allmean, pred.class)
+pred.class
+```

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Econometrics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Sujiao (Emma) ZHAO" />
+    <link href="Lecture1.1_Principles_Econometrics_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="class\bplim-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="class\bplim.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# <strong>Econometrics</strong>
+## <strong>2M3E03 Principles of Econometrics</strong>
+### Sujiao (Emma) ZHAO
+### 2021/09/22 (updated: 2021-09-22)
+
+---
+
+
+
+
+
+## Working Method
+.font100[
+- Presencial
+- Expository classes + Laboratorial work
+]
+
+## Pre-requirements
+.font100[
+- Introductory Econometrics at the undergraduate level
+]
+
+## Policies
+.font100[
+- Do reading before class
+
+- Do exercises after class to check your understanding
+
+- Ask questions in the course
+
+- Students must attend at least 75% of classes to be eligible for exams
+]
+
+---
+
+## Software
+.font100[
+- R
+- Stata
+]
+
+## Evaluation 
+.font100[
+- Test
+
+- Practical or project work
+
+    - The final grade is the average of the two evaluations.
+    - A minimum of 10 is required in each evaluation
+]
+
+
+## [Contact](up649687@g.uporto.pt) 
+
+
+---
+
+
+# References
+
+.font100[
+
+**Textbooks**
+
+#### Marno Verbeek (2017), A Guide to Modern Econometrics, 5th ed. Wiley, ISBN 9781119401100. 
+
+#### William H. Greene (2020), Econometric Analysis, 8th ed. Pearson, ISBN: 978-0-13-446136-6.
+
+#### Jeffrey M. Wooldridge (2012), Introductory Econometrics: A Modern Approach, 5th ed. Cenage Learning, ISBN 978-1111531041. 
+
+#### Jeffrey M. Wooldridge (2010), Econometric Analysis of Cross Section and Panel Data, 2nd ed. The MIT Press, ISBN: 9780262232586. 
+
+#### Joseph Adler (2012), R in a Nutshell, 2nd ed. Reilly, ISBN 978-1-449-31208-4.
+
+
+]
+
+---
+
+
+# References
+
+.font100[
+
+**Programming**
+
+#### [R Cookbook, 2nd Edition](https://rc2e.com/)
+
+#### [Introduction to Econometrics with R](https://www.econometrics-with-r.org/): Practice with the exercises!
+
+#### [Introductory Econometrics Examples](https://justinmshea.github.io/wooldridge/articles/Introductory-Econometrics-Examples.html#chapter-13-pooling-cross-sections-across-time-simple-panel-data-methods-1)
+
+#### [Reproducible Finance with R](http://www.reproduciblefinance.com/start-here/)
+
+
+#### Christopher F. Baum (2016), An Introduction to Stata Programming, 2nd ed. Stata Press, ISBN: 978-1-59718-150-1.
+
+
+]
+
+---
+
+
+# References
+
+.font100[
+
+**Data Sets**
+
+#### [Data Sets for Econometrics](https://cran.r-project.org/web/packages/Ecdat/Ecdat.pdf)
+
+#### [Data Sets from "Introductory Econometrics: A Modern Approach" by Jeffrey M. Wooldridge](https://cran.r-project.org/web/packages/wooldridge/wooldridge.pdf)
+
+[Other Materials](https://github.com/JustinMShea/wooldridge)
+
+
+#### [Introductory Econometrics Examples](https://justinmshea.github.io/wooldridge/)
+
+
+```r
+install.packages("Ecdat")
+library("Ecdat")
+install.packages("wooldridge")
+library("wooldridge")
+```
+
+]
+
+
+
+---
+
+# What is Econometrics?
+
+
+&lt;blockquote&gt;
+Definition 1: econometrics = econo+ metrics
+&lt;/blockquote&gt;
+
+- Econometrics is the marriage between economic models and the modern practice of econometrics.
+
+.font120[
+.blue[
+**Economics vs. Econometrics**
+]
+]
+
+.font80[
+
+- Economics: focus on “how” and “why”
+
+- Econometrics: focus on “how much” and “by how much”
+    
+    - Economist: “If the government increases alcohol excise tax, consumers will cut down on their alcohol consumption.”
+    
+    - Econometrician: “If the government increases alcohol excise tax by 20%, consumers will reduce their alcohol consumption by 1%.”
+    
+    
+- Is econometrics a part of statistics? 
+
+    - Not quite – economic data give rise to methods unparalleled in any branch of statistics.
+    
+
+- Econometrics is absolutely vital in applying economic theories in practice!
+
+    - Reflected in the number of econometricians among Nobel prize laureates
+
+]
+---
+
+# What is Econometrics?
+
+&lt;blockquote&gt;
+Definition 2: econometrics = statistics for economists
+&lt;/blockquote&gt;
+
+- Econometrics is not concerned with the numbers themselves, but rather with the methods used to obtain the information
+
+
+.font120[
+.blue[
+**Textbook definitions of econometrics**
+]
+]
+
+.font90[
+- “Application of mathematical statistics to economic data to lend empirical support to models constructed by mathematical economics and to obtain numerical estimates.” (Samuelson et al., Econometrica, 1954)
+
+- “Application of mathematics and statistical methods to the analysis of economic data.“ (www.wikipedia.org)
+
+- Econometrics is the science of deriving **causal conclusions** from non-experimental data (e.g., business data, administrative and tax records, etc.)
+
+- Econometrics facilitates **causal inferences** by using statistical methods to control for confounding factors
+
+
+]
+ 
+
+---
+
+# Why Study Econometrics?
+
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+
+.font100[
+*The Master in the Economics of Business and Strategy was designed to enable students to successfully grasp and tackle this dynamic environment, either as managers or researchers.*
+
+*Students are provided foundations in economic theory and a powerful set of cutting-edge analytical tools, allowing them to effectively solve real business situations.*
+]
+
+&lt;br /&gt;
+
+---
+# Why Study Econometrics?
+
+#### **Confront theory with real-world data**
+
+.font90[
+
+- Use of statistical techniques to understand economic issues and test theories
+    
+    - Provides the tools to enable extraction of useful information about important economic issues from the available data (e.g., evaluate the effectiveness of a publicly funded job training program; study the returns on different investment strategies)
+
+    - To test a hypothesis (e.g., how much of the "gender pay gap" can be explained by differences in education and experience)
+    
+    - To estimate a key parameter (e.g., market risk, known as beta in the CAPM model)
+    
+    - To generate forecasts (e.g., predict economic recessions, determine the level that the base interest rate should be set each month)
+
+    
+- Without evidence, economic theories are abstract and might have no bearing on reality (even if they are completely rigorous)
+
+]   
+
+---
+
+# Why Study Econometrics?
+
+#### **Confront theory with real-world data**
+
+.font120[
+.blue[
+**Examples**
+]
+]
+
+.font90[
+
+- Does attending an elite college bring an expected payoff in expected lifetime income sufficient to justify the higher tuition? [Kreuger and Dale (1999) and Kreuger (2000)]
+
+- Does a voluntary training program produce tangible benefits? Can these benefits be accurately measured? [Angrist (2001)]
+
+- Does an increase in the minimum wage lead to reduced employment? [Card and Krueger (1994)]
+
+- Do smaller class sizes bring real benefits in student performance? [Hanuschek (1999), Hoxby (2000), and Angrist and Lavy (1999)]
+  
+
+]
+
+
+---
+
+# Basic Econometric Questions
+
+.font120[
+.blue[
+**Descriptive**
+]
+]
+    
+- How much do men and women earn annually on average in Portugal? How long do recessions typically last?
+
+- Main trait: all these question mean “how much … on average or typically”. If we had enough data, we would know the answer for sure
+
+- Challenges: 
+
+    - Sampling: how to make conclusions based on a sample rather than the whole population (random sampling &amp; statistical inference)
+    
+    - Summary statistics: how to summarize the (quantitative) answer in a nice, brief and comprehensible way
+    
+---
+
+# Basic Econometric Questions
+
+.font120[
+.blue[
+**Forecasting**
+]
+]
+
+
+- What will the global temperature be in 2040? How long will the recession last this year? Highly visible applications of econometrics: forecasts of macroeconomic indicators (interest rates, inflation, GDP etc.)
+
+- Main trait: 
+
+    - We can never know the answers for sure in advance; but if we wait long enough, we’ll know the answer. 
+    
+    - There might be very high stakes behind these questions
+    
+    - Inferences are drawn based on time-related data (i.e., time series)
+
+
+    
+---
+
+# Basic Econometric Questions
+
+.font120[
+.blue[
+**Causal**
+]
+]
+
+
+- If the federal reserve lowers interest rates today, what will happen to inflation tomorrow? What is the effect of political campaign expenditures on voting outcomes? How much more money will you earn as a result of taking this course?
+
+- Main trait: 
+
+    - The cause(s) and the effect should always be distinguished. 
+    
+    - The presence of a causal link is suggested by economic theory (or common sense), the goal of econometric analysis is either to empirically verify or quantify this causal link.
+    
+    
+---
+
+# Causality and Correlation
+    
+- Correlations are easy to get but not informative.
+
+- Correlations go both ways. Any causal statement, by definition, is one way.
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/spurious_correlations.png" width=600 height=300&gt;
+&lt;/div&gt;
+
+
+---
+
+# Causality and Correlation
+
+- It’s easy to watch correlated data change in tandem and assume that one thing causes the other.
+
+    - *When your height increased, your mass increased too. But getting taller didn’t make you also get wider. Instead, maturing to adulthood caused both variables to increase*
+
+- **The illusion of causality**: there are many forms of cognitive bias or irrational thinking patterns that often lead to faulty conclusions and economic decisions.
+
+    - *Millions of people believed that buying a home for much more than its actual value would continue to result in a return on the investment just because that happened in the past.*
+    
+    
+---
+
+# Causality and Correlation
+
+.font120[
+.blue[
+**Cell phones cause cancer or the reverse?**
+]
+]
+
+&lt;br \&gt;
+
+&lt;div align="center"&gt;
+&lt;img src="pictures/mobile_phone_cancer.png" width=700 height=300&gt;
+&lt;/div&gt;
+
+
+  
+---
+
+# Causality and Ceteris Paribus
+
+.font90[
+
+- In economic thinking, causal relations are strongly connected with the notion of ceteris paribus (“other things being equal”)
+
+    - Example: Consumer demand analysis – increasing a price makes consumers buy less ceteris paribus (however, if other factors change, anything can happen)
+    
+- If one could run an experiment with ceteris paribus conditions enforced, it would be easy to verify and evaluate the causal link
+    
+- This is the way things are done in natural sciences
+    
+    - Example: with decreasing air pressure, lower water temperature is needed for it to boil and turn into steam
+    
+- In social sciences, such controlled experiments are either impossible, unethical or prohibitively expensive
+
+    - Example: political campaign expenditures – impossible to re-run the election with different campaign budgets
+    
+]    
+
+
+---
+
+&lt;div class="navy" align="center"&gt;
+
+&lt;iframe width="700" height="500" src="https://www.youtube.com/embed/c-OF0OaK3o0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+
+&lt;/div&gt;
+
+&lt;div class="navy" align="center"&gt;
+Three Identical Strangers Trailer #1 (2018)
+&lt;/div&gt;
+    
+---
+
+# Causality and Experiments
+
+- We can distinguish between
+
+    - experimental data: “created” in a laboratory experiment
+    
+    - non-experimental/observational data: researcher = passive collector of the data
+
+- A large part of econometrics deals with how to get “correct” results despite working with non-experimental data.
+
+&lt;blockquote&gt;
+Econometric tools cannot be used to find causal links; these have to be found in economic theory. Econometrics can help us quantify causal effects and/or verify their presence. The challenge in here consist in dealing with non-experimental data where ceteris paribus conditions cannot be established.
+&lt;/blockquote&gt;
+
+
+---
+
+# Causality and Experiments
+
+Sometimes, even in experiments related to natural sciences, it is impossible to enforce ceteris paribus conditions
+
+.font85[
+
+- Example: assessing the effect of a new fertilizer on soybeans
+
+- Ceteris paribus = ruling out other yield-affecting factors such as rainfall, quality of land, presence of parasites etc.
+
+- Experimental design:
+
+    - 1.Choose several one-acre plots of land.
+    
+    - 2.Apply different amounts of fertilizer to each plot.
+    
+    - 3.Use statistical methods to measure the association between yields and fertilizer amounts.
+
+]
+
+
+---
+
+# Causality and Experiments
+
+
+.font85[
+
+- Drawback: some of yield-affecting factors are not fully observed --&gt; impossible to choose “identical” plots of land
+
+- Solution: statistical procedures still work correctly, if fertilizer amounts are independent of the other factors, e.g., if we choose fertilizer amounts completely at random  --&gt; hence randomized experiments
+
+]
+
+
+&lt;blockquote&gt;
+If carried out properly, randomized experiments can substitute the ceteris paribus conditions. However, in social sciences,these experiments are typically either impossible, or at least unethical or extremely costly to conduct.
+&lt;/blockquote&gt;
+
+- Example: Regulation SHO
+
+    
+---
+
+# Steps in Empirical Analysis
+
+.font80[
+
+**Step 1**: Formulate the question of interest.
+
+**Step 2**: Find a suitable economic model.
+
+- formal relationships between economic variables
+
+`$$wage=f(education, experience, training)$$`
+
+**Step 3**: Turn it into an econometric model.
+
+- Specify the function form f (•) of the economic relationships
+
+- Deal with variables and quantification
+    
+`$$wage=\beta_0 +\beta_1education+\beta_2 experience+\beta_3 training+u$$` 
+
+`\(u\)` is the error termor disturbance, which contains unobserved factors, measurement errors, and random nature of human behaviour
+
+**Step 4**: Obtain suitable data.
+
+**Step 5**: Use econometric methods to estimate the econometric model.
+
+**Step 6**: If needed, use hypothesis tests to answer the question from step 1.
+
+- If training plays a role in wage, then `\(\beta_3=0\)` 
+
+
+]    
+---
+
+# Econometric Modeling
+
+.font85[
+
+- Econometric analysis usually begins with a statement of a theoretical proposition.
+
+- Economic theories are typically sharp and unambiguous 
+
+    - Dependent and independent variables are identified, a functional form is specified, and in most cases, at least a qualitative statement is made about the directions of effects that occur when independent variables in the model change.
+
+
+]
+
+---
+
+# Econometric Modeling
+
+.font120[
+.blue[
+**However,**
+]
+]
+
+.font85[
+
+- The data may be badly measured or may correspond only vaguely to the variables in the model. Some of the variables may be inherently unmeasurable. e.g., “expectations”. 
+
+- Some relevant variables may be missing from the model.
+
+- The theory may make only a rough guess as to the correct form of the model.
+
+- The conditions under which data are collected lead to a sample of observations that is systematically unrepresentative of the population we wish to study.
+
+- Due to the random aspects of economic life it is necessary to incorporate stochastic elements.
+    
+    - A model cannot be made so broad as to include every possibility.
+]
+
+
+
+---
+
+# The Structure of Economic Data
+
+- Cross-Sectional Data
+
+    - A cross-sectional data set consists of a sample of units, taken at a given point in time.
+    
+    - We can often assume that cross-sectional data has been obtained by random sampling from the underlying population
+    
+    - Not necessarily true if sample selection bias and/or sampling from units that are large relative to the population
+    
+    - Different variables sometimes correspond to different time periods in cross-sectional data sets
+    
+    
+---
+
+# The Structure of Economic Data
+
+- Cross-Sectional Data
+
+.scroll-output[    
+
+
+```r
+# install.packages("wooldridge")
+library(wooldridge)
+```
+
+```
+## Warning: package 'wooldridge' was built under R version 4.0.5
+```
+
+```r
+# Loading data set
+data("wage1")
+
+# Print the first 6 rows
+head(wage1, 6)
+```
+
+```
+##   wage educ exper tenure nonwhite female married numdep smsa northcen south
+## 1 3.10   11     2      0        0      1       0      2    1        0     0
+## 2 3.24   12    22      2        0      1       1      3    1        0     0
+## 3 3.00   11     2      0        0      0       0      2    0        0     0
+## 4 6.00    8    44     28        0      0       1      0    1        0     0
+## 5 5.30   12     7      2        0      0       1      1    0        0     0
+## 6 8.75   16     9      8        0      0       1      0    1        0     0
+##   west construc ndurman trcommpu trade services profserv profocc clerocc
+## 1    1        0       0        0     0        0        0       0       0
+## 2    1        0       0        0     0        1        0       0       0
+## 3    1        0       0        0     1        0        0       0       0
+## 4    1        0       0        0     0        0        0       0       1
+## 5    1        0       0        0     0        0        0       0       0
+## 6    1        0       0        0     0        0        1       1       0
+##   servocc    lwage expersq tenursq
+## 1       0 1.131402       4       0
+## 2       1 1.175573     484       4
+## 3       0 1.098612       4       0
+## 4       0 1.791759    1936     784
+## 5       0 1.667707      49       4
+## 6       0 2.169054      81      64
+```
+
+```r
+# Number of rows (observations)
+nrow(wage1)
+```
+
+```
+## [1] 526
+```
+
+```r
+# Number of columns (variables)
+ncol(wage1)
+```
+
+```
+## [1] 24
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+]
+
+---
+
+# The Structure of Economic Data
+
+- Time Series Data
+
+    - A time series data set consists of observations on a variable or several variables over time.
+    
+    - Economic observations can rarely, if ever, be assumed to be independent across time.
+    
+    - Some economic time series display seasonal pattern or trends
+    
+    
+---
+
+# The Structure of Economic Data
+
+- Time Series Data
+    
+.scroll-output[    
+
+
+```r
+# install.packages("wooldridge")
+library(wooldridge)
+ 
+# Loading data set
+data("intdef")
+
+# Print the first 6 rows
+head(intdef, 6)
+```
+
+```
+##   year   i3  inf  rec  out        def i3_1 inf_1      def_1        ci3 cinf
+## 1 1948 1.04  8.1 16.2 11.6 -4.6000004   NA    NA         NA         NA   NA
+## 2 1949 1.10 -1.2 14.5 14.3 -0.1999998 1.04   8.1 -4.6000004 0.06000006 -9.3
+## 3 1950 1.22  1.3 14.4 15.6  1.2000008 1.10  -1.2 -0.1999998 0.12000000  2.5
+## 4 1951 1.55  7.9 16.1 14.2 -1.9000006 1.22   1.3  1.2000008 0.32999992  6.6
+## 5 1952 1.77  1.9 19.0 19.4  0.3999996 1.55   7.9 -1.9000006 0.22000003 -6.0
+## 6 1953 1.93  0.8 18.7 20.4  1.6999989 1.77   1.9  0.3999996 0.15999997 -1.1
+##        cdef y77
+## 1        NA   0
+## 2  4.400001   0
+## 3  1.400001   0
+## 4 -3.100001   0
+## 5  2.300000   0
+## 6  1.299999   0
+```
+
+```r
+# Number of rows (observations)
+nrow(intdef)
+```
+
+```
+## [1] 56
+```
+
+```r
+# Number of columns (variables)
+ncol(intdef)
+```
+
+```
+## [1] 13
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+]
+
+---
+
+# The Structure of Economic Data
+
+- Pooled Cross Sections
+
+    - Data sets have both cross-sectional and time series features.
+    
+    - For example, cross-sectional household surveys taken in different years and everytime a new random sample is drawn
+    
+- Panel or Longitudinal Data
+
+    - A panel data (or longitudinal data) set consists of a time series for each cross-sectional member in the data set.
+    
+    - Panel data can facilitate causal inference and allow to study the importance of lags in behavior or the result of decision making.
+  
+
+---
+
+# The Structure of Economic Data
+    
+- Panel or Longitudinal Data
+
+.scroll-output[    
+
+
+```r
+# install.packages("wooldridge")
+library(wooldridge)
+ 
+# Loading data set
+data("crime4")
+
+# Print the first 6 rows
+head(crime4, 6)
+```
+
+```
+##   county year    crmrte   prbarr  prbconv  prbpris avgsen      polpc  density
+## 1      1   81 0.0398849 0.289696 0.402062 0.472222   5.61 0.00178678 2.307159
+## 2      1   82 0.0383449 0.338111 0.433005 0.506993   5.59 0.00176659 2.330254
+## 3      1   83 0.0303048 0.330449 0.525703 0.479705   5.80 0.00183577 2.341801
+## 4      1   84 0.0347259 0.362525 0.604706 0.520104   6.89 0.00188588 2.346420
+## 5      1   85 0.0365730 0.325395 0.578723 0.497059   6.55 0.00192436 2.364896
+## 6      1   86 0.0347524 0.326062 0.512324 0.439863   6.90 0.00189522 2.385681
+##      taxpc west central urban pctmin80     wcon      wtuc     wtrd     wfir
+## 1 25.69763    0       1     0  20.2187 206.4803  333.6209 182.3330 272.4492
+## 2 24.87425    0       1     0  20.2187 212.7542  369.2964 189.5414 300.8788
+## 3 26.45144    0       1     0  20.2187 219.7802 1394.8035 196.6395 309.9696
+## 4 26.84235    0       1     0  20.2187 223.4238  398.8604 200.5629 350.0863
+## 5 28.14034    0       1     0  20.2187 243.7562  358.7830 206.8827 383.0707
+## 6 29.74098    0       1     0  20.2187 257.9139  369.5465 218.5165 409.8842
+##       wser   wmfg   wfed   wsta   wloc        mix    pctymle d82 d83 d84 d85
+## 1 215.7335 229.12 409.37 236.24 231.47 0.09991788 0.08769682   0   0   0   0
+## 2 231.5767 240.33 419.70 253.88 236.79 0.10304912 0.08637666   1   0   0   0
+## 3 240.1568 269.70 438.85 250.36 248.58 0.08067867 0.08509085   0   1   0   0
+## 4 252.4477 281.74 459.17 261.93 264.38 0.07850353 0.08383328   0   0   1   0
+## 5 261.0861 298.88 490.43 281.44 288.58 0.09324856 0.08230646   0   0   0   1
+## 6 269.6129 322.65 478.67 286.91 306.70 0.09732283 0.08008062   0   0   0   0
+##   d86 d87   lcrmrte   lprbarr   lprbconv   lprbpris  lavgsen    lpolpc
+## 1   0   0 -3.221757 -1.238923 -0.9111490 -0.7503061 1.724551 -6.327340
+## 2   0   0 -3.261134 -1.084381 -0.8370060 -0.6792581 1.720979 -6.338704
+## 3   0   0 -3.496449 -1.107303 -0.6430188 -0.7345839 1.757858 -6.300291
+## 4   0   0 -3.360270 -1.014662 -0.5030129 -0.6537265 1.930071 -6.273361
+## 5   0   0 -3.308445 -1.122715 -0.5469313 -0.6990466 1.879465 -6.253162
+## 6   1   0 -3.359507 -1.120668 -0.6687981 -0.8212920 1.931521 -6.268420
+##    ldensity   ltaxpc    lwcon    lwtuc    lwtrd    lwfir    lwser    lwmfg
+## 1 0.8360171 3.246399 5.330205 5.810005 5.205835 5.607452 5.374044 5.434246
+## 2 0.8459773 3.213833 5.360137 5.911600 5.244607 5.706707 5.444911 5.482013
+## 3 0.8509204 3.275311 5.392628 7.240509 5.281372 5.736475 5.481292 5.597310
+## 4 0.8528909 3.289981 5.409070 5.988612 5.301128 5.858180 5.531204 5.640985
+## 5 0.8607340 3.337204 5.496169 5.882718 5.332152 5.948220 5.564850 5.700042
+## 6 0.8694848 3.392526 5.552626 5.912277 5.386862 6.015875 5.596987 5.776568
+##      lwfed    lwsta    lwloc      lmix  lpctymle  lpctmin    clcrmrte
+## 1 6.014619 5.464848 5.444450 -2.303407 -2.433870 3.006608          NA
+## 2 6.039540 5.536862 5.467174 -2.272549 -2.449038 3.006608 -0.03937626
+## 3 6.084157 5.522900 5.515765 -2.517281 -2.464036 3.006608 -0.23531556
+## 4 6.129421 5.568077 5.577387 -2.544612 -2.478925 3.006608  0.13617969
+## 5 6.195282 5.639919 5.664972 -2.372487 -2.497306 3.006608  0.05182457
+## 6 6.171011 5.659169 5.725870 -2.329722 -2.524721 3.006608 -0.05106163
+##       clprbarr    clprbcon    clprbpri     clavgsen     clpolpc     cltaxpc
+## 1           NA          NA          NA           NA          NA          NA
+## 2  0.154542208  0.07414299  0.07104796 -0.003571391 -0.01136398 -0.03256536
+## 3 -0.022922039  0.19398713 -0.05532581  0.036878586  0.03841305  0.06147742
+## 4  0.092641115  0.14000595  0.08085740  0.172213197  0.02693033  0.01467013
+## 5 -0.108053565 -0.04391843 -0.04532003 -0.050606012  0.02019882  0.04722309
+## 6  0.002047777 -0.12186676 -0.12224543  0.052056313 -0.01525831  0.05532193
+##         clmix
+## 1          NA
+## 2  0.03085732
+## 3 -0.24473166
+## 4 -0.02733064
+## 5  0.17212510
+## 6  0.04276490
+```
+
+```r
+# Number of rows (observations)
+nrow(crime4)
+```
+
+```
+## [1] 630
+```
+
+```r
+# Number of columns (variables)
+ncol(crime4)
+```
+
+```
+## [1] 59
+```
+
+&lt;br /&gt;
+
+&lt;br /&gt;
+
+]
+
+---
+
+# Scientific Production: A Trend
+
+- Big Data. Today, economists have at their disposal vast quantities of new data
+
+- Methodological advances in the analysis of quasi-experimental data
+
+- Data Transparency
+
+- Replicability and open-source software tools
+
+- Publication Process
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightLines": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
